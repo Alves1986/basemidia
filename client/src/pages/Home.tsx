@@ -4,7 +4,7 @@ import { ArrowDownRight, ArrowUpRight, BarChart3, Check, ChevronDown, CircleChec
 
 const heroDashboard = "/manus-storage/base-midia-hero-dashboard_b6a66915.png";
 const signalDetail = "/manus-storage/base-midia-signal-detail_3b2b23b3.png";
-const brandMark = "/manus-storage/base-midia-mark_b175993d.png";
+const officialLogo = "/manus-storage/base-midia-logo-compact_988a8739.png";
 
 const painPoints = [
   "Você investe em anúncios e não sabe exatamente onde está o problema?",
@@ -41,8 +41,7 @@ export default function Home() {
     <main className="site-shell">
       <nav className="topbar">
         <a className="brand" href="#top" aria-label="BASE MÍDIA início">
-          <img src={brandMark} alt="" className="brand-mark" />
-          <span>BASE<span className="brand-accent">.</span>MÍDIA</span>
+          <img src={officialLogo} alt="BASE MÍDIA" className="brand-logo" />
         </a>
         <div className={`nav-links ${menuOpen ? "is-open" : ""}`}>
           <a href="#metodo" onClick={() => setMenuOpen(false)}>Como funciona</a>
@@ -112,7 +111,7 @@ export default function Home() {
 
       <section className="final-cta"><div className="final-grid" /><div className="section-index">/ PRÓXIMO MOVIMENTO</div><h2>Pronto para entender o que está<br /><span>travando seus anúncios?</span></h2><button className="primary-cta" onClick={scrollToForm}>Agendar diagnóstico gratuito <ArrowUpRight size={18} /></button><p><Clock3 size={14} /> Resposta em até 1 dia útil</p></section>
 
-      <footer className="footer"><div className="footer-brand"><img src={brandMark} alt="" className="brand-mark" /><strong className="custom-wordmark">BASE<span>.</span>MÍDIA</strong><p>Planejamento antes da execução.</p></div><div className="footer-contact"><span>FALE COM A BASE</span><a href="mailto:contato@basemidia.com.br">contato@basemidia.com.br</a></div><div className="footer-meta"><span>© 2026 BASE MÍDIA</span><span>Privacidade & dados</span></div></footer>
+      <footer className="footer"><div className="footer-brand"><img src={officialLogo} alt="BASE MÍDIA" className="brand-logo footer-logo" /><p>Planejamento antes da execução.</p></div><div className="footer-contact"><span>FALE COM A BASE</span><a href="mailto:contato@basemidia.com.br">contato@basemidia.com.br</a></div><div className="footer-meta"><span>© 2026 BASE MÍDIA</span><span>Privacidade & dados</span></div></footer>
     </main>
   );
 }
