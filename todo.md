@@ -1,8 +1,8 @@
-# Atualização de identidade visual
+# Revisão de interação e responsividade
 
-- [x] Localizar a logo oficial e os demais ativos de marca compartilhados no projeto.
-- [x] Validar visualmente qual arquivo deve ser usado no header, footer e favicon.
-- [x] Substituir referências aos ativos gerados pela identidade aprovada.
-- [x] Ajustar tratamento do wordmark sem descaracterizar a logo oficial.
-- [x] Rodar checagem de tipos/build e revisar a aplicação da marca.
-- [ ] Salvar um novo checkpoint da versão atualizada.
+- [x] Esconder o formulário da página inicial e abrir somente por ação explícita nos CTAs.
+- [x] Implementar modal flutuante responsivo com fechamento por botão, clique externo e tecla Esc.
+- [x] Garantir foco, rolagem e acessibilidade adequados durante a abertura do modal.
+- [x] Ajustar grids, tipografia, imagens e espaçamentos para desktop, tablet e mobile.
+- [x] Validar a landing page e o modal em múltiplos viewports.
+- [x] Rodar checagem de tipos/build e salvar nova versão.
