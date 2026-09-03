@@ -82,7 +82,14 @@ function whatsappUrl(value: string, message?: string) {
       ? `55${digits}`
       : digits;
   if (!normalized) return "#";
-  return `https://wa.me/${normalized}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
+  
+  const isMobile = /iPhone|Android|iPad|iPod/i.test(navigator.userAgent);
+  const textParam = message ? `text=${encodeURIComponent(message)}` : "";
+  
+  if (isMobile) {
+    return `https://wa.me/${normalized}${message ? `?${textParam}` : ""}`;
+  }
+  return `https://web.whatsapp.com/send?phone=${normalized}${message ? `&${textParam}` : ""}`;
 }
 
 function whatsappGreeting(lead: Lead, settings: OperationSettings) {
