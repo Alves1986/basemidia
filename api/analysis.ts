@@ -48,11 +48,16 @@ const analysisSchema = {
   additionalProperties: false,
 } as const;
 
-function forgeConfig() {
-  const baseUrl = process.env.BUILT_IN_FORGE_API_URL;
-  const apiKey = process.env.BUILT_IN_FORGE_API_KEY;
-  if (!baseUrl || !apiKey) return null;
-  return { baseUrl: baseUrl.replace(/\/$/, ""), apiKey };
+function openRouterConfig() {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return null;
+  return {
+    apiKey,
+    baseUrl: (
+      process.env.OPENROUTER_API_BASE_URL || "https://openrouter.ai/api/v1"
+    ).replace(/\/$/, ""),
+    model: process.env.OPENROUTER_MODEL || "openrouter/free",
+  };
 }
 
 async function readBody(request: Request) {
@@ -127,11 +132,14 @@ export default async function handler(
       jsonResponse({ error: "Informe o lead para analisar." }, { status: 400 }),
       response
     );
-  const config = forgeConfig();
+  const config = openRouterConfig();
   if (!config)
     return sendWebResponse(
       jsonResponse(
-        { error: "A análise por IA ainda não foi configurada neste ambiente." },
+        {
+          error:
+            "A análise por IA ainda não foi configurada. Insira OPENROUTER_API_KEY no Vercel.",
+        },
         { status: 503 }
       ),
       response
@@ -152,7 +160,6 @@ export default async function handler(
         ),
         response
       );
-    const model = process.env.BUILT_IN_FORGE_MODEL || "gpt-5-mini";
     const prompt = JSON.stringify({
       lead: {
         name: lead.name,
@@ -163,14 +170,18 @@ export default async function handler(
       },
       briefing: lead.briefing,
     });
-    const upstream = await fetch(`${config.baseUrl}/v1/chat/completions`, {
+    const upstream = await fetch(`${config.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
         "Content-Type": "application/json",
+        ...(process.env.OPENROUTER_SITE_URL
+          ? { "HTTP-Referer": process.env.OPENROUTER_SITE_URL }
+          : {}),
+        "X-OpenRouter-Title": "BASE MÍDIA — Análise estratégica",
       },
       body: JSON.stringify({
-        model,
+        model: config.model,
         messages: [
           {
             role: "system",
@@ -182,7 +193,7 @@ export default async function handler(
             content: `Transforme este lead e briefing em um diagnóstico para reunião e planejamento de campanha:\n${prompt}`,
           },
         ],
-        max_completion_tokens: 2800,
+        max_tokens: 2800,
         response_format: {
           type: "json_schema",
           json_schema: {

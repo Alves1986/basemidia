@@ -53,7 +53,9 @@ A rota protegida `/configuracoes` permite editar os nomes das etapas do funil, a
 
 ## Análise estratégica por IA
 
-Dentro do detalhe de um lead, depois que o briefing estiver salvo, a ação `Gerar análise estratégica` cria um diagnóstico com ângulos de campanha, hipóteses de público, perguntas para reunião, lacunas/riscos e próximo passo recomendado. A resposta é gerada server-side em `/api/analysis`, com JSON estruturado, e fica salva no mesmo registro privado do lead. O modelo padrão é `gpt-5-mini`; a análise só fica ativa quando o ambiente possui as credenciais integradas do serviço de IA (`BUILT_IN_FORGE_API_URL` e `BUILT_IN_FORGE_API_KEY`).
+Dentro do detalhe de um lead, depois que o briefing estiver salvo, a ação `Gerar análise estratégica` cria um diagnóstico com ângulos de campanha, hipóteses de público, perguntas para reunião, lacunas/riscos e próximo passo recomendado. A resposta é gerada server-side em `/api/analysis`, com JSON estruturado, e fica salva no mesmo registro privado do lead. O provedor é a OpenRouter e o modelo padrão é `openrouter/free`, que escolhe automaticamente um modelo gratuito disponível. A análise fica ativa quando `OPENROUTER_API_KEY` está configurada no Vercel; o modelo pode ser substituído por uma variante gratuita específica com `OPENROUTER_MODEL`.
+
+Para ativar, crie uma chave em [OpenRouter Keys](https://openrouter.ai/keys) e adicione `OPENROUTER_API_KEY` no ambiente Production do Vercel. Opcionalmente, defina `OPENROUTER_SITE_URL` para identificar a aplicação e mantenha `OPENROUTER_API_BASE_URL` como `https://openrouter.ai/api/v1`. A modalidade gratuita pode ter limites de requisição, maior latência e disponibilidade variável; se a OpenRouter estiver indisponível, o sistema mostra uma mensagem de erro sem perder o briefing.
 
 ## Exclusão de leads duplicados
 
