@@ -17,7 +17,9 @@ import {
   MessageCircle,
   RefreshCw,
   Search,
+  Trash2,
   ShieldCheck,
+  Settings2,
   Users,
   X,
 } from "lucide-react";
@@ -30,6 +32,11 @@ import {
   type LeadStatus,
 } from "@shared/leads";
 import StrategicBriefingForm from "../components/StrategicBriefingForm";
+import StrategicAnalysisPanel from "../components/StrategicAnalysisPanel";
+import {
+  defaultOperationSettings,
+  type OperationSettings,
+} from "@shared/operation";
 
 interface AuthState {
   authenticated?: boolean;
@@ -51,6 +58,12 @@ function formatDate(timestamp: number) {
   }).format(new Date(timestamp));
 }
 
+function dateAfterDays(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 function formatShortDate(timestamp: number) {
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
@@ -69,9 +82,21 @@ function whatsappUrl(value: string, message?: string) {
   return `https://wa.me/${normalized}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
 }
 
-function whatsappGreeting(lead: Lead) {
-  const firstName = lead.name.trim().split(/\s+/)[0] || "tudo bem";
-  return `Olá, ${firstName}! Aqui é da BASE MÍDIA. Recebi seu diagnóstico sobre ${lead.goal.toLowerCase()} e quero entender melhor o cenário para te mostrar o próximo passo.`;
+function whatsappGreeting(lead: Lead, settings: OperationSettings) {
+  const firstName = lead.name.trim().split(/\s+/)[0] || lead.name;
+  const company = lead.briefing?.companyClient || lead.name;
+  const template =
+    lead.status === "proposta"
+      ? settings.messages.proposalSent
+      : lead.briefing
+        ? settings.messages.briefingReady
+        : lead.status === "novo"
+          ? settings.messages.newLead
+          : settings.messages.followUp;
+  return template
+    .replaceAll("{{nome}}", firstName)
+    .replaceAll("{{empresa}}", company)
+    .replaceAll("{{objetivo}}", lead.goal);
 }
 
 export default function Gestao() {
@@ -93,6 +118,25 @@ export default function Gestao() {
   const [briefingLead, setBriefingLead] = useState<Lead | null>(null);
   const [error, setError] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [operationSettings, setOperationSettings] = useState<OperationSettings>(
+    defaultOperationSettings
+  );
+  const [analyzingLeadId, setAnalyzingLeadId] = useState<string | null>(null);
+  const [analysisError, setAnalysisError] = useState("");
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [deletingLead, setDeletingLead] = useState(false);
+
+  async function loadSettings() {
+    try {
+      const response = await fetch("/api/settings", {
+        credentials: "same-origin",
+      });
+      const body = (await response.json()) as { settings?: OperationSettings };
+      if (response.ok && body.settings) setOperationSettings(body.settings);
+    } catch {
+      // Os defaults locais mantêm o pipeline utilizável caso as configurações ainda não existam.
+    }
+  }
 
   async function loadLeads() {
     setLoadingLeads(true);
@@ -133,6 +177,7 @@ export default function Gestao() {
         }
         setUser(body.user ?? null);
         void loadLeads();
+        void loadSettings();
       })
       .catch(() => {
         if (active)
@@ -149,10 +194,22 @@ export default function Gestao() {
 
   useEffect(() => {
     if (!selectedLead) return;
+    const currentStage = operationSettings.stages.find(
+      stage => stage.id === selectedLead.status
+    );
     setPipelineStatus(selectedLead.status);
-    setNextActionDraft(selectedLead.nextAction);
-    setNextActionAtDraft(selectedLead.nextActionAt ?? "");
+    setNextActionDraft(
+      selectedLead.nextAction || currentStage?.defaultNextAction || ""
+    );
+    setNextActionAtDraft(
+      selectedLead.nextActionAt ||
+        dateAfterDays(
+          currentStage?.deadlineDays ?? operationSettings.defaultFollowUpDays
+        )
+    );
     setPipelineSaved(false);
+    setDeleteConfirmationOpen(false);
+    setAnalysisError("");
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setSelectedLead(null);
     };
@@ -191,6 +248,74 @@ export default function Gestao() {
     lead => lead.createdAt > Date.now() - 7 * 24 * 60 * 60 * 1000
   ).length;
   const segmentCount = new Set(leads.map(lead => lead.segment)).size;
+
+  async function handleGenerateAnalysis() {
+    if (!selectedLead?.briefing) return;
+    setAnalyzingLeadId(selectedLead.id);
+    setAnalysisError("");
+    try {
+      const response = await fetch("/api/analysis", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId: selectedLead.id }),
+      });
+      const body = (await response.json()) as { lead?: Lead; error?: string };
+      if (response.status === 401) {
+        navigate("/auth");
+        return;
+      }
+      if (!response.ok || !body.lead)
+        throw new Error(body.error ?? "Não foi possível gerar a análise.");
+      setLeads(current =>
+        current.map(lead => (lead.id === body.lead!.id ? body.lead! : lead))
+      );
+      setSelectedLead(body.lead);
+    } catch (reason) {
+      setAnalysisError(
+        reason instanceof Error
+          ? reason.message
+          : "Não foi possível gerar a análise."
+      );
+    } finally {
+      setAnalyzingLeadId(null);
+    }
+  }
+
+  async function handleDeleteLead() {
+    if (!selectedLead) return;
+    setDeletingLead(true);
+    setError("");
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "delete-lead",
+          leadId: selectedLead.id,
+        }),
+      });
+      const body = (await response.json()) as { error?: string };
+      if (response.status === 401) {
+        navigate("/auth");
+        return;
+      }
+      if (!response.ok)
+        throw new Error(body.error ?? "Não foi possível excluir o lead.");
+      setLeads(current => current.filter(lead => lead.id !== selectedLead.id));
+      setSelectedLead(null);
+      setDeleteConfirmationOpen(false);
+    } catch (reason) {
+      setError(
+        reason instanceof Error
+          ? reason.message
+          : "Não foi possível excluir o lead."
+      );
+    } finally {
+      setDeletingLead(false);
+    }
+  }
 
   async function handleLogout() {
     await fetch("/api/auth", { method: "DELETE", credentials: "same-origin" });
@@ -292,6 +417,9 @@ export default function Gestao() {
           </a>
           <a href="#briefings" onClick={() => setMobileMenuOpen(false)}>
             <FileText size={17} /> Briefings <span>{leads.length}</span>
+          </a>
+          <a href="/configuracoes" onClick={() => setMobileMenuOpen(false)}>
+            <Settings2 size={17} /> Configurações <ChevronRight size={14} />
           </a>
         </nav>
         <div className="admin-sidebar-foot">
@@ -429,7 +557,11 @@ export default function Gestao() {
                     <span className="pipeline-stage-index">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <strong>{leadStatusLabels[status]}</strong>
+                    <strong>
+                      {operationSettings.stages.find(
+                        stage => stage.id === status
+                      )?.label ?? leadStatusLabels[status]}
+                    </strong>
                     <b>{count}</b>
                   </button>
                 );
@@ -631,6 +763,13 @@ export default function Gestao() {
                 <p>{selectedLead.goal}</p>
               </div>
             </div>
+            <StrategicAnalysisPanel
+              analysis={selectedLead.strategicAnalysis}
+              hasBriefing={Boolean(selectedLead.briefing)}
+              loading={analyzingLeadId === selectedLead.id}
+              error={analysisError}
+              onGenerate={() => void handleGenerateAnalysis()}
+            />
             <section
               className="lead-pipeline-panel"
               aria-label="Pipeline do lead"
@@ -648,13 +787,26 @@ export default function Gestao() {
                   <select
                     value={pipelineStatus}
                     onChange={event => {
-                      setPipelineStatus(event.target.value as LeadStatus);
+                      const nextStatus = event.target.value as LeadStatus;
+                      const nextStage = operationSettings.stages.find(
+                        stage => stage.id === nextStatus
+                      );
+                      setPipelineStatus(nextStatus);
+                      setNextActionDraft(nextStage?.defaultNextAction || "");
+                      setNextActionAtDraft(
+                        dateAfterDays(
+                          nextStage?.deadlineDays ??
+                            operationSettings.defaultFollowUpDays
+                        )
+                      );
                       setPipelineSaved(false);
                     }}
                   >
                     {leadStatuses.map(status => (
                       <option value={status} key={status}>
-                        {leadStatusLabels[status]}
+                        {operationSettings.stages.find(
+                          stage => stage.id === status
+                        )?.label ?? leadStatusLabels[status]}
                       </option>
                     ))}
                   </select>
@@ -702,7 +854,7 @@ export default function Gestao() {
                 className="primary-cta"
                 href={whatsappUrl(
                   selectedLead.whatsapp,
-                  whatsappGreeting(selectedLead)
+                  whatsappGreeting(selectedLead, operationSettings)
                 )}
                 target="_blank"
                 rel="noreferrer"
@@ -721,7 +873,45 @@ export default function Gestao() {
               >
                 <ArrowLeft size={15} /> Voltar para a lista
               </button>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={() => setDeleteConfirmationOpen(true)}
+              >
+                <Trash2 size={15} /> Excluir duplicado
+              </button>
             </div>
+            {deleteConfirmationOpen && (
+              <div className="delete-confirm">
+                <p>
+                  Esta ação remove definitivamente o lead e o briefing salvo.
+                  Use apenas se este registro for realmente duplicado.
+                </p>
+                <div className="delete-confirm-actions">
+                  <button
+                    className="danger-button"
+                    type="button"
+                    onClick={() => void handleDeleteLead()}
+                    disabled={deletingLead}
+                  >
+                    {deletingLead ? (
+                      <Loader2 className="spin" size={14} />
+                    ) : (
+                      <Trash2 size={14} />
+                    )}
+                    {deletingLead ? "Excluindo..." : "Confirmar exclusão"}
+                  </button>
+                  <button
+                    className="admin-secondary-button"
+                    type="button"
+                    onClick={() => setDeleteConfirmationOpen(false)}
+                    disabled={deletingLead}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
           </article>
         </div>
       )}

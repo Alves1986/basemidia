@@ -1,3 +1,5 @@
+import type { StrategicAnalysis } from "./operation.js";
+
 export interface LeadInput {
   name: string;
   whatsapp: string;
@@ -70,6 +72,7 @@ export interface Lead extends LeadInput {
   nextActionAt?: string;
   briefing?: StrategicBriefing;
   briefingUpdatedAt?: number;
+  strategicAnalysis?: StrategicAnalysis;
 }
 
 export const leadFieldLabels: Record<keyof LeadInput, string> = {

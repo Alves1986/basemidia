@@ -1,6 +1,7 @@
 import type { IncomingHttpHeaders } from "node:http";
 import { getAuthenticatedAdmin, jsonResponse } from "./_lib/auth.js";
 import {
+  deleteLead,
   getLeads,
   isLeadStorageConfigured,
   saveLead,
@@ -79,6 +80,36 @@ async function readBody(request: Request) {
     return await request.json();
   } catch {
     return null;
+  }
+}
+
+async function handleDeleteLead(request: Request, body: unknown) {
+  if (!(await getAuthenticatedAdmin(request))) {
+    return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
+  }
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse(
+      {
+        error:
+          "O armazenamento de leads ainda não foi configurado no Vercel Blob.",
+      },
+      { status: 503 }
+    );
+  }
+  const source =
+    body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+  if (!/^[0-9a-f-]{20,}$/i.test(leadId))
+    return jsonResponse({ error: "Lead inválido." }, { status: 400 });
+  try {
+    await deleteLead(leadId);
+    return jsonResponse({ success: true, deletedLeadId: leadId });
+  } catch (error) {
+    console.error("[Leads] Falha ao excluir lead", error);
+    return jsonResponse(
+      { error: "Não foi possível excluir este lead agora." },
+      { status: 404 }
+    );
   }
 }
 
@@ -188,6 +219,17 @@ export default async function handler(
 
   if (webRequest.method === "POST") {
     const body = await readBody(webRequest);
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "delete-lead"
+    ) {
+      return sendWebResponse(
+        await handleDeleteLead(webRequest, body),
+        response
+      );
+    }
+
     if (
       body &&
       typeof body === "object" &&

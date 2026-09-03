@@ -2577,7 +2577,6 @@ h1 em {
   }
 }
 
-
 /* Strategic briefing workspace */
 .briefing-modal-backdrop {
   position: fixed;
@@ -2809,7 +2808,9 @@ h1 em {
   font: inherit;
   font-size: 13px;
   line-height: 1.55;
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
 }
 .briefing-field input {
   min-height: 43px;
@@ -2980,7 +2981,6 @@ h1 em {
   }
 }
 
-
 /* Lead pipeline */
 .pipeline-section {
   margin-top: 58px;
@@ -3013,7 +3013,10 @@ h1 em {
   cursor: pointer;
   font: inherit;
   text-align: left;
-  transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
 }
 .pipeline-stage:hover,
 .pipeline-stage.is-active {
@@ -3210,5 +3213,266 @@ h1 em {
   }
   .briefing-form-footer {
     padding-top: 22px;
+  }
+}
+
+/* Operational settings and strategic analysis */
+.admin-success {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 25px;
+  padding: 13px 15px;
+  background: rgba(56, 255, 20, 0.08);
+  border-left: 2px solid var(--acid);
+  color: #c8f9bf;
+  font-size: 12px;
+}
+.operation-settings-page {
+  max-width: 1120px;
+}
+.settings-card {
+  margin-top: 34px;
+  padding: clamp(21px, 3vw, 34px);
+  background: #171717;
+  border: 1px solid var(--border);
+}
+.settings-card + .settings-card {
+  margin-top: 16px;
+}
+.settings-intro {
+  max-width: 680px;
+  margin-top: 13px;
+  color: #948888;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.settings-intro code {
+  color: var(--acid);
+  font-family: "IBM Plex Mono", monospace;
+}
+.settings-stage-list {
+  display: grid;
+  gap: 11px;
+  margin-top: 27px;
+}
+.settings-stage-row {
+  display: grid;
+  grid-template-columns: 12px minmax(150px, 1.1fr) minmax(180px, 1.5fr) 108px;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: #101010;
+  border: 1px solid var(--border);
+}
+.settings-stage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 12px currentColor;
+}
+.settings-stage-row strong {
+  display: block;
+  margin-bottom: 7px;
+  color: #756969;
+  font:
+    9px "IBM Plex Mono",
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.settings-stage-row label,
+.settings-message-grid label,
+.settings-wide-field {
+  display: grid;
+  gap: 8px;
+  color: #827676;
+  font:
+    9px "IBM Plex Mono",
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.settings-stage-row input,
+.settings-message-grid textarea,
+.settings-wide-field input {
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid rgba(240, 240, 240, 0.14);
+  outline: 0;
+  background: #151515;
+  color: #e7dede;
+  font:
+    12px "DM Sans",
+    sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+  transition: border-color 0.18s var(--ease-out);
+}
+.settings-stage-row input:focus,
+.settings-message-grid textarea:focus,
+.settings-wide-field input:focus {
+  border-color: var(--acid);
+}
+.settings-wide-field {
+  max-width: 260px;
+  margin-top: 20px;
+}
+.settings-message-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 27px;
+}
+.settings-message-grid textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.55;
+}
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+.analysis-panel {
+  margin-top: 25px;
+  padding: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(56, 255, 20, 0.08),
+    rgba(203, 166, 247, 0.06)
+  );
+  border: 1px solid rgba(56, 255, 20, 0.28);
+}
+.analysis-panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+.analysis-panel h3 {
+  margin-top: 7px;
+  color: #ede4e4;
+  font:
+    500 22px "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.05em;
+}
+.analysis-panel time {
+  color: #817676;
+  font:
+    9px "IBM Plex Mono",
+    monospace;
+}
+.analysis-panel h4 {
+  margin-top: 23px;
+  color: var(--acid);
+  font:
+    10px "IBM Plex Mono",
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.analysis-panel p,
+.analysis-panel li {
+  color: #c5baba;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.analysis-panel p {
+  margin-top: 9px;
+}
+.analysis-panel ul {
+  display: grid;
+  gap: 9px;
+  margin: 10px 0 0;
+  padding-left: 19px;
+}
+.analysis-angle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 11px;
+  margin-top: 10px;
+}
+.analysis-angle {
+  padding: 14px;
+  background: rgba(16, 16, 16, 0.72);
+  border: 1px solid var(--border);
+}
+.analysis-angle strong {
+  color: #e8dfdf;
+  font:
+    500 14px "Space Grotesk",
+    sans-serif;
+}
+.analysis-angle p {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.analysis-angle em {
+  display: block;
+  margin-top: 10px;
+  color: var(--acid);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.analysis-inline-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.danger-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 118, 95, 0.45);
+  background: transparent;
+  color: #ffab9e;
+  font:
+    10px "IBM Plex Mono",
+    monospace;
+  transition:
+    color 0.18s var(--ease-out),
+    border-color 0.18s var(--ease-out),
+    background 0.18s var(--ease-out);
+}
+.danger-button:hover {
+  background: rgba(255, 118, 95, 0.08);
+  border-color: #ff765f;
+  color: #ffd2cb;
+}
+.delete-confirm {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 118, 95, 0.07);
+  border: 1px solid rgba(255, 118, 95, 0.32);
+}
+.delete-confirm p {
+  color: #ffb8ad;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.delete-confirm-actions {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 760px) {
+  .settings-stage-row {
+    grid-template-columns: 12px 1fr;
+  }
+  .settings-stage-row > label {
+    grid-column: 2;
+  }
+  .settings-message-grid,
+  .analysis-angle-grid {
+    grid-template-columns: 1fr;
+  }
+  .analysis-panel-heading {
+    flex-direction: column;
   }
 }

@@ -46,3 +46,15 @@ O formulário público pode sincronizar cada novo lead com o CRM Bolten.io como 
 A sincronização usa o endpoint oficial de oportunidades da API REST da Bolten, com autenticação `Bearer`. O lead é salvo primeiro no armazenamento privado da BASE MÍDIA. Se a Bolten estiver indisponível, responder com erro ou ainda não estiver configurada, o cadastro local continua concluído e o problema fica registrado nos logs do servidor, evitando perda do lead ou falha para o usuário.
 
 Depois de configurar as variáveis, é necessário publicar um novo deployment para que o runtime carregue os valores. A automação de WhatsApp deve ser configurada dentro do projeto Bolten, usando a oportunidade/contato criado pela API e o fluxo ou template aprovado no CRM.
+
+## Configurações da operação
+
+A rota protegida `/configuracoes` permite editar os nomes das etapas do funil, a próxima ação padrão, o prazo de cada etapa, o prazo padrão de follow-up e as mensagens operacionais. Os textos aceitam os marcadores `{{nome}}`, `{{empresa}}` e `{{objetivo}}`. As configurações ficam salvas em um objeto privado do Vercel Blob e, quando a tela de gestão é aberta, os rótulos e prazos configurados são aplicados ao pipeline.
+
+## Análise estratégica por IA
+
+Dentro do detalhe de um lead, depois que o briefing estiver salvo, a ação `Gerar análise estratégica` cria um diagnóstico com ângulos de campanha, hipóteses de público, perguntas para reunião, lacunas/riscos e próximo passo recomendado. A resposta é gerada server-side em `/api/analysis`, com JSON estruturado, e fica salva no mesmo registro privado do lead. O modelo padrão é `gpt-5-mini`; a análise só fica ativa quando o ambiente possui as credenciais integradas do serviço de IA (`BUILT_IN_FORGE_API_URL` e `BUILT_IN_FORGE_API_KEY`).
+
+## Exclusão de leads duplicados
+
+No detalhe de cada lead existe a ação `Excluir duplicado`. O sistema exige uma segunda confirmação e remove o registro e o briefing vinculado do armazenamento privado. Essa ação é protegida pela mesma autenticação administrativa e não é disponibilizada no formulário público.

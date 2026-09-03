@@ -1,4 +1,4 @@
-import { get, list, put } from "@vercel/blob";
+import { del, get, list, put } from "@vercel/blob";
 import {
   leadStatuses,
   type Lead,
@@ -126,6 +126,38 @@ async function readLead(pathname: string) {
   if (!result || result.statusCode !== 200) return null;
   const parsed = JSON.parse(await new Response(result.stream).text());
   return parseStoredLead(parsed);
+}
+
+export async function getLeadById(leadId: string) {
+  assertStorageConfigured();
+  return readLead(`${LEADS_PREFIX}${leadId}.json`);
+}
+
+export async function saveLeadAnalysis(
+  leadId: string,
+  strategicAnalysis: Lead["strategicAnalysis"]
+) {
+  assertStorageConfigured();
+  const pathname = `${LEADS_PREFIX}${leadId}.json`;
+  const lead = await readLead(pathname);
+  if (!lead) throw new Error("Lead não encontrado.");
+  const updatedLead: Lead = { ...lead, strategicAnalysis };
+  await put(pathname, JSON.stringify(updatedLead), {
+    access: "private",
+    contentType: "application/json",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+  return updatedLead;
+}
+
+export async function deleteLead(leadId: string) {
+  assertStorageConfigured();
+  const pathname = `${LEADS_PREFIX}${leadId}.json`;
+  const lead = await readLead(pathname);
+  if (!lead) throw new Error("Lead não encontrado.");
+  await del(pathname);
+  return lead;
 }
 
 export async function getLeads() {

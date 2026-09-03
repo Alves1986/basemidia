@@ -36,3 +36,12 @@
 - [x] Documentar `BOLTEN_API_KEY`, `BOLTEN_PROJECT_ID` e `BOLTEN_API_BASE_URL`.
 - [ ] Configurar a API Key e o Project ID da Bolten no Vercel.
 - [ ] Ativar no CRM Bolten a automação/template de WhatsApp para a nova oportunidade.
+
+## Próxima evolução operacional
+
+- [x] Criar a tela protegida `/configuracoes` para etapas, mensagens e prazos.
+- [x] Aplicar rótulos, ações padrão, prazos e mensagens configurados na gestão.
+- [x] Gerar análise estratégica por IA a partir do briefing salvo.
+- [x] Salvar a análise estratégica no lead e exibir diagnóstico, ângulos, público, perguntas e riscos.
+- [x] Adicionar confirmação para excluir lead duplicado e briefing vinculado.
+- [ ] Configurar as credenciais integradas de IA no ambiente de produção, se ainda não estiverem disponíveis.
