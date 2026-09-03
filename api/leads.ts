@@ -1,12 +1,12 @@
 import type { IncomingHttpHeaders } from "node:http";
-import { getAuthenticatedAdmin, jsonResponse } from "./_lib/auth";
-import { getLeads, isLeadStorageConfigured, saveLead } from "./_lib/leads";
+import { getAuthenticatedAdmin, jsonResponse } from "./_lib/auth.js";
+import { getLeads, isLeadStorageConfigured, saveLead } from "./_lib/leads.js";
 import {
   sendWebResponse,
   toWebRequest,
   type VercelResponseLike,
-} from "./_lib/vercel";
-import type { LeadInput } from "../shared/leads";
+} from "./_lib/vercel.js";
+import type { LeadInput } from "../shared/leads.js";
 
 interface VercelRequest {
   method?: string;

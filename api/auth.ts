@@ -6,12 +6,12 @@ import {
   getAuthenticatedAdmin,
   isAdminConfigured,
   jsonResponse,
-} from "./_lib/auth";
+} from "./_lib/auth.js";
 import {
   sendWebResponse,
   toWebRequest,
   type VercelResponseLike,
-} from "./_lib/vercel";
+} from "./_lib/vercel.js";
 
 interface VercelRequest {
   method?: string;

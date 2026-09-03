@@ -1,5 +1,5 @@
 import { get, list, put } from "@vercel/blob";
-import type { Lead, LeadInput } from "../../shared/leads";
+import type { Lead, LeadInput } from "../../shared/leads.js";
 
 const LEADS_PREFIX = "base-midia/leads/";
 
