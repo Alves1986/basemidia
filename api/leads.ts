@@ -31,7 +31,7 @@ function normalizeInput(body: unknown): LeadInput | null {
   return input;
 }
 
-export async function POST(request: Request) {
+async function handlePost(request: Request) {
   if (!isLeadStorageConfigured()) {
     return jsonResponse(
       {
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+async function handleGet(request: Request) {
   if (!getAuthenticatedAdmin(request)) {
     return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
   }
@@ -102,3 +102,11 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export default {
+  async fetch(request: Request) {
+    if (request.method === "GET") return handleGet(request);
+    if (request.method === "POST") return handlePost(request);
+    return jsonResponse({ error: "Método não permitido." }, { status: 405 });
+  },
+};

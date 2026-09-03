@@ -7,7 +7,7 @@ import {
   jsonResponse,
 } from "./_lib/auth";
 
-export async function GET(request: Request) {
+async function handleGet(request: Request) {
   const admin = getAuthenticatedAdmin(request);
   return jsonResponse({
     configured: isAdminConfigured(),
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   });
 }
 
-export async function POST(request: Request) {
+async function handlePost(request: Request) {
   if (!isAdminConfigured()) {
     return jsonResponse(
       {
@@ -56,9 +56,18 @@ export async function POST(request: Request) {
   );
 }
 
-export async function DELETE(request: Request) {
+async function handleDelete(request: Request) {
   return jsonResponse(
     { success: true },
     { headers: { "Set-Cookie": clearSessionCookie(request) } }
   );
 }
+
+export default {
+  async fetch(request: Request) {
+    if (request.method === "GET") return handleGet(request);
+    if (request.method === "POST") return handlePost(request);
+    if (request.method === "DELETE") return handleDelete(request);
+    return jsonResponse({ error: "Método não permitido." }, { status: 405 });
+  },
+};
