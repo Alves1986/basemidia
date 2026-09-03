@@ -1,7 +1,5 @@
-node_modules
 .manus-logs
 server
-shared
 attached_assets
 screenshots
 *.log
