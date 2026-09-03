@@ -15,6 +15,7 @@ import {
   Target,
   X,
 } from "lucide-react";
+import AnimatedBackground from "../components/AnimatedBackground";
 import heroDashboard from "../assets/base-midia-hero-dashboard.svg";
 import signalDetail from "../assets/base-midia-signal-detail.svg";
 import officialLogo from "../assets/logo_base.jpg";
@@ -150,6 +151,7 @@ export default function Home() {
 
   return (
     <main className="site-shell">
+      <AnimatedBackground />
       <nav className="topbar">
         <a className="brand" href="#top" aria-label="BASE MÍDIA início">
           <img src={officialLogo} alt="BASE MÍDIA" className="brand-logo" />
