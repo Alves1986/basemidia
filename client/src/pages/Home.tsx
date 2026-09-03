@@ -163,9 +163,14 @@ export default function Home() {
           <button className="nav-link-button" onClick={openDiagnostic}>
             Diagnóstico
           </button>
-          <button className="nav-cta" onClick={openDiagnostic}>
+          <a 
+            className="nav-cta" 
+            href="https://wa.me/5511999999999?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20conversa." 
+            target="_blank" 
+            rel="noreferrer"
+          >
             Agendar conversa <ArrowUpRight size={15} />
-          </button>
+          </a>
         </div>
         <button
           className="menu-toggle"
