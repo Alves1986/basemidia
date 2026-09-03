@@ -1,10 +1,9 @@
 // Design: Dark Performance Lab — neo-brutalist digital, assimetria editorial, verde ácido como sinal de ação e prova.
 import { useEffect, useState, type FormEvent } from "react";
 import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, CircleCheck, Clock3, LockKeyhole, Menu, MoveUpRight, ShieldCheck, Target, X } from "lucide-react";
-
-const heroDashboard = "/manus-storage/base-midia-hero-dashboard_b6a66915.png";
-const signalDetail = "/manus-storage/base-midia-signal-detail_3b2b23b3.png";
-const officialLogo = "/manus-storage/base-midia-logo-compact_988a8739.png";
+import heroDashboard from "../assets/base-midia-hero-dashboard.svg";
+import signalDetail from "../assets/base-midia-signal-detail.svg";
+import officialLogo from "../assets/base-midia-logo.svg";
 
 const painPoints = [
   "Você investe em anúncios e não sabe exatamente onde está o problema?",
