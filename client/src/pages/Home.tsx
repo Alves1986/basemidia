@@ -1,5 +1,6 @@
 // Design: Dark Performance Lab — neo-brutalist digital, assimetria editorial, verde ácido como sinal de ação e prova.
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -272,7 +273,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="dor" className="pain-section section-pad">
+      <motion.section
+        id="dor"
+        className="pain-section section-pad"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="section-index">/ 01 — RECONHECIMENTO</div>
         <div className="pain-layout">
           <div className="section-heading">
@@ -307,9 +315,16 @@ export default function Home() {
           </p>
           <div className="strip-line" />
         </div>
-      </section>
+      </motion.section>
 
-      <section id="metodo" className="method-section section-pad">
+      <motion.section
+        id="metodo"
+        className="method-section section-pad"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="section-index">/ 02 — MÉTODO</div>
         <div className="method-intro">
           <div>
@@ -343,9 +358,15 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
-      <section className="proof-section section-pad">
+      <motion.section
+        className="proof-section section-pad"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="proof-image">
           <img
             src={signalDetail}
@@ -394,9 +415,15 @@ export default function Home() {
             Ver se faz sentido para mim <ArrowUpRight size={17} />
           </button>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="faq-section section-pad">
+      <motion.section
+        className="faq-section section-pad"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="section-index">/ 04 — DÚVIDAS FREQUENTES</div>
         <div className="faq-layout">
           <h2>
@@ -416,9 +443,15 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="final-cta">
+      <motion.section
+        className="final-cta"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="final-grid" />
         <div className="section-index">/ PRÓXIMO MOVIMENTO</div>
         <h2>
@@ -432,7 +465,7 @@ export default function Home() {
         <p>
           <Clock3 size={14} /> Resposta em até 1 dia útil
         </p>
-      </section>
+      </motion.section>
 
       <footer className="footer">
         <div className="footer-brand">
