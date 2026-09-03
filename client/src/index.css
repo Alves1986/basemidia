@@ -4543,6 +4543,201 @@ h1 em {
   border-bottom: 1px solid #e0e0e0 !important;
 }
 .briefing-form-section {
+}
+.cb-secure {
+  font-size: 12px;
+  color: #867a7a;
+  margin-top: 16px;
+}
+.cb-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--acid);
+}
+.cb-error-card {
+  background: #2a1111;
+  border: 1px solid #ff4d4d;
+  padding: 32px;
+  border-radius: 8px;
+  text-align: center;
+  color: #ff4d4d;
+}
+.cb-error-card h2 {
+  margin-bottom: 8px;
+}
+.cb-error-msg {
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+  padding: 16px;
+  border-radius: 4px;
+  margin-top: 24px;
+  text-align: center;
+}
+.cb-success-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cb-success-card {
+  background: #111;
+  border: 1px solid rgba(240, 240, 240, 0.1);
+  padding: 60px 40px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 500px;
+}
+.cb-success-icon {
+  color: var(--acid);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+.cb-success-card h2 {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+.cb-success-card p {
+  color: #a3a3a3;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+.cb-success-footer {
+  border-top: 1px dashed rgba(240, 240, 240, 0.15);
+  padding-top: 24px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: var(--acid);
+}
+
+@media (max-width: 768px) {
+  .cb-header-inner {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cb-grid {
+    grid-template-columns: 1fr;
+  }
+  .cb-intro-card {
+    padding: 24px;
+  }
+  .cb-section {
+    padding: 20px;
+  }
+}
+
+/* ── Print Media Query for PDF Export ── */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .briefing-modal-backdrop, .briefing-workspace, .briefing-form, .briefing-form * {
+    visibility: visible;
+  }
+  .briefing-modal-backdrop {
+    background: #fff;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+  }
+  .briefing-workspace {
+    width: 100%;
+    height: 100%;
+    border: none;
+    box-shadow: none;
+    background: #fff;
+  }
+  .briefing-workspace-topbar, .briefing-form-footer, .modal-close {
+    display: none !important;
+  }
+  .briefing-form {
+    padding: 0;
+    color: #000;
+  }
+  .briefing-form-hero {
+    border-bottom: 2px solid #000;
+    background: #fff;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  .briefing-form-hero p, .briefing-form-hero h2 {
+    color: #000;
+  }
+  .briefing-progress-card {
+    display: none !important;
+  }
+  .briefing-section-heading {
+    border-bottom: 1px solid #ccc;
+  }
+  .briefing-section-heading h3, .briefing-section-heading p {
+    color: #000;
+  }
+  .briefing-field label, .briefing-field-label {
+    color: #333 !important;
+  }
+  .briefing-field input, .briefing-field textarea {
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    color: #000;
+    page-break-inside: avoid;
+  }
+}
+
+.read-only-field {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Force Light Theme (White Background) for Briefing Workspace (Admin View) ── */
+.briefing-workspace {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+.briefing-form {
+  background: #ffffff !important;
+}
+.briefing-form-hero {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+.briefing-form-hero h2,
+.briefing-form-hero p,
+.briefing-form-hero em,
+.briefing-form-eyebrow,
+.briefing-section-heading h3,
+.briefing-section-heading .section-index,
+.briefing-field strong,
+.briefing-field small,
+.section-index,
+.briefing-progress-card span,
+.briefing-progress-card strong,
+.briefing-progress-card small,
+.briefing-analysis-note p,
+.briefing-analysis-note h4 {
+  color: #111111 !important;
+}
+.briefing-field input,
+.briefing-field textarea {
+  background: #f9f9f9 !important;
+  color: #000000 !important;
+  border: 1px solid #cccccc !important;
+}
+.briefing-field input:focus,
+.briefing-field textarea:focus {
+  border-color: #38ff14 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+.briefing-section-heading {
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+.briefing-form-section {
   border-bottom: 1px solid #e0e0e0 !important;
 }
 .briefing-progress-bar {
@@ -4552,4 +4747,45 @@ h1 em {
   background: #111111 !important;
   color: #ffffff !important;
   border-bottom: 1px solid #333 !important;
+}
+
+/* ── Force Light Theme (White Background) for Client Briefing Form ── */
+.cb-wrap {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+.cb-intro-card, .cb-section {
+  background: #ffffff !important;
+  border-color: #e0e0e0 !important;
+}
+.cb-intro-card h1, 
+.cb-section-header h2, 
+.cb-section-header p, 
+.cb-grid label, 
+.cb-grid-full label, 
+.cb-subtitle {
+  color: #111111 !important;
+}
+.cb-intro-quote p {
+  color: #333333 !important;
+}
+.cb-grid input, 
+.cb-grid-full input, 
+.cb-grid-full textarea {
+  background: #f9f9f9 !important;
+  color: #000000 !important;
+  border: 1px solid #cccccc !important;
+}
+.cb-grid input:focus, 
+.cb-grid-full input:focus, 
+.cb-grid-full textarea:focus {
+  background: #ffffff !important;
+  border-color: #38ff14 !important;
+  color: #000000 !important;
+}
+.cb-section-header {
+  border-bottom: 1px dashed #cccccc !important;
+}
+.cb-header {
+  border-bottom: 1px solid #e0e0e0 !important;
 }
