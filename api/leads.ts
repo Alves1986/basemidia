@@ -5,13 +5,19 @@ import {
   isLeadStorageConfigured,
   saveLead,
   updateLeadBriefing,
+  updateLeadPipeline,
 } from "./_lib/leads.js";
 import {
   sendWebResponse,
   toWebRequest,
   type VercelResponseLike,
 } from "./_lib/vercel.js";
-import type { LeadInput, StrategicBriefing } from "../shared/leads.js";
+import type {
+  LeadInput,
+  LeadStatus,
+  StrategicBriefing,
+} from "../shared/leads.js";
+import { leadStatuses } from "../shared/leads.js";
 import { strategicBriefingMaxLengths } from "../shared/leads.js";
 
 interface VercelRequest {
@@ -75,6 +81,62 @@ async function readBody(request: Request) {
   }
 }
 
+async function handleUpdatePipeline(request: Request, body: unknown) {
+  if (!(await getAuthenticatedAdmin(request))) {
+    return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
+  }
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse(
+      {
+        error:
+          "O armazenamento de leads ainda não foi configurado no Vercel Blob.",
+      },
+      { status: 503 }
+    );
+  }
+
+  if (!body || typeof body !== "object") {
+    return jsonResponse(
+      { error: "Envie os dados do pipeline." },
+      { status: 400 }
+    );
+  }
+  const source = body as Record<string, unknown>;
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+  const status = source.status as LeadStatus;
+  const nextAction =
+    typeof source.nextAction === "string" ? source.nextAction.trim() : "";
+  const nextActionAt =
+    typeof source.nextActionAt === "string" ? source.nextActionAt.trim() : "";
+
+  if (
+    !leadId ||
+    !leadStatuses.includes(status) ||
+    nextAction.length > 300 ||
+    nextActionAt.length > 30
+  ) {
+    return jsonResponse(
+      { error: "Revise o status e a próxima ação." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const lead = await updateLeadPipeline(leadId, {
+      status,
+      nextAction,
+      ...(nextActionAt ? { nextActionAt } : { nextActionAt: undefined }),
+    });
+    return jsonResponse({ success: true, lead });
+  } catch (error) {
+    console.error("[Leads] Falha ao atualizar pipeline", error);
+    return jsonResponse(
+      { error: "Não foi possível atualizar este lead agora." },
+      { status: 500 }
+    );
+  }
+}
+
 async function handleSaveBriefing(request: Request, body: unknown) {
   if (!(await getAuthenticatedAdmin(request))) {
     return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
@@ -125,6 +187,17 @@ export default async function handler(
 
   if (webRequest.method === "POST") {
     const body = await readBody(webRequest);
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "update-pipeline"
+    ) {
+      return sendWebResponse(
+        await handleUpdatePipeline(webRequest, body),
+        response
+      );
+    }
+
     if (
       body &&
       typeof body === "object" &&

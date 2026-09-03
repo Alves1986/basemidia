@@ -7,6 +7,8 @@ import {
   FilePenLine,
   CircleAlert,
   FileText,
+  KanbanSquare,
+  Save,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -21,7 +23,12 @@ import {
 } from "lucide-react";
 import { useLocation } from "wouter";
 import officialLogo from "../assets/base-midia-logo.svg";
-import type { Lead } from "@shared/leads";
+import {
+  leadStatuses,
+  leadStatusLabels,
+  type Lead,
+  type LeadStatus,
+} from "@shared/leads";
 import StrategicBriefingForm from "../components/StrategicBriefingForm";
 
 interface AuthState {
@@ -51,9 +58,20 @@ function formatShortDate(timestamp: number) {
   }).format(new Date(timestamp));
 }
 
-function whatsappUrl(value: string) {
+function whatsappUrl(value: string, message?: string) {
   const digits = value.replace(/\D/g, "");
-  return digits ? `https://wa.me/${digits}` : "#";
+  const normalized = digits.startsWith("55")
+    ? digits
+    : digits.length >= 10
+      ? `55${digits}`
+      : digits;
+  if (!normalized) return "#";
+  return `https://wa.me/${normalized}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
+}
+
+function whatsappGreeting(lead: Lead) {
+  const firstName = lead.name.trim().split(/\s+/)[0] || "tudo bem";
+  return `Olá, ${firstName}! Aqui é da BASE MÍDIA. Recebi seu diagnóstico sobre ${lead.goal.toLowerCase()} e quero entender melhor o cenário para te mostrar o próximo passo.`;
 }
 
 export default function Gestao() {
@@ -63,7 +81,15 @@ export default function Gestao() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [query, setQuery] = useState("");
+  const [pipelineFilter, setPipelineFilter] = useState<LeadStatus | "todos">(
+    "todos"
+  );
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [pipelineStatus, setPipelineStatus] = useState<LeadStatus>("novo");
+  const [nextActionDraft, setNextActionDraft] = useState("");
+  const [nextActionAtDraft, setNextActionAtDraft] = useState("");
+  const [savingPipeline, setSavingPipeline] = useState(false);
+  const [pipelineSaved, setPipelineSaved] = useState(false);
   const [briefingLead, setBriefingLead] = useState<Lead | null>(null);
   const [error, setError] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -123,6 +149,10 @@ export default function Gestao() {
 
   useEffect(() => {
     if (!selectedLead) return;
+    setPipelineStatus(selectedLead.status);
+    setNextActionDraft(selectedLead.nextAction);
+    setNextActionAtDraft(selectedLead.nextActionAt ?? "");
+    setPipelineSaved(false);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setSelectedLead(null);
     };
@@ -137,18 +167,24 @@ export default function Gestao() {
 
   const filteredLeads = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return leads;
-    return leads.filter(lead =>
-      [
-        lead.name,
-        lead.email,
-        lead.whatsapp,
-        lead.segment,
-        lead.pain,
-        lead.goal,
-      ].some(field => field.toLowerCase().includes(normalized))
+    if (!normalized) {
+      return leads.filter(
+        lead => pipelineFilter === "todos" || lead.status === pipelineFilter
+      );
+    }
+    return leads.filter(
+      lead =>
+        (pipelineFilter === "todos" || lead.status === pipelineFilter) &&
+        [
+          lead.name,
+          lead.email,
+          lead.whatsapp,
+          lead.segment,
+          lead.pain,
+          lead.goal,
+        ].some(field => field.toLowerCase().includes(normalized))
     );
-  }, [leads, query]);
+  }, [leads, query, pipelineFilter]);
 
   const latestLead = leads[0];
   const recentCount = leads.filter(
@@ -161,12 +197,62 @@ export default function Gestao() {
     navigate("/auth");
   }
 
+  async function handlePipelineSave() {
+    if (!selectedLead) return;
+    setSavingPipeline(true);
+    setPipelineSaved(false);
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update-pipeline",
+          leadId: selectedLead.id,
+          status: pipelineStatus,
+          nextAction: nextActionDraft,
+          nextActionAt: nextActionAtDraft,
+        }),
+      });
+      const body = (await response.json()) as LeadsResponse;
+      if (response.status === 401) {
+        navigate("/auth");
+        return;
+      }
+      if (
+        !response.ok ||
+        (!body.leads && !(body as LeadsResponse & { lead?: Lead }).lead)
+      ) {
+        setError(body.error ?? "Não foi possível atualizar o pipeline.");
+        return;
+      }
+      const updatedLead = (body as LeadsResponse & { lead: Lead }).lead;
+      setLeads(current =>
+        current.map(lead => (lead.id === updatedLead.id ? updatedLead : lead))
+      );
+      setSelectedLead(updatedLead);
+      setPipelineSaved(true);
+    } catch {
+      setError("Não foi possível atualizar o pipeline agora.");
+    } finally {
+      setSavingPipeline(false);
+    }
+  }
+
   function handleBriefingSaved(updatedLead: Lead) {
     setLeads(current =>
       current.map(lead => (lead.id === updatedLead.id ? updatedLead : lead))
     );
     setSelectedLead(updatedLead);
     setBriefingLead(null);
+  }
+
+  function handleBriefingAutosaved(updatedLead: Lead) {
+    setLeads(current =>
+      current.map(lead => (lead.id === updatedLead.id ? updatedLead : lead))
+    );
+    setSelectedLead(updatedLead);
+    setBriefingLead(current => (current ? updatedLead : current));
   }
 
   if (checkingSession) {
@@ -305,6 +391,52 @@ export default function Gestao() {
             </article>
           </section>
 
+          <section id="pipeline" className="pipeline-section">
+            <div className="admin-section-head">
+              <div>
+                <span className="section-index">/ PIPELINE OPERACIONAL</span>
+                <h2>Próximo passo de cada lead</h2>
+              </div>
+              <span className="pipeline-total">
+                {leads.length} oportunidades
+              </span>
+            </div>
+            <div
+              className="pipeline-board"
+              role="tablist"
+              aria-label="Filtrar por etapa"
+            >
+              <button
+                className={`pipeline-stage ${pipelineFilter === "todos" ? "is-active" : ""}`}
+                type="button"
+                onClick={() => setPipelineFilter("todos")}
+              >
+                <span className="pipeline-stage-index">00</span>
+                <strong>Todos</strong>
+                <b>{leads.length}</b>
+              </button>
+              {leadStatuses.map((status, index) => {
+                const count = leads.filter(
+                  lead => lead.status === status
+                ).length;
+                return (
+                  <button
+                    className={`pipeline-stage ${pipelineFilter === status ? "is-active" : ""}`}
+                    type="button"
+                    key={status}
+                    onClick={() => setPipelineFilter(status)}
+                  >
+                    <span className="pipeline-stage-index">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <strong>{leadStatusLabels[status]}</strong>
+                    <b>{count}</b>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
           <section id="briefings" className="admin-leads-section">
             <div className="admin-section-head">
               <div>
@@ -435,6 +567,7 @@ export default function Gestao() {
           adminEmail={user.email}
           onClose={() => setBriefingLead(null)}
           onSaved={handleBriefingSaved}
+          onAutosaved={handleBriefingAutosaved}
         />
       )}
 
@@ -498,10 +631,79 @@ export default function Gestao() {
                 <p>{selectedLead.goal}</p>
               </div>
             </div>
+            <section
+              className="lead-pipeline-panel"
+              aria-label="Pipeline do lead"
+            >
+              <div className="lead-pipeline-heading">
+                <div>
+                  <span className="section-index">/ PRÓXIMA AÇÃO</span>
+                  <strong>Organize o avanço deste lead</strong>
+                </div>
+                {pipelineSaved && <span className="pipeline-saved">Salvo</span>}
+              </div>
+              <div className="lead-pipeline-fields">
+                <label>
+                  <span>Status</span>
+                  <select
+                    value={pipelineStatus}
+                    onChange={event => {
+                      setPipelineStatus(event.target.value as LeadStatus);
+                      setPipelineSaved(false);
+                    }}
+                  >
+                    {leadStatuses.map(status => (
+                      <option value={status} key={status}>
+                        {leadStatusLabels[status]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Próxima ação</span>
+                  <input
+                    value={nextActionDraft}
+                    onChange={event => {
+                      setNextActionDraft(event.target.value);
+                      setPipelineSaved(false);
+                    }}
+                    placeholder="Ex.: enviar proposta ou agendar reunião"
+                    maxLength={300}
+                  />
+                </label>
+                <label>
+                  <span>Quando</span>
+                  <input
+                    type="date"
+                    value={nextActionAtDraft}
+                    onChange={event => {
+                      setNextActionAtDraft(event.target.value);
+                      setPipelineSaved(false);
+                    }}
+                  />
+                </label>
+              </div>
+              <button
+                className="pipeline-save-button"
+                type="button"
+                onClick={() => void handlePipelineSave()}
+                disabled={savingPipeline}
+              >
+                {savingPipeline ? (
+                  <Loader2 className="spin" size={14} />
+                ) : (
+                  <Save size={14} />
+                )}
+                {savingPipeline ? "Salvando..." : "Salvar etapa"}
+              </button>
+            </section>
             <div className="lead-modal-footer">
               <a
                 className="primary-cta"
-                href={whatsappUrl(selectedLead.whatsapp)}
+                href={whatsappUrl(
+                  selectedLead.whatsapp,
+                  whatsappGreeting(selectedLead)
+                )}
                 target="_blank"
                 rel="noreferrer"
               >

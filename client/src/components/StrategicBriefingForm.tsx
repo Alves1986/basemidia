@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -25,6 +25,7 @@ interface StrategicBriefingFormProps {
   adminEmail: string;
   onClose: () => void;
   onSaved: (lead: Lead) => void;
+  onAutosaved?: (lead: Lead) => void;
 }
 
 interface BriefingResponse {
@@ -32,14 +33,20 @@ interface BriefingResponse {
   error?: string;
 }
 
-function formatWhatsAppHref(value: string) {
+function formatWhatsAppHref(value: string, message?: string) {
   const digits = value.replace(/\D/g, "");
   const normalized = digits.startsWith("55")
     ? digits
     : digits.length >= 10
       ? `55${digits}`
       : digits;
-  return normalized ? `https://wa.me/${normalized}` : "#";
+  if (!normalized) return "#";
+  return `https://wa.me/${normalized}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
+}
+
+function whatsappGreeting(lead: Lead) {
+  const firstName = lead.name.trim().split(/\s+/)[0] || "tudo bem";
+  return `Olá, ${firstName}! Aqui é da BASE MÍDIA. Estou organizando seu briefing estratégico e quero alinhar o próximo passo com você.`;
 }
 
 function today() {
@@ -124,6 +131,7 @@ export default function StrategicBriefingForm({
   adminEmail,
   onClose,
   onSaved,
+  onAutosaved,
 }: StrategicBriefingFormProps) {
   const [form, setForm] = useState<StrategicBriefing>(() =>
     createInitialBriefing(lead, adminEmail)
@@ -131,6 +139,10 @@ export default function StrategicBriefingForm({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [autosaveStatus, setAutosaveStatus] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+  const hasEdited = useRef(false);
 
   const allFields = useMemo(
     () => [
@@ -143,16 +155,18 @@ export default function StrategicBriefingForm({
   const progress = Math.round((filledFields / allFields.length) * 100);
 
   function updateField(key: keyof StrategicBriefing, value: string) {
+    hasEdited.current = true;
     setForm(current => ({ ...current, [key]: value }));
     setSaved(false);
+    setAutosaveStatus("idle");
     setError("");
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setIsSaving(true);
+  async function persistBriefing(isManual: boolean) {
+    if (isManual) setIsSaving(true);
+    else setAutosaveStatus("saving");
     setError("");
-    setSaved(false);
+    if (isManual) setSaved(false);
 
     try {
       const response = await fetch("/api/leads", {
@@ -171,16 +185,34 @@ export default function StrategicBriefingForm({
         return;
       }
       if (!response.ok || !body.lead) {
+        if (!isManual) setAutosaveStatus("error");
         setError(body.error ?? "Não foi possível salvar este briefing.");
         return;
       }
-      setSaved(true);
-      onSaved(body.lead);
+      if (isManual) {
+        setSaved(true);
+        onSaved(body.lead);
+      } else {
+        setAutosaveStatus("saved");
+        onAutosaved?.(body.lead);
+      }
     } catch {
+      if (!isManual) setAutosaveStatus("error");
       setError("Não foi possível conectar ao armazenamento agora.");
     } finally {
-      setIsSaving(false);
+      if (isManual) setIsSaving(false);
     }
+  }
+
+  useEffect(() => {
+    if (!hasEdited.current) return;
+    const timer = window.setTimeout(() => void persistBriefing(false), 1200);
+    return () => window.clearTimeout(timer);
+  }, [form]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await persistBriefing(true);
   }
 
   return (
@@ -204,6 +236,22 @@ export default function StrategicBriefingForm({
             >
               Ver PDF modelo <ArrowUpRight size={13} />
             </a>
+            <span className={`briefing-autosave-status ${autosaveStatus}`}>
+              {autosaveStatus === "saving"
+                ? "Salvando rascunho..."
+                : autosaveStatus === "saved"
+                  ? "Rascunho salvo"
+                  : autosaveStatus === "error"
+                    ? "Falha no autosave"
+                    : "Autosave ativo"}
+            </span>
+            <button
+              className="briefing-pdf-link briefing-pdf-button"
+              type="button"
+              onClick={() => window.print()}
+            >
+              Exportar PDF <ArrowUpRight size={13} />
+            </button>
             <span className="briefing-private-status">
               <FileText size={14} /> Documento interno
             </span>
@@ -321,7 +369,7 @@ export default function StrategicBriefingForm({
             <div className="briefing-form-footer-actions">
               <a
                 className="admin-secondary-button"
-                href={formatWhatsAppHref(lead.whatsapp)}
+                href={formatWhatsAppHref(lead.whatsapp, whatsappGreeting(lead))}
                 target="_blank"
                 rel="noreferrer"
               >

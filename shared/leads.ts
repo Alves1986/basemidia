@@ -36,9 +36,38 @@ export interface StrategicBriefing {
   restrictions: string;
 }
 
+export type LeadStatus =
+  | "novo"
+  | "contato"
+  | "briefing"
+  | "proposta"
+  | "cliente"
+  | "perdido";
+
+export const leadStatusLabels: Record<LeadStatus, string> = {
+  novo: "Novo",
+  contato: "Em contato",
+  briefing: "Briefing em andamento",
+  proposta: "Proposta enviada",
+  cliente: "Cliente",
+  perdido: "Perdido",
+};
+
+export const leadStatuses: LeadStatus[] = [
+  "novo",
+  "contato",
+  "briefing",
+  "proposta",
+  "cliente",
+  "perdido",
+];
+
 export interface Lead extends LeadInput {
   id: string;
   createdAt: number;
+  status: LeadStatus;
+  nextAction: string;
+  nextActionAt?: string;
   briefing?: StrategicBriefing;
   briefingUpdatedAt?: number;
 }

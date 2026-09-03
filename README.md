@@ -32,3 +32,9 @@ pnpm dev
 O endpoint público do formulário é `POST /api/leads`. A listagem administrativa usa `GET /api/leads` e exige o cookie de sessão emitido por `POST /api/auth`. O formulário interno salva o documento vinculado com `POST /api/leads` usando `{ action: "save-briefing", leadId, briefing }`. O login e o logout usam `POST /api/auth` e `DELETE /api/auth`.
 
 Sem o Vercel Blob configurado, a interface continua disponível, mas o envio responde com erro de configuração em vez de fingir que o briefing foi salvo. Essa decisão evita perder dados silenciosamente.
+
+## Operação comercial
+
+A central de gestão agora organiza os leads por etapas de pipeline: Novo, Em contato, Briefing em andamento, Proposta enviada, Cliente e Perdido. Cada lead pode receber uma próxima ação e uma data de acompanhamento; essas informações são salvas no mesmo objeto privado do Blob.
+
+O briefing estratégico conta com autosave após alterações, além do salvamento manual. A ação `Exportar PDF` usa a folha de impressão da própria identidade visual da BASE MÍDIA para gerar o documento pelo diálogo de impressão do navegador. O botão de WhatsApp abre a conversa com uma mensagem inicial contextualizada pelo nome e objetivo do lead.

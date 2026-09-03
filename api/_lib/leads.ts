@@ -1,5 +1,10 @@
 import { get, list, put } from "@vercel/blob";
-import type { Lead, LeadInput } from "../../shared/leads.js";
+import {
+  leadStatuses,
+  type Lead,
+  type LeadInput,
+  type LeadStatus,
+} from "../../shared/leads.js";
 
 const LEADS_PREFIX = "base-midia/leads/";
 
@@ -34,7 +39,21 @@ function parseStoredLead(value: unknown): Lead | null {
   ) {
     return null;
   }
-  return lead as Lead;
+  const statusCandidate = lead.status as LeadStatus | undefined;
+  const status =
+    statusCandidate && leadStatuses.includes(statusCandidate)
+      ? statusCandidate
+      : lead.briefing
+        ? "briefing"
+        : "novo";
+  return {
+    ...lead,
+    status,
+    nextAction: typeof lead.nextAction === "string" ? lead.nextAction : "",
+    ...(typeof lead.nextActionAt === "string"
+      ? { nextActionAt: lead.nextActionAt }
+      : {}),
+  } as Lead;
 }
 
 export async function saveLead(input: LeadInput) {
@@ -43,6 +62,8 @@ export async function saveLead(input: LeadInput) {
     ...input,
     id: crypto.randomUUID(),
     createdAt: Date.now(),
+    status: "novo",
+    nextAction: "",
   };
 
   await put(`${LEADS_PREFIX}${lead.id}.json`, JSON.stringify(lead), {
@@ -53,6 +74,25 @@ export async function saveLead(input: LeadInput) {
   });
 
   return lead;
+}
+
+export async function updateLeadPipeline(
+  leadId: string,
+  updates: Pick<Lead, "status" | "nextAction" | "nextActionAt">
+) {
+  assertStorageConfigured();
+  const pathname = `${LEADS_PREFIX}${leadId}.json`;
+  const lead = await readLead(pathname);
+  if (!lead) throw new Error("Lead não encontrado.");
+
+  const updatedLead: Lead = { ...lead, ...updates };
+  await put(pathname, JSON.stringify(updatedLead), {
+    access: "private",
+    contentType: "application/json",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+  return updatedLead;
 }
 
 export async function updateLeadBriefing(
@@ -66,6 +106,7 @@ export async function updateLeadBriefing(
 
   const updatedLead: Lead = {
     ...lead,
+    status: lead.status === "novo" ? "briefing" : lead.status,
     briefing,
     briefingUpdatedAt: Date.now(),
   };
