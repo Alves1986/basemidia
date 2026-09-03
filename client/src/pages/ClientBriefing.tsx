@@ -89,6 +89,15 @@ export default function ClientBriefing() {
     fetchLead();
   }, [leadId]);
 
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        window.location.href = "/";
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   const update = (field: keyof BriefingForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -157,7 +166,17 @@ export default function ClientBriefing() {
           <p>
             Obrigado, {lead?.name}. Recebemos suas respostas e nosso time estratégico já está analisando o seu cenário.
           </p>
-          <div className="cb-success-footer">
+          <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+            <button 
+              className="cb-button" 
+              onClick={() => window.location.href = "/"}
+              style={{ width: "auto", padding: "10px 24px" }}
+            >
+              Voltar ao Site
+            </button>
+            <span style={{ fontSize: "12px", opacity: 0.7 }}>Redirecionando automaticamente em 10s...</span>
+          </div>
+          <div className="cb-success-footer" style={{ marginTop: "30px" }}>
             <span>MÉTODO PRIMEIRO, RESULTADO DEPOIS.</span>
           </div>
         </div>
