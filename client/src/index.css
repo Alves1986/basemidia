@@ -498,25 +498,36 @@ h1 em {
   align-items: flex-end;
   margin-top: 8px;
 }
+@keyframes barBounce {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.7); }
+}
 .mini-bars i {
   display: block;
   width: 15%;
   background: var(--acid);
+  transform-origin: bottom;
+  animation: barBounce 1.5s ease-in-out infinite;
 }
 .mini-bars i:nth-child(1) {
   height: 35%;
+  animation-delay: 0.1s;
 }
 .mini-bars i:nth-child(2) {
   height: 49%;
+  animation-delay: 0.3s;
 }
 .mini-bars i:nth-child(3) {
   height: 44%;
+  animation-delay: 0.5s;
 }
 .mini-bars i:nth-child(4) {
   height: 73%;
+  animation-delay: 0.2s;
 }
 .mini-bars i:nth-child(5) {
   height: 100%;
+  animation-delay: 0.4s;
 }
 .visual-label {
   position: absolute;
