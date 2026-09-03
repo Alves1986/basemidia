@@ -8,8 +8,9 @@ import {
   CircleAlert,
   FileText,
   KanbanSquare,
-  Save,
+  FolderOpen,
   LayoutDashboard,
+  Link,
   Loader2,
   LogOut,
   Mail,
@@ -24,7 +25,8 @@ import {
   X,
 } from "lucide-react";
 import { useLocation } from "wouter";
-import officialLogo from "../assets/base-midia-logo.svg";
+import { toast } from "sonner";
+import officialLogo from "../assets/logo_base.jpg";
 import {
   leadStatuses,
   leadStatusLabels,
@@ -698,8 +700,6 @@ export default function Gestao() {
           lead={briefingLead}
           adminEmail={user.email}
           onClose={() => setBriefingLead(null)}
-          onSaved={handleBriefingSaved}
-          onAutosaved={handleBriefingAutosaved}
         />
       )}
 
@@ -864,8 +864,21 @@ export default function Gestao() {
               <button
                 className="admin-secondary-button"
                 onClick={() => setBriefingLead(selectedLead)}
+                disabled={!selectedLead.briefing}
               >
-                <FilePenLine size={15} /> Gerar briefing
+                <FileText size={15} /> Ver briefing
+              </button>
+              <button
+                className="admin-secondary-button"
+                onClick={() => {
+                  const link = `${window.location.origin}/briefing/${selectedLead.id}`;
+                  const msg = `Olá, ${selectedLead.name.split(" ")[0]}! Segue o link para o nosso briefing estratégico:\n${link}`;
+                  navigator.clipboard.writeText(link);
+                  toast.success("Link copiado para a área de transferência!");
+                  window.open(whatsappUrl(selectedLead.whatsapp, msg), "_blank");
+                }}
+              >
+                <Link size={15} /> Enviar link do briefing
               </button>
               <button
                 className="admin-secondary-button"

@@ -6,7 +6,7 @@ import {
   type OperationSettings,
 } from "@shared/operation";
 import { leadStatuses } from "@shared/leads";
-import officialLogo from "../assets/base-midia-logo.svg";
+import officialLogo from "../assets/logo_base.jpg";
 
 export default function Configuracoes() {
   const [, navigate] = useLocation();

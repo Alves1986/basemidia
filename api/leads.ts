@@ -1,7 +1,7 @@
 import type { IncomingHttpHeaders } from "node:http";
 import { getAuthenticatedAdmin, jsonResponse } from "./_lib/auth.js";
 import {
-  deleteLead,
+  getLeadById,
   getLeads,
   isLeadStorageConfigured,
   saveLead,
@@ -50,11 +50,16 @@ function normalizeInput(body: unknown): LeadInput | null {
     const value = source[key];
     if (typeof value !== "string") return null;
     const normalized = value.trim();
-    if (!normalized || normalized.length > maxLength) return null;
-    input[key] = normalized;
+    if (key === "email") {
+      if (normalized.length > maxLength) return null;
+      input[key] = normalized;
+    } else {
+      if (!normalized || normalized.length > maxLength) return null;
+      input[key] = normalized;
+    }
   }
 
-  if (!/^\S+@\S+\.\S+$/.test(input.email)) return null;
+  if (input.email && !/^\S+@\S+\.\S+$/.test(input.email)) return null;
   return input;
 }
 
@@ -211,6 +216,81 @@ async function handleSaveBriefing(request: Request, body: unknown) {
   }
 }
 
+async function handleClientGetLead(request: Request, body: unknown) {
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse(
+      { error: "O armazenamento de leads ainda não foi configurado." },
+      { status: 503 }
+    );
+  }
+
+  const source = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+  if (!leadId) {
+    return jsonResponse({ error: "Lead ID é obrigatório." }, { status: 400 });
+  }
+
+  try {
+    const lead = await getLeadById(leadId);
+    if (!lead) {
+      return jsonResponse({ error: "Lead não encontrado." }, { status: 404 });
+    }
+    // Retornamos apenas dados básicos para o cliente
+    return jsonResponse({
+      success: true,
+      lead: {
+        id: lead.id,
+        name: lead.name,
+        segment: lead.segment,
+        briefing: lead.briefing,
+      },
+    });
+  } catch (error) {
+    console.error("[Leads] Falha ao buscar lead pelo cliente", error);
+    return jsonResponse(
+      { error: "Não foi possível buscar os dados." },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleClientSaveBriefing(request: Request, body: unknown) {
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse(
+      { error: "O armazenamento de leads ainda não foi configurado." },
+      { status: 503 }
+    );
+  }
+
+  if (!body || typeof body !== "object") {
+    return jsonResponse(
+      { error: "Envie os dados do briefing." },
+      { status: 400 }
+    );
+  }
+  const source = body as Record<string, unknown>;
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+  const briefing = normalizeBriefing(source.briefing);
+  
+  if (!leadId || !briefing) {
+    return jsonResponse(
+      { error: "Revise os campos do briefing antes de salvar." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const lead = await updateLeadBriefing(leadId, briefing);
+    return jsonResponse({ success: true, lead: { id: lead.id } });
+  } catch (error) {
+    console.error("[Leads] Falha ao salvar briefing pelo cliente", error);
+    return jsonResponse(
+      { error: "Não foi possível salvar este briefing agora." },
+      { status: 500 }
+    );
+  }
+}
+
 export default async function handler(
   request: VercelRequest,
   response: VercelResponseLike
@@ -248,6 +328,28 @@ export default async function handler(
     ) {
       return sendWebResponse(
         await handleSaveBriefing(webRequest, body),
+        response
+      );
+    }
+
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "client-get-lead"
+    ) {
+      return sendWebResponse(
+        await handleClientGetLead(webRequest, body),
+        response
+      );
+    }
+
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "client-save-briefing"
+    ) {
+      return sendWebResponse(
+        await handleClientSaveBriefing(webRequest, body),
         response
       );
     }

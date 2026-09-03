@@ -1,13 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
-  Check,
-  CircleAlert,
   FileText,
-  Loader2,
   MessageCircle,
-  Save,
   X,
 } from "lucide-react";
 import type {
@@ -24,8 +20,6 @@ interface StrategicBriefingFormProps {
   lead: Lead;
   adminEmail: string;
   onClose: () => void;
-  onSaved: (lead: Lead) => void;
-  onAutosaved?: (lead: Lead) => void;
 }
 
 interface BriefingResponse {
@@ -109,8 +103,7 @@ function BriefingField({
         <textarea
           id={id}
           value={value}
-          onChange={event => onChange(event.target.value)}
-          placeholder={field.placeholder}
+          readOnly
           rows={4}
         />
       ) : (
@@ -118,8 +111,7 @@ function BriefingField({
           id={id}
           type={field.type ?? "text"}
           value={value}
-          onChange={event => onChange(event.target.value)}
-          placeholder={field.placeholder}
+          readOnly
         />
       )}
     </label>
@@ -130,19 +122,10 @@ export default function StrategicBriefingForm({
   lead,
   adminEmail,
   onClose,
-  onSaved,
-  onAutosaved,
 }: StrategicBriefingFormProps) {
-  const [form, setForm] = useState<StrategicBriefing>(() =>
+  const [form] = useState<StrategicBriefing>(() =>
     createInitialBriefing(lead, adminEmail)
   );
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [autosaveStatus, setAutosaveStatus] = useState<
-    "idle" | "saving" | "saved" | "error"
-  >("idle");
-  const hasEdited = useRef(false);
 
   const allFields = useMemo(
     () => [
@@ -151,69 +134,8 @@ export default function StrategicBriefingForm({
     ],
     []
   );
-  const filledFields = allFields.filter(field => form[field.key].trim()).length;
+  const filledFields = allFields.filter(field => form[field.key]?.trim()).length;
   const progress = Math.round((filledFields / allFields.length) * 100);
-
-  function updateField(key: keyof StrategicBriefing, value: string) {
-    hasEdited.current = true;
-    setForm(current => ({ ...current, [key]: value }));
-    setSaved(false);
-    setAutosaveStatus("idle");
-    setError("");
-  }
-
-  async function persistBriefing(isManual: boolean) {
-    if (isManual) setIsSaving(true);
-    else setAutosaveStatus("saving");
-    setError("");
-    if (isManual) setSaved(false);
-
-    try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "save-briefing",
-          leadId: lead.id,
-          briefing: form,
-        }),
-      });
-      const body = (await response.json()) as BriefingResponse;
-      if (response.status === 401) {
-        onClose();
-        return;
-      }
-      if (!response.ok || !body.lead) {
-        if (!isManual) setAutosaveStatus("error");
-        setError(body.error ?? "Não foi possível salvar este briefing.");
-        return;
-      }
-      if (isManual) {
-        setSaved(true);
-        onSaved(body.lead);
-      } else {
-        setAutosaveStatus("saved");
-        onAutosaved?.(body.lead);
-      }
-    } catch {
-      if (!isManual) setAutosaveStatus("error");
-      setError("Não foi possível conectar ao armazenamento agora.");
-    } finally {
-      if (isManual) setIsSaving(false);
-    }
-  }
-
-  useEffect(() => {
-    if (!hasEdited.current) return;
-    const timer = window.setTimeout(() => void persistBriefing(false), 1200);
-    return () => window.clearTimeout(timer);
-  }, [form]);
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    await persistBriefing(true);
-  }
 
   return (
     <div className="briefing-modal-backdrop" role="presentation">
@@ -236,15 +158,6 @@ export default function StrategicBriefingForm({
             >
               Ver PDF modelo <ArrowUpRight size={13} />
             </a>
-            <span className={`briefing-autosave-status ${autosaveStatus}`}>
-              {autosaveStatus === "saving"
-                ? "Salvando rascunho..."
-                : autosaveStatus === "saved"
-                  ? "Rascunho salvo"
-                  : autosaveStatus === "error"
-                    ? "Falha no autosave"
-                    : "Autosave ativo"}
-            </span>
             <button
               className="briefing-pdf-link briefing-pdf-button"
               type="button"
@@ -266,7 +179,7 @@ export default function StrategicBriefingForm({
           </div>
         </header>
 
-        <form className="briefing-form" onSubmit={handleSubmit}>
+        <div className="briefing-form">
           <div className="briefing-form-hero">
             <div>
               <span className="section-index">
@@ -308,8 +221,8 @@ export default function StrategicBriefingForm({
                 <BriefingField
                   key={field.key}
                   field={field}
-                  value={form[field.key]}
-                  onChange={value => updateField(field.key, value)}
+                  value={form[field.key] || ""}
+                  onChange={() => {}}
                 />
               ))}
             </div>
@@ -331,8 +244,8 @@ export default function StrategicBriefingForm({
                   <BriefingField
                     key={field.key}
                     field={field}
-                    value={form[field.key]}
-                    onChange={value => updateField(field.key, value)}
+                    value={form[field.key] || ""}
+                    onChange={() => {}}
                   />
                 ))}
               </div>
@@ -349,17 +262,6 @@ export default function StrategicBriefingForm({
             <span>MÉTODO: PRIMEIRO IA, DEPOIS.</span>
           </aside>
 
-          {error && (
-            <div className="briefing-form-error" role="alert">
-              <CircleAlert size={17} /> {error}
-            </div>
-          )}
-          {saved && (
-            <div className="briefing-form-success" role="status">
-              <Check size={17} /> Briefing salvo no cadastro de {lead.name}.
-            </div>
-          )}
-
           <footer className="briefing-form-footer">
             <div>
               <span className="section-index">/ LEAD VINCULADO</span>
@@ -375,17 +277,9 @@ export default function StrategicBriefingForm({
               >
                 <MessageCircle size={15} /> WhatsApp
               </a>
-              <button className="primary-cta" type="submit" disabled={isSaving}>
-                {isSaving ? (
-                  <Loader2 className="spin" size={17} />
-                ) : (
-                  <Save size={17} />
-                )}
-                {isSaving ? "Salvando..." : "Salvar briefing"}
-              </button>
             </div>
           </footer>
-        </form>
+        </div>
       </section>
     </div>
   );

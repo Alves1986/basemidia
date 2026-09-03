@@ -8,7 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useLocation } from "wouter";
-import officialLogo from "../assets/base-midia-logo.svg";
+import officialLogo from "../assets/logo_base.jpg";
 
 interface AuthResponse {
   configured?: boolean;

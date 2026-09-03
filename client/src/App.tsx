@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Gestao from "./pages/Gestao";
 import Configuracoes from "./pages/Configuracoes";
+import ClientBriefing from "./pages/ClientBriefing";
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/auth" component={Auth} />
       <Route path="/gestao" component={Gestao} />
       <Route path="/configuracoes" component={Configuracoes} />
+      <Route path="/briefing/:leadId" component={ClientBriefing} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

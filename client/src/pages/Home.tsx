@@ -1,11 +1,10 @@
 // Design: Dark Performance Lab — neo-brutalist digital, assimetria editorial, verde ácido como sinal de ação e prova.
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
   Check,
   ChevronDown,
-  CircleCheck,
   Clock3,
   Loader2,
   LockKeyhole,
@@ -17,7 +16,7 @@ import {
 } from "lucide-react";
 import heroDashboard from "../assets/base-midia-hero-dashboard.svg";
 import signalDetail from "../assets/base-midia-signal-detail.svg";
-import officialLogo from "../assets/base-midia-logo.svg";
+import officialLogo from "../assets/logo_base.jpg";
 
 const painPoints = [
   "Você investe em anúncios e não sabe exatamente onde está o problema?",
@@ -62,12 +61,27 @@ const faqs = [
   ],
 ];
 
+const painOptions = [
+  "Poucos cliques",
+  "Cliques sem contato",
+  "Contato sem venda",
+  "Não sei o que priorizar",
+];
+
+const goalOptions = [
+  "Mais previsibilidade",
+  "Reduzir custo por lead",
+  "Escalar o que já funciona",
+  "Começar do zero",
+];
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [formStep, setFormStep] = useState(1);
   const [form, setForm] = useState({
     name: "",
     whatsapp: "",
@@ -81,12 +95,19 @@ export default function Home() {
   const openDiagnostic = () => {
     setMenuOpen(false);
     setIsFormOpen(true);
+    setFormStep(1);
   };
   const closeDiagnostic = () => setIsFormOpen(false);
   const update = (field: string, value: string) =>
     setForm(current => ({ ...current, [field]: value }));
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const goToStep = (step: number) => setFormStep(step);
+  const canAdvance =
+    form.name.trim() !== "" &&
+    form.whatsapp.trim() !== "" &&
+    form.segment !== "" &&
+    form.ads !== "";
+  const canSubmit = form.pain !== "" && form.goal !== "";
+  const submitForm = async () => {
     setSubmitError("");
     setIsSubmitting(true);
     try {
@@ -478,7 +499,7 @@ export default function Home() {
                 </button>
               </div>
             ) : (
-              <div className="modal-form-content">
+              <div className="modal-form-content modal-form-stepped">
                 <div className="modal-heading">
                   <div className="section-index">/ DIAGNÓSTICO GRATUITO</div>
                   <h2 id="diagnostico-title">
@@ -486,138 +507,161 @@ export default function Home() {
                     <br />
                     <span>A gente organiza o próximo movimento.</span>
                   </h2>
-                  <p>
-                    Preencha em menos de 2 minutos. Suas respostas tornam a
-                    conversa mais objetiva desde o primeiro contato.
+                  <p className="stepped-sub">
+                    4 perguntas rápidas, sem letra miúda.
                   </p>
-                  <div className="form-benefits">
-                    <div>
-                      <CircleCheck size={18} />
-                      <span>Sem pitch genérico</span>
-                    </div>
-                    <div>
-                      <CircleCheck size={18} />
-                      <span>Leitura do seu contexto</span>
-                    </div>
-                    <div>
-                      <CircleCheck size={18} />
-                      <span>Próximos passos claros</span>
-                    </div>
-                  </div>
                 </div>
                 <div className="form-card">
-                  <form onSubmit={submit}>
-                    <div className="form-top">
-                      <span>01 / 01</span>
-                      <span className="progress-label">FORMULÁRIO RÁPIDO</span>
-                      <div className="progress-bar">
-                        <i />
+                  <div className="form-top stepped-progress">
+                    <div className="stepped-progress-row">
+                      <span className="stepped-progress-label">
+                        Etapa <b>{formStep}</b> de 2
+                      </span>
+                      <span className="stepped-progress-hint">
+                        {formStep === 1 ? "Seus dados" : "Seu contexto"}
+                      </span>
+                    </div>
+                    <div className="stepped-track">
+                      <div
+                        className="stepped-fill"
+                        style={{ width: formStep === 1 ? "50%" : "100%" }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* STEP 1 */}
+                  {formStep === 1 && (
+                    <div className="stepped-step">
+                      <div className="form-grid">
+                        <label>
+                          Seu nome
+                          <input
+                            value={form.name}
+                            onChange={e => update("name", e.target.value)}
+                            placeholder="Como podemos te chamar?"
+                          />
+                        </label>
+                        <label>
+                          WhatsApp
+                          <input
+                            type="tel"
+                            value={form.whatsapp}
+                            onChange={e => update("whatsapp", e.target.value)}
+                            placeholder="(00) 00000-0000"
+                          />
+                        </label>
+                        <label className="full-label">
+                          Segmento
+                          <select
+                            value={form.segment}
+                            onChange={e => update("segment", e.target.value)}
+                          >
+                            <option value="">Selecione o segmento</option>
+                            <option>Beleza e estética</option>
+                            <option>Imobiliário</option>
+                            <option>Saúde</option>
+                            <option>Varejo local</option>
+                            <option>Outro</option>
+                          </select>
+                        </label>
+                        <label className="full-label">
+                          Você já anuncia hoje?
+                          <select
+                            value={form.ads}
+                            onChange={e => update("ads", e.target.value)}
+                          >
+                            <option value="">Escolha uma opção</option>
+                            <option>Sim, com agência ou gestor</option>
+                            <option>Sim, faço por conta própria</option>
+                            <option>Não, nunca anunciei</option>
+                          </select>
+                        </label>
+                      </div>
+                      <div className="stepped-actions">
+                        <button
+                          type="button"
+                          className="primary-cta form-submit"
+                          disabled={!canAdvance}
+                          onClick={() => goToStep(2)}
+                        >
+                          Continuar <ArrowUpRight size={18} />
+                        </button>
                       </div>
                     </div>
-                    <div className="form-grid">
-                      <label>
-                        Seu nome
-                        <input
-                          required
-                          value={form.name}
-                          onChange={e => update("name", e.target.value)}
-                          placeholder="Como podemos te chamar?"
-                        />
-                      </label>
-                      <label>
-                        WhatsApp
-                        <input
-                          required
-                          type="tel"
-                          value={form.whatsapp}
-                          onChange={e => update("whatsapp", e.target.value)}
-                          placeholder="(00) 00000-0000"
-                        />
-                      </label>
-                      <label>
-                        E-mail
-                        <input
-                          required
-                          type="email"
-                          value={form.email}
-                          onChange={e => update("email", e.target.value)}
-                          placeholder="voce@empresa.com"
-                        />
-                      </label>
-                      <label>
-                        Segmento
-                        <select
-                          required
-                          value={form.segment}
-                          onChange={e => update("segment", e.target.value)}
-                        >
-                          <option value="">Selecione o segmento</option>
-                          <option>Negócio local</option>
-                          <option>E-commerce</option>
-                          <option>Serviços B2B</option>
-                          <option>Outro</option>
-                        </select>
-                      </label>
-                      <label>
-                        Você já anuncia hoje?
-                        <select
-                          required
-                          value={form.ads}
-                          onChange={e => update("ads", e.target.value)}
-                        >
-                          <option value="">Escolha uma opção</option>
-                          <option>Sim, mas sem estratégia clara</option>
-                          <option>Sim, com frequência</option>
-                          <option>Ainda não anuncio</option>
-                        </select>
-                      </label>
-                      <label className="full-label">
-                        Qual é hoje o maior problema que você quer resolver com
-                        tráfego pago?
-                        <textarea
-                          required
-                          value={form.pain}
-                          onChange={e => update("pain", e.target.value)}
-                          placeholder="Ex.: tenho cliques, mas poucos contatos que avançam..."
-                        />
-                      </label>
-                      <label className="full-label">
-                        O que você quer melhorar nos próximos 90 dias?
-                        <input
-                          required
-                          value={form.goal}
-                          onChange={e => update("goal", e.target.value)}
-                          placeholder="Ex.: gerar demanda com mais previsibilidade"
-                        />
-                      </label>
-                    </div>
-                    {submitError && (
-                      <p className="form-error" role="alert">
-                        {submitError}
-                      </p>
-                    )}
-                    <button
-                      type="submit"
-                      className="primary-cta form-submit"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="spin" size={18} /> Enviando
-                          briefing...
-                        </>
-                      ) : (
-                        <>
-                          Quero meu diagnóstico gratuito{" "}
-                          <ArrowUpRight size={18} />
-                        </>
+                  )}
+
+                  {/* STEP 2 */}
+                  {formStep === 2 && (
+                    <div className="stepped-step">
+                      <div className="chip-group">
+                        <span className="chip-group-label">
+                          Qual é hoje o maior problema com tráfego pago?
+                        </span>
+                        <div className="chips">
+                          {painOptions.map(option => (
+                            <button
+                              key={option}
+                              type="button"
+                              className={`chip ${form.pain === option ? "selected" : ""}`}
+                              onClick={() => update("pain", option)}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="chip-group">
+                        <span className="chip-group-label">
+                          O que você quer melhorar nos próximos 90 dias?
+                        </span>
+                        <div className="chips">
+                          {goalOptions.map(option => (
+                            <button
+                              key={option}
+                              type="button"
+                              className={`chip ${form.goal === option ? "selected" : ""}`}
+                              onClick={() => update("goal", option)}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      {submitError && (
+                        <p className="form-error" role="alert">
+                          {submitError}
+                        </p>
                       )}
-                    </button>
-                    <p className="privacy-note">
-                      <LockKeyhole size={13} /> Seus dados ficam seguros e serão
-                      usados apenas para este contato.
-                    </p>
-                  </form>
+                      <div className="stepped-actions stepped-actions-split">
+                        <button
+                          type="button"
+                          className="stepped-btn-ghost"
+                          onClick={() => goToStep(1)}
+                        >
+                          Voltar
+                        </button>
+                        <button
+                          type="button"
+                          className="primary-cta form-submit"
+                          disabled={!canSubmit || isSubmitting}
+                          onClick={submitForm}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="spin" size={18} /> Enviando...
+                            </>
+                          ) : (
+                            <>Quero meu diagnóstico →</>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="privacy-note">
+                    <LockKeyhole size={13} /> Seus dados ficam seguros e são
+                    usados apenas para este contato.
+                  </p>
                 </div>
               </div>
             )}
