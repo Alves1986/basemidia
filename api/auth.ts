@@ -8,7 +8,7 @@ import {
 } from "./_lib/auth";
 
 async function handleGet(request: Request) {
-  const admin = getAuthenticatedAdmin(request);
+  const admin = await getAuthenticatedAdmin(request);
   return jsonResponse({
     configured: isAdminConfigured(),
     authenticated: Boolean(admin),
@@ -39,7 +39,7 @@ async function handlePost(request: Request) {
 
   const email = typeof body.email === "string" ? body.email : "";
   const password = typeof body.password === "string" ? body.password : "";
-  if (!canLogin(email, password)) {
+  if (!(await canLogin(email, password))) {
     return jsonResponse(
       { error: "E-mail ou senha inválidos." },
       { status: 401 }
@@ -50,7 +50,10 @@ async function handlePost(request: Request) {
     { authenticated: true, user: { email: email.trim().toLowerCase() } },
     {
       headers: {
-        "Set-Cookie": createSessionCookie(request, email.trim().toLowerCase()),
+        "Set-Cookie": await createSessionCookie(
+          request,
+          email.trim().toLowerCase()
+        ),
       },
     }
   );

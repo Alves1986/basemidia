@@ -78,7 +78,7 @@ async function handlePost(request: Request) {
 }
 
 async function handleGet(request: Request) {
-  if (!getAuthenticatedAdmin(request)) {
+  if (!(await getAuthenticatedAdmin(request))) {
     return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
   }
   if (!isLeadStorageConfigured()) {

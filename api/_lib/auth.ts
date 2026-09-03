@@ -1,5 +1,3 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
-
 export const ADMIN_SESSION_COOKIE = "bm_admin_session";
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
@@ -22,25 +20,76 @@ export function isAdminConfigured() {
   return Boolean(config.email && config.password && config.secret);
 }
 
-function safeEqual(left: string, right: string) {
-  const leftBuffer = Buffer.from(left);
-  const rightBuffer = Buffer.from(right);
-  if (leftBuffer.length !== rightBuffer.length) return false;
-  return timingSafeEqual(leftBuffer, rightBuffer);
+function toBase64Url(bytes: Uint8Array) {
+  let binary = "";
+  for (let index = 0; index < bytes.length; index += 1) {
+    binary += String.fromCharCode(bytes[index]);
+  }
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
 }
 
-function signatureFor(payload: string, secret: string) {
-  return createHmac("sha256", secret).update(payload).digest("base64url");
+function fromBase64Url(value: string) {
+  const base64 = value
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .padEnd(Math.ceil(value.length / 4) * 4, "=");
+  const binary = atob(base64);
+  return Uint8Array.from(binary, character => character.charCodeAt(0));
 }
 
-function createSession(email: string) {
+function encodePayload(value: unknown) {
+  return toBase64Url(new TextEncoder().encode(JSON.stringify(value)));
+}
+
+function decodePayload<T>(value: string) {
+  return JSON.parse(new TextDecoder().decode(fromBase64Url(value))) as T;
+}
+
+async function digest(value: string) {
+  const bytes = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(value)
+  );
+  return new Uint8Array(bytes);
+}
+
+async function safeEqual(left: string, right: string) {
+  const [leftDigest, rightDigest] = await Promise.all([
+    digest(left),
+    digest(right),
+  ]);
+  if (leftDigest.length !== rightDigest.length) return false;
+  let difference = 0;
+  for (let index = 0; index < leftDigest.length; index += 1) {
+    difference |= leftDigest[index] ^ rightDigest[index];
+  }
+  return difference === 0;
+}
+
+async function signatureFor(payload: string, secret: string) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(payload)
+  );
+  return toBase64Url(new Uint8Array(signature));
+}
+
+async function createSession(email: string) {
   const config = getAdminConfig();
   const expiresAt = Date.now() + SESSION_MAX_AGE_SECONDS * 1000;
-  const payload = Buffer.from(
-    JSON.stringify({ email, expiresAt }),
-    "utf8"
-  ).toString("base64url");
-  return `${payload}.${signatureFor(payload, config.secret)}`;
+  const payload = encodePayload({ email, expiresAt });
+  return `${payload}.${await signatureFor(payload, config.secret)}`;
 }
 
 function parseCookies(request: Request) {
@@ -60,7 +109,7 @@ function parseCookies(request: Request) {
   );
 }
 
-export function getAuthenticatedAdmin(request: Request) {
+export async function getAuthenticatedAdmin(request: Request) {
   if (!isAdminConfigured()) return null;
 
   const token = parseCookies(request)[ADMIN_SESSION_COOKIE];
@@ -72,11 +121,12 @@ export function getAuthenticatedAdmin(request: Request) {
   const signature = token.slice(separator + 1);
 
   const config = getAdminConfig();
-  if (!safeEqual(signature, signatureFor(payload, config.secret))) return null;
+  if (!(await safeEqual(signature, await signatureFor(payload, config.secret))))
+    return null;
 
   let session: { email?: unknown; expiresAt?: unknown };
   try {
-    session = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    session = decodePayload<{ email?: unknown; expiresAt?: unknown }>(payload);
   } catch {
     return null;
   }
@@ -86,18 +136,19 @@ export function getAuthenticatedAdmin(request: Request) {
     typeof session.expiresAt === "number" ? session.expiresAt : 0;
   if (!email || !Number.isFinite(expiresAt) || expiresAt <= Date.now())
     return null;
-  if (!safeEqual(email, config.email)) return null;
+  if (!(await safeEqual(email, config.email))) return null;
 
   return { email };
 }
 
-export function canLogin(email: string, password: string) {
+export async function canLogin(email: string, password: string) {
   if (!isAdminConfigured()) return false;
   const config = getAdminConfig();
-  return (
-    safeEqual(email.trim().toLowerCase(), config.email) &&
-    safeEqual(password, config.password)
-  );
+  const [emailMatches, passwordMatches] = await Promise.all([
+    safeEqual(email.trim().toLowerCase(), config.email),
+    safeEqual(password, config.password),
+  ]);
+  return emailMatches && passwordMatches;
 }
 
 export function sessionCookie(
@@ -109,8 +160,8 @@ export function sessionCookie(
   return `${ADMIN_SESSION_COOKIE}=${encodeURIComponent(value)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${maxAge}${secure}`;
 }
 
-export function createSessionCookie(request: Request, email: string) {
-  return sessionCookie(request, createSession(email));
+export async function createSessionCookie(request: Request, email: string) {
+  return sessionCookie(request, await createSession(email));
 }
 
 export function clearSessionCookie(request: Request) {
