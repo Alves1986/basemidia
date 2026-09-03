@@ -188,14 +188,6 @@ export default function ClientBriefing() {
           </div>
         </div>
 
-        <div className="cb-warning-box">
-          <h3>E as dores, desejos e objeções?</h3>
-          <p>
-            Isso a gente NÃO preenche aqui. Dores, desejos, objeções e jornada de compra são análise — o próximo passo, onde nosso time entra pra acelerar. Neste briefing você só coleta a matéria-prima do negócio.
-          </p>
-          <span className="cb-warning-tag">MÉTODO PRIMEIRO, ESTRATÉGIA DEPOIS.</span>
-        </div>
-
         <form className="cb-form" onSubmit={submit}>
           {/* Seção 1 */}
           <div className="cb-section">

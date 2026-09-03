@@ -252,15 +252,7 @@ export default function StrategicBriefingForm({
             </section>
           ))}
 
-          <aside className="briefing-analysis-note">
-            <strong>◆ E as dores, desejos e objeções?</strong>
-            <p>
-              Isso não é preenchido aqui. Dores, desejos, objeções e jornada de
-              compra são análise — o próximo passo, onde a IA entra para
-              acelerar. Neste briefing você coleta a matéria-prima do negócio.
-            </p>
-            <span>MÉTODO: PRIMEIRO IA, DEPOIS.</span>
-          </aside>
+
 
           <footer className="briefing-form-footer">
             <div>
