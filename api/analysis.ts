@@ -187,8 +187,7 @@ export default async function handler(
         messages: [
           {
             role: "system",
-            content:
-              "Você é estrategista sênior da BASE MÍDIA. Analise o contexto comercial e o briefing. Seja prático, específico e responsável: não invente dados, sinalize lacunas e não trate hipóteses como fatos. Responda exclusivamente no JSON solicitado.",
+            content: `Você é estrategista sênior da BASE MÍDIA. Analise o contexto comercial e o briefing. Seja prático, específico e responsável: não invente dados, sinalize lacunas e não trate hipóteses como fatos. Responda EXCLUSIVAMENTE em formato JSON válido, aderindo estritamente a esta estrutura (sem markdown ou texto adicional):\n${JSON.stringify(analysisSchema)}`,
           },
           {
             role: "user",
@@ -196,14 +195,6 @@ export default async function handler(
           },
         ],
         max_tokens: 2800,
-        response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "strategic_analysis",
-            strict: true,
-            schema: analysisSchema,
-          },
-        },
       }),
       signal: AbortSignal.timeout(30000),
     });
@@ -213,7 +204,12 @@ export default async function handler(
     };
     const content = payload.choices?.[0]?.message?.content;
     if (!content) throw new Error("Resposta de IA vazia");
-    const analysis = cleanAnalysis(JSON.parse(content));
+    
+    // Attempt to extract JSON if model included markdown blocks
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const rawJson = jsonMatch ? jsonMatch[0] : content;
+    
+    const analysis = cleanAnalysis(JSON.parse(rawJson));
     const updatedLead = await saveLeadAnalysis(leadId, analysis);
     return sendWebResponse(
       jsonResponse({ success: true, lead: updatedLead, analysis }),

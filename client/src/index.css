@@ -3509,13 +3509,11 @@ h1 em {
 }
 .analysis-panel {
   margin-top: 25px;
-  padding: 20px;
-  background: linear-gradient(
-    135deg,
-    rgba(56, 255, 20, 0.08),
-    rgba(203, 166, 247, 0.06)
-  );
-  border: 1px solid rgba(56, 255, 20, 0.28);
+  padding: 26px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(56, 255, 20, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 .analysis-panel-heading {
   display: flex;
