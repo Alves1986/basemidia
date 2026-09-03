@@ -7,6 +7,7 @@ import {
   saveLead,
   updateLeadBriefing,
   updateLeadPipeline,
+  deleteLead,
 } from "./_lib/leads.js";
 import {
   sendWebResponse,
