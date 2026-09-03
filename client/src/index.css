@@ -3676,3 +3676,321 @@ h1 em {
     margin-top: 15px;
   }
 }
+
+/* Compact density for the public site */
+@media (min-width: 901px) {
+  .topbar {
+    height: 64px;
+    padding-inline: clamp(20px, 4vw, 58px);
+  }
+  .brand-logo {
+    width: 132px;
+    height: 40px;
+  }
+  .nav-links {
+    gap: 21px;
+    font-size: 10px;
+  }
+  .nav-link-button {
+    font-size: 10px;
+  }
+  .nav-cta {
+    padding: 9px 0 9px 16px;
+    font-size: 10px;
+  }
+  .hero-section {
+    min-height: 570px;
+    padding: 64px clamp(20px, 5.5vw, 82px) 53px;
+    gap: clamp(32px, 5vw, 78px);
+  }
+  h1 {
+    font-size: clamp(44px, 5.25vw, 76px);
+  }
+  .eyebrow {
+    margin-bottom: 19px;
+  }
+  .hero-lede {
+    margin-top: 21px;
+    font-size: 14px;
+  }
+  .hero-actions {
+    gap: 18px;
+    margin-top: 26px;
+  }
+  .primary-cta {
+    padding: 13px 16px;
+    gap: 13px;
+    font-size: 10px;
+  }
+  .trust-row {
+    margin-top: 19px;
+    font-size: 10px;
+  }
+  .dashboard-overlay {
+    inset: 20px;
+  }
+  .metric-card {
+    padding: 12px;
+  }
+  .hero-side-note {
+    right: 20px;
+    bottom: 42px;
+  }
+  .section-pad {
+    padding: 78px clamp(20px, 7vw, 116px);
+  }
+  .pain-layout {
+    gap: clamp(35px, 8vw, 125px);
+    margin-top: 32px;
+  }
+  .section-heading h2,
+  .method-intro h2,
+  .proof-copy h2,
+  .faq-layout h2 {
+    font-size: clamp(31px, 3.7vw, 53px);
+  }
+  .section-heading p,
+  .method-intro > p,
+  .proof-copy > p {
+    margin-top: 17px;
+    font-size: 13px;
+  }
+  .pain-item {
+    min-height: 72px;
+  }
+  .pain-item p {
+    font-size: 14px;
+  }
+  .statement-strip {
+    margin-top: 64px;
+    padding-top: 18px;
+  }
+  .statement-strip p {
+    font-size: clamp(20px, 2.35vw, 33px);
+  }
+  .method-intro {
+    margin-top: 31px;
+  }
+  .steps-list {
+    margin-top: 45px;
+  }
+  .step-row {
+    grid-template-columns: 52px 46px 1fr 25px;
+    gap: 16px;
+    min-height: 100px;
+  }
+  .step-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .step-content h3 {
+    font-size: 20px;
+  }
+  .step-content p {
+    font-size: 12px;
+  }
+  .proof-section {
+    gap: clamp(35px, 8vw, 110px);
+  }
+  .proof-image {
+    min-height: 360px;
+  }
+  .proof-copy h2 {
+    margin-top: 19px;
+  }
+  .proof-grid {
+    gap: 12px;
+    margin-top: 31px;
+    padding: 14px 0;
+  }
+  .proof-grid strong {
+    font-size: 35px;
+  }
+  .outline-cta {
+    margin-top: 24px;
+    padding: 11px 14px;
+    gap: 12px;
+    font-size: 10px;
+  }
+  .faq-layout {
+    gap: clamp(35px, 8vw, 120px);
+    margin-top: 32px;
+  }
+  .faq-list details {
+    padding: 15px 0;
+  }
+  .faq-list summary {
+    font-size: 15px;
+  }
+  .faq-list details p {
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .final-cta {
+    min-height: 360px;
+    padding: 78px 20px;
+  }
+  .final-cta h2 {
+    margin: 21px auto 26px;
+    font-size: clamp(35px, 4.7vw, 64px);
+  }
+  .final-cta p {
+    margin-top: 13px;
+  }
+  .footer {
+    padding: 27px clamp(20px, 5vw, 70px);
+  }
+  .modal-dialog {
+    max-height: min(780px, calc(100vh - 20px));
+    padding: 29px 36px;
+  }
+  .modal-form-content {
+    gap: clamp(24px, 4vw, 48px);
+  }
+  .modal-heading h2 {
+    margin-top: 18px;
+    font-size: clamp(31px, 3.4vw, 50px);
+  }
+  .modal-heading > p {
+    margin-top: 14px;
+    font-size: 12px;
+  }
+  .modal-heading .form-benefits {
+    margin-top: 22px;
+  }
+}
+
+@media (max-width: 900px) {
+  .section-pad {
+    padding-top: 76px;
+    padding-bottom: 76px;
+  }
+  .hero-section {
+    padding-top: 66px;
+    padding-bottom: 62px;
+  }
+  .hero-lede {
+    margin-top: 21px;
+    font-size: 14px;
+  }
+  .hero-actions {
+    margin-top: 26px;
+  }
+  .pain-layout {
+    margin-top: 32px;
+  }
+  .statement-strip {
+    margin-top: 68px;
+  }
+  .method-intro {
+    margin-top: 32px;
+  }
+  .steps-list {
+    margin-top: 45px;
+  }
+  .step-row {
+    min-height: 108px;
+  }
+  .proof-image {
+    min-height: 330px;
+  }
+  .faq-layout {
+    margin-top: 34px;
+  }
+  .final-cta {
+    min-height: 390px;
+    padding-top: 84px;
+    padding-bottom: 84px;
+  }
+  .footer {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 560px) {
+  .section-pad {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+  .hero-section {
+    padding-top: 51px;
+    padding-bottom: 50px;
+  }
+  .hero-lede {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .hero-actions {
+    gap: 17px;
+    margin-top: 22px;
+  }
+  .trust-row {
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .pain-layout,
+  .method-intro,
+  .faq-layout {
+    margin-top: 26px;
+  }
+  .pain-item {
+    min-height: 72px;
+  }
+  .pain-item p {
+    font-size: 14px;
+  }
+  .statement-strip {
+    margin-top: 52px;
+    gap: 16px;
+  }
+  .quote-mark {
+    font-size: 48px;
+  }
+  .steps-list {
+    margin-top: 33px;
+  }
+  .step-row {
+    grid-template-columns: 35px 38px 1fr 19px;
+    gap: 10px;
+    min-height: 96px;
+  }
+  .step-content h3 {
+    font-size: 17px;
+  }
+  .step-content p {
+    font-size: 11px;
+    line-height: 1.45;
+  }
+  .proof-image {
+    min-height: 260px;
+  }
+  .proof-grid {
+    margin-top: 28px;
+    padding: 14px 0;
+  }
+  .proof-grid strong {
+    font-size: 31px;
+  }
+  .proof-grid small {
+    font-size: 9px;
+  }
+  .faq-list details {
+    padding: 16px 0;
+  }
+  .faq-list summary {
+    font-size: 15px;
+  }
+  .final-cta {
+    min-height: 335px;
+    padding: 68px 20px;
+  }
+  .final-cta h2 {
+    margin-top: 18px;
+    margin-bottom: 24px;
+  }
+  .footer {
+    gap: 22px;
+    padding: 25px 20px;
+  }
+}
