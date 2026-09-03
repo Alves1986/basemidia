@@ -3476,3 +3476,203 @@ h1 em {
     flex-direction: column;
   }
 }
+
+/* Compact density for the administrative workspace */
+@media (min-width: 901px) {
+  .admin-sidebar {
+    width: 218px;
+    padding: 20px 16px 16px;
+  }
+  .admin-brand {
+    padding: 0 8px;
+  }
+  .admin-brand .brand-logo {
+    width: 126px;
+    height: 37px;
+  }
+  .admin-nav {
+    gap: 3px;
+    margin-top: 34px;
+  }
+  .admin-nav a {
+    min-height: 38px;
+    padding: 0 9px;
+    font-size: 10px;
+  }
+  .admin-sidebar-foot {
+    padding: 14px 8px 0;
+  }
+  .admin-topbar {
+    min-height: 82px;
+    padding: 17px clamp(20px, 4vw, 48px);
+  }
+  .admin-topbar h1 {
+    margin-top: 5px;
+    font-size: clamp(23px, 2.6vw, 34px);
+  }
+  .admin-content {
+    padding: 31px clamp(20px, 4vw, 48px) 48px;
+  }
+  .admin-welcome h2 {
+    margin-top: 14px;
+    font-size: clamp(30px, 4vw, 50px);
+  }
+  .admin-welcome > p {
+    max-width: 250px;
+    font-size: 12px;
+  }
+  .admin-stats {
+    gap: 10px;
+    margin-top: 36px;
+  }
+  .admin-stats article {
+    min-height: 119px;
+    padding: 14px 15px;
+  }
+  .admin-stats strong {
+    margin-top: 17px;
+    font-size: 37px;
+  }
+  .admin-stats small {
+    margin-top: 8px;
+    font-size: 9px;
+  }
+  .pipeline-section {
+    margin-top: 40px;
+  }
+  .pipeline-board {
+    grid-template-columns: repeat(7, minmax(105px, 1fr));
+    gap: 5px;
+    margin-top: 15px;
+  }
+  .pipeline-stage {
+    min-height: 87px;
+    padding: 10px 10px;
+  }
+  .pipeline-stage strong {
+    font-size: 11px;
+  }
+  .pipeline-stage b {
+    font-size: 20px;
+  }
+  .admin-leads-section {
+    margin-top: 45px;
+  }
+  .admin-section-head h2 {
+    margin-top: 7px;
+    font-size: 25px;
+  }
+  .leads-table-wrap {
+    margin-top: 17px;
+  }
+  .leads-table th {
+    padding: 10px 11px;
+  }
+  .leads-table td {
+    padding: 12px 11px;
+    font-size: 11px;
+  }
+  .lead-avatar {
+    width: 30px;
+    height: 30px;
+  }
+  .lead-identity {
+    gap: 8px;
+  }
+  .lead-identity strong {
+    font-size: 12px;
+  }
+  .lead-identity span {
+    font-size: 9px;
+  }
+  .briefing-status {
+    font-size: 9px;
+  }
+  .lead-modal {
+    width: min(720px, 100%);
+    max-height: min(760px, calc(100vh - 20px));
+    padding: 29px 34px;
+  }
+  .lead-modal-header h2 {
+    font-size: clamp(26px, 3.4vw, 38px);
+  }
+  .lead-contact-row {
+    margin-top: 21px;
+    padding: 11px 0;
+  }
+  .lead-answers {
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .lead-answers > div {
+    padding: 12px;
+  }
+  .lead-answers p {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  .analysis-panel {
+    margin-top: 17px;
+    padding: 15px;
+  }
+  .analysis-panel h4 {
+    margin-top: 16px;
+  }
+  .analysis-panel p,
+  .analysis-panel li {
+    font-size: 12px;
+  }
+  .lead-pipeline-panel {
+    margin-top: 17px;
+    padding: 14px;
+  }
+  .lead-pipeline-fields {
+    margin-top: 12px;
+  }
+  .lead-modal-footer {
+    gap: 9px;
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-topbar {
+    min-height: 82px;
+    padding-top: 17px;
+    padding-bottom: 17px;
+  }
+  .admin-content {
+    padding-top: 28px;
+    padding-bottom: 42px;
+  }
+}
+
+@media (min-width: 901px) {
+  .settings-card {
+    margin-top: 22px;
+    padding: 20px 22px;
+  }
+  .settings-stage-list,
+  .settings-message-grid {
+    margin-top: 18px;
+  }
+  .settings-stage-row {
+    gap: 10px;
+    padding: 10px 11px;
+  }
+  .settings-stage-row strong {
+    margin-bottom: 4px;
+  }
+  .settings-stage-row input,
+  .settings-message-grid textarea,
+  .settings-wide-field input {
+    padding: 8px 9px;
+    font-size: 11px;
+  }
+  .settings-wide-field {
+    margin-top: 14px;
+  }
+  .settings-actions {
+    margin-top: 15px;
+  }
+}
