@@ -19,6 +19,7 @@ import type {
 } from "../shared/leads.js";
 import { leadStatuses } from "../shared/leads.js";
 import { strategicBriefingMaxLengths } from "../shared/leads.js";
+import { isBoltenConfigured, syncLeadToBolten } from "./_lib/bolten.js";
 
 interface VercelRequest {
   method?: string;
@@ -237,9 +238,21 @@ export default async function handler(
     }
 
     try {
-      await saveLead(input);
+      const lead = await saveLead(input);
+      let boltenSync: "skipped" | "synced" | "failed" = "skipped";
+      if (isBoltenConfigured()) {
+        try {
+          boltenSync = await syncLeadToBolten(lead);
+        } catch (syncError) {
+          boltenSync = "failed";
+          console.error(
+            "[Leads] Falha ao sincronizar lead com a Bolten",
+            syncError
+          );
+        }
+      }
       return sendWebResponse(
-        jsonResponse({ success: true }, { status: 201 }),
+        jsonResponse({ success: true, boltenSync }, { status: 201 }),
         response
       );
     } catch (error) {

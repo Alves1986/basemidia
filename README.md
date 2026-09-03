@@ -38,3 +38,11 @@ Sem o Vercel Blob configurado, a interface continua disponível, mas o envio res
 A central de gestão agora organiza os leads por etapas de pipeline: Novo, Em contato, Briefing em andamento, Proposta enviada, Cliente e Perdido. Cada lead pode receber uma próxima ação e uma data de acompanhamento; essas informações são salvas no mesmo objeto privado do Blob.
 
 O briefing estratégico conta com autosave após alterações, além do salvamento manual. A ação `Exportar PDF` usa a folha de impressão da própria identidade visual da BASE MÍDIA para gerar o documento pelo diálogo de impressão do navegador. O botão de WhatsApp abre a conversa com uma mensagem inicial contextualizada pelo nome e objetivo do lead.
+
+## Integração com Bolten.io
+
+O formulário público pode sincronizar cada novo lead com o CRM Bolten.io como uma oportunidade no funil. A integração é opcional e é ativada quando `BOLTEN_API_KEY` e `BOLTEN_PROJECT_ID` estão configuradas no ambiente de produção do Vercel. A chave deve ser criada na área de API Keys da Bolten e cadastrada diretamente no Vercel; ela nunca deve ser colocada no código ou enviada pelo navegador.
+
+A sincronização usa o endpoint oficial de oportunidades da API REST da Bolten, com autenticação `Bearer`. O lead é salvo primeiro no armazenamento privado da BASE MÍDIA. Se a Bolten estiver indisponível, responder com erro ou ainda não estiver configurada, o cadastro local continua concluído e o problema fica registrado nos logs do servidor, evitando perda do lead ou falha para o usuário.
+
+Depois de configurar as variáveis, é necessário publicar um novo deployment para que o runtime carregue os valores. A automação de WhatsApp deve ser configurada dentro do projeto Bolten, usando a oportunidade/contato criado pela API e o fluxo ou template aprovado no CRM.

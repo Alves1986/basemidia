@@ -27,3 +27,12 @@
 - [x] Exibir na lista se o briefing está pendente ou preenchido.
 - [x] Fazer `Iniciar conversa` abrir diretamente o WhatsApp.
 - [x] Disponibilizar o PDF modelo em `client/public/briefing-modelo.pdf`.
+
+## Integração Bolten.io
+
+- [x] Criar adaptador server-side para API REST da Bolten.
+- [x] Sincronizar cada novo lead como oportunidade quando as variáveis estiverem configuradas.
+- [x] Manter o cadastro local funcionando se a Bolten estiver indisponível ou sem configuração.
+- [x] Documentar `BOLTEN_API_KEY`, `BOLTEN_PROJECT_ID` e `BOLTEN_API_BASE_URL`.
+- [ ] Configurar a API Key e o Project ID da Bolten no Vercel.
+- [ ] Ativar no CRM Bolten a automação/template de WhatsApp para a nova oportunidade.
