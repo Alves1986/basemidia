@@ -150,31 +150,47 @@ export default function StrategicBriefingForm({
       setIsExporting(true);
       toast.loading("Gerando PDF, aguarde...", { id: "pdf-export" });
       
-      const canvas = await html2canvas(formRef.current, {
+      const formEl = formRef.current;
+      
+      // Temporarily expand the element to capture its full height
+      const originalMaxHeight = formEl.style.maxHeight;
+      const originalOverflow = formEl.style.overflow;
+      formEl.style.maxHeight = "none";
+      formEl.style.overflow = "visible";
+
+      // Expand all textareas to their full content height
+      const textareas = formEl.querySelectorAll("textarea");
+      const originalHeights = Array.from(textareas).map(ta => ta.style.height);
+      textareas.forEach(ta => {
+        ta.style.height = "auto";
+        ta.style.height = `${ta.scrollHeight + 10}px`;
+      });
+
+      const canvas = await html2canvas(formEl, {
         scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
-        windowWidth: 1000
+        windowWidth: formEl.scrollWidth
+      });
+      
+      // Restore original styles
+      formEl.style.maxHeight = originalMaxHeight;
+      formEl.style.overflow = originalOverflow;
+      textareas.forEach((ta, i) => {
+        ta.style.height = originalHeights[i];
       });
       
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      let position = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
+      // Generate a single continuous PDF page to prevent text cutoff
+      const pdf = new jsPDF({
+        orientation: "p",
+        unit: "px",
+        format: [canvas.width / 2, canvas.height / 2]
+      });
       
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-      let heightLeft = pdfHeight - pageHeight;
-      
-      while (heightLeft > 0) {
-        position = heightLeft - pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pageHeight;
-      }
+      pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
       
       pdf.save(`Briefing-${lead.name.replace(/\s+/g, "-")}.pdf`);
       toast.success("PDF exportado com sucesso!", { id: "pdf-export" });
