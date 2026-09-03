@@ -26,4 +26,4 @@
 - [x] Salvar e atualizar o documento no mesmo registro privado do lead.
 - [x] Exibir na lista se o briefing está pendente ou preenchido.
 - [x] Fazer `Iniciar conversa` abrir diretamente o WhatsApp.
-- [x] Disponibilizar o PDF modelo em `public/briefing-modelo.pdf`.
+- [x] Disponibilizar o PDF modelo em `client/public/briefing-modelo.pdf`.
