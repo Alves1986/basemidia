@@ -2633,6 +2633,20 @@ h1 em {
   align-items: center;
   gap: 12px;
 }
+.briefing-pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #d5d5d1;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.briefing-pdf-link:hover {
+  color: #a6ff00;
+}
 .briefing-private-status {
   display: inline-flex;
   align-items: center;
@@ -2941,6 +2955,9 @@ h1 em {
   }
   .briefing-private-status {
     display: none;
+  }
+  .briefing-pdf-link {
+    font-size: 8px;
   }
   .briefing-general-grid,
   .briefing-fields-grid {

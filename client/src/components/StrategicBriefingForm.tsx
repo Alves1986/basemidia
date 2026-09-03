@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
+  ArrowUpRight,
   Check,
   CircleAlert,
   FileText,
@@ -195,6 +196,14 @@ export default function StrategicBriefingForm({
             <ArrowLeft size={16} /> Voltar para o lead
           </button>
           <div className="briefing-workspace-actions">
+            <a
+              className="briefing-pdf-link"
+              href="/briefing-modelo.pdf"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Ver PDF modelo <ArrowUpRight size={13} />
+            </a>
             <span className="briefing-private-status">
               <FileText size={14} /> Documento interno
             </span>
