@@ -11,7 +11,7 @@ function getAdminConfig(): AdminConfig {
   return {
     email: (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase(),
     password: process.env.ADMIN_PASSWORD ?? "",
-    secret: process.env.SESSION_SECRET ?? "",
+    secret: process.env.AUTH_SECRET ?? process.env.SESSION_SECRET ?? "",
   };
 }
 

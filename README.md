@@ -10,13 +10,13 @@ A página pública continua em `/`. O acesso administrativo começa em `/auth`, 
 
 A gestão usa funções serverless do Vercel e objetos privados no Vercel Blob. Antes do primeiro deploy com captura real de leads, crie um Blob Store privado no projeto Vercel e conecte-o aos ambientes Production e Preview. Depois, configure as seguintes variáveis no projeto:
 
-| Variável                | Uso                                                                                        |
-| ----------------------- | ------------------------------------------------------------------------------------------ |
-| `ADMIN_EMAIL`           | E-mail que terá acesso à área administrativa.                                              |
-| `ADMIN_PASSWORD`        | Senha da área administrativa; não deve ser publicada no código.                            |
-| `SESSION_SECRET`        | Segredo aleatório usado para assinar o cookie de sessão. Use uma string longa e exclusiva. |
-| `BLOB_READ_WRITE_TOKEN` | Token do Vercel Blob, caso o projeto use token de leitura e escrita.                       |
-| `BLOB_STORE_ID`         | ID do Blob Store quando o projeto estiver conectado via OIDC do Vercel.                    |
+| Variável                | Uso                                                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `ADMIN_EMAIL`           | E-mail que terá acesso à área administrativa.                                                                                  |
+| `ADMIN_PASSWORD`        | Senha da área administrativa; não deve ser publicada no código.                                                                |
+| `AUTH_SECRET`           | Segredo aleatório usado para assinar o cookie de sessão. Use uma string longa e exclusiva. (`SESSION_SECRET` também é aceito.) |
+| `BLOB_READ_WRITE_TOKEN` | Token do Vercel Blob, caso o projeto use token de leitura e escrita.                                                           |
+| `BLOB_STORE_ID`         | ID do Blob Store quando o projeto estiver conectado via OIDC do Vercel.                                                        |
 
 O `.env.example` contém a lista sem valores reais. Nunca comite `.env`, `.env.local` ou qualquer credencial.
 
