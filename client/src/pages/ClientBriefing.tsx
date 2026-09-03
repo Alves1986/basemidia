@@ -9,7 +9,7 @@ type BriefingForm = StrategicBriefing;
 
 const emptyBriefing: BriefingForm = {
   companyClient: "",
-  filledBy: "",
+  filledBy: "BASE MIDIA",
   briefingDate: "",
   siteInstagram: "",
   companyDescription: "",
@@ -202,7 +202,7 @@ export default function ClientBriefing() {
               </label>
               <label>
                 Preenchido por
-                <input required value={form.filledBy} onChange={(e) => update("filledBy", e.target.value)} />
+                <input required value="BASE MIDIA" readOnly className="read-only-field" />
               </label>
               <label>
                 Data do Briefing
