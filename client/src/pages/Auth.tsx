@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "wouter";
 import officialLogo from "../assets/logo_base.jpg";
+import AnimatedBackground from "../components/AnimatedBackground";
 
 interface AuthResponse {
   configured?: boolean;
@@ -82,6 +83,7 @@ export default function Auth() {
 
   return (
     <main className="auth-page">
+      <AnimatedBackground />
       <header className="auth-topbar">
         <a href="/" aria-label="Voltar para a página inicial">
           <img src={officialLogo} alt="BASE MÍDIA" className="brand-logo" />

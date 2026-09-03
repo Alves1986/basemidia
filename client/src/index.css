@@ -1757,7 +1757,7 @@ h1 em {
   width: min(1160px, 100%);
   flex: 1;
   margin: 0 auto;
-  padding: clamp(58px, 9vw, 125px) clamp(20px, 6vw, 70px);
+  padding: clamp(30px, 5vw, 60px) clamp(20px, 6vw, 70px);
   display: grid;
   grid-template-columns: 1fr minmax(360px, 450px);
   gap: clamp(55px, 12vw, 170px);
