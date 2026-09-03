@@ -864,7 +864,10 @@ export default function Gestao() {
               </a>
               <button
                 className="admin-secondary-button"
-                onClick={() => setBriefingLead(selectedLead)}
+                onClick={() => {
+                  setBriefingLead(selectedLead);
+                  setSelectedLead(null);
+                }}
                 disabled={!selectedLead.briefing}
               >
                 <FileText size={15} /> Ver briefing
