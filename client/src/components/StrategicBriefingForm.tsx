@@ -1,10 +1,14 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   ArrowUpRight,
   FileText,
   MessageCircle,
   X,
+  Loader2
 } from "lucide-react";
 import type {
   BriefingFieldDefinition,
@@ -137,6 +141,51 @@ export default function StrategicBriefingForm({
   const filledFields = allFields.filter(field => form[field.key]?.trim()).length;
   const progress = Math.round((filledFields / allFields.length) * 100);
 
+  const formRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportPDF = async () => {
+    if (!formRef.current) return;
+    try {
+      setIsExporting(true);
+      toast.loading("Gerando PDF, aguarde...", { id: "pdf-export" });
+      
+      const canvas = await html2canvas(formRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+        windowWidth: 1000
+      });
+      
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      let position = 0;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      let heightLeft = pdfHeight - pageHeight;
+      
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(`Briefing-${lead.name.replace(/\s+/g, "-")}.pdf`);
+      toast.success("PDF exportado com sucesso!", { id: "pdf-export" });
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast.error("Ocorreu um erro ao exportar o PDF.", { id: "pdf-export" });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="briefing-modal-backdrop" role="presentation">
       <section
@@ -161,9 +210,15 @@ export default function StrategicBriefingForm({
             <button
               className="briefing-pdf-link briefing-pdf-button"
               type="button"
-              onClick={() => window.print()}
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              style={{ opacity: isExporting ? 0.5 : 1, cursor: isExporting ? "wait" : "pointer" }}
             >
-              Exportar PDF <ArrowUpRight size={13} />
+              {isExporting ? (
+                <>Gerando PDF... <Loader2 size={13} className="animate-spin" /></>
+              ) : (
+                <>Exportar PDF <ArrowUpRight size={13} /></>
+              )}
             </button>
             <span className="briefing-private-status">
               <FileText size={14} /> Documento interno
@@ -179,7 +234,7 @@ export default function StrategicBriefingForm({
           </div>
         </header>
 
-        <div className="briefing-form">
+        <div className="briefing-form" ref={formRef}>
           <div className="briefing-form-hero">
             <div>
               <span className="section-index">
