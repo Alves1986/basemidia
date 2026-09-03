@@ -1,6 +1,19 @@
+import type { IncomingHttpHeaders } from "node:http";
 import { getAuthenticatedAdmin, jsonResponse } from "./_lib/auth";
 import { getLeads, isLeadStorageConfigured, saveLead } from "./_lib/leads";
+import {
+  sendWebResponse,
+  toWebRequest,
+  type VercelResponseLike,
+} from "./_lib/vercel";
 import type { LeadInput } from "../shared/leads";
+
+interface VercelRequest {
+  method?: string;
+  url?: string;
+  headers: IncomingHttpHeaders;
+  body?: unknown;
+}
 
 const MAX_LENGTHS: Record<keyof LeadInput, number> = {
   name: 120,
@@ -31,82 +44,111 @@ function normalizeInput(body: unknown): LeadInput | null {
   return input;
 }
 
-async function handlePost(request: Request) {
-  if (!isLeadStorageConfigured()) {
-    return jsonResponse(
-      {
-        error:
-          "O formulário ainda não está conectado ao armazenamento. Configure o Vercel Blob antes de publicar.",
-      },
-      { status: 503 }
-    );
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponseLike
+) {
+  const webRequest = toWebRequest(request);
+
+  if (webRequest.method === "POST") {
+    if (!isLeadStorageConfigured()) {
+      return sendWebResponse(
+        jsonResponse(
+          {
+            error:
+              "O formulário ainda não está conectado ao armazenamento. Configure o Vercel Blob antes de publicar.",
+          },
+          { status: 503 }
+        ),
+        response
+      );
+    }
+
+    let body: unknown;
+    try {
+      body = await webRequest.json();
+    } catch {
+      return sendWebResponse(
+        jsonResponse(
+          { error: "Não foi possível ler as respostas do formulário." },
+          { status: 400 }
+        ),
+        response
+      );
+    }
+
+    const input = normalizeInput(body);
+    if (!input) {
+      return sendWebResponse(
+        jsonResponse(
+          {
+            error:
+              "Preencha todos os campos obrigatórios com informações válidas.",
+          },
+          { status: 400 }
+        ),
+        response
+      );
+    }
+
+    try {
+      await saveLead(input);
+      return sendWebResponse(
+        jsonResponse({ success: true }, { status: 201 }),
+        response
+      );
+    } catch (error) {
+      console.error("[Leads] Falha ao salvar briefing", error);
+      return sendWebResponse(
+        jsonResponse(
+          {
+            error:
+              "Não foi possível registrar seu briefing agora. Tente novamente em instantes.",
+          },
+          { status: 500 }
+        ),
+        response
+      );
+    }
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonResponse(
-      { error: "Não foi possível ler as respostas do formulário." },
-      { status: 400 }
-    );
+  if (webRequest.method === "GET") {
+    if (!(await getAuthenticatedAdmin(webRequest))) {
+      return sendWebResponse(
+        jsonResponse({ error: "Acesso restrito." }, { status: 401 }),
+        response
+      );
+    }
+    if (!isLeadStorageConfigured()) {
+      return sendWebResponse(
+        jsonResponse(
+          {
+            error:
+              "O armazenamento de leads ainda não foi configurado no Vercel Blob.",
+          },
+          { status: 503 }
+        ),
+        response
+      );
+    }
+
+    try {
+      const leads = await getLeads();
+      return sendWebResponse(jsonResponse({ leads }), response);
+    } catch (error) {
+      console.error("[Leads] Falha ao listar briefings", error);
+      return sendWebResponse(
+        jsonResponse(
+          { error: "Não foi possível carregar os briefings agora." },
+          { status: 500 }
+        ),
+        response
+      );
+    }
   }
 
-  const input = normalizeInput(body);
-  if (!input) {
-    return jsonResponse(
-      {
-        error: "Preencha todos os campos obrigatórios com informações válidas.",
-      },
-      { status: 400 }
-    );
-  }
-
-  try {
-    await saveLead(input);
-    return jsonResponse({ success: true }, { status: 201 });
-  } catch (error) {
-    console.error("[Leads] Falha ao salvar briefing", error);
-    return jsonResponse(
-      {
-        error:
-          "Não foi possível registrar seu briefing agora. Tente novamente em instantes.",
-      },
-      { status: 500 }
-    );
-  }
+  return sendWebResponse(
+    jsonResponse({ error: "Método não permitido." }, { status: 405 }),
+    response
+  );
 }
-
-async function handleGet(request: Request) {
-  if (!(await getAuthenticatedAdmin(request))) {
-    return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
-  }
-  if (!isLeadStorageConfigured()) {
-    return jsonResponse(
-      {
-        error:
-          "O armazenamento de leads ainda não foi configurado no Vercel Blob.",
-      },
-      { status: 503 }
-    );
-  }
-
-  try {
-    const leads = await getLeads();
-    return jsonResponse({ leads });
-  } catch (error) {
-    console.error("[Leads] Falha ao listar briefings", error);
-    return jsonResponse(
-      { error: "Não foi possível carregar os briefings agora." },
-      { status: 500 }
-    );
-  }
-}
-
-export default {
-  async fetch(request: Request) {
-    if (request.method === "GET") return handleGet(request);
-    if (request.method === "POST") return handlePost(request);
-    return jsonResponse({ error: "Método não permitido." }, { status: 405 });
-  },
-};
