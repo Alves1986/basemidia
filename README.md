@@ -29,6 +29,6 @@ pnpm build
 pnpm dev
 ```
 
-O endpoint público do formulário é `POST /api/leads`. A listagem administrativa usa `GET /api/leads` e exige o cookie de sessão emitido por `POST /api/auth`. O login e o logout usam `POST /api/auth` e `DELETE /api/auth`.
+O endpoint público do formulário é `POST /api/leads`. A listagem administrativa usa `GET /api/leads` e exige o cookie de sessão emitido por `POST /api/auth`. O formulário interno salva o documento vinculado com `POST /api/leads` usando `{ action: "save-briefing", leadId, briefing }`. O login e o logout usam `POST /api/auth` e `DELETE /api/auth`.
 
 Sem o Vercel Blob configurado, a interface continua disponível, mas o envio responde com erro de configuração em vez de fingir que o briefing foi salvo. Essa decisão evita perder dados silenciosamente.

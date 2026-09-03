@@ -1,12 +1,18 @@
 import type { IncomingHttpHeaders } from "node:http";
 import { getAuthenticatedAdmin, jsonResponse } from "./_lib/auth.js";
-import { getLeads, isLeadStorageConfigured, saveLead } from "./_lib/leads.js";
+import {
+  getLeads,
+  isLeadStorageConfigured,
+  saveLead,
+  updateLeadBriefing,
+} from "./_lib/leads.js";
 import {
   sendWebResponse,
   toWebRequest,
   type VercelResponseLike,
 } from "./_lib/vercel.js";
-import type { LeadInput } from "../shared/leads.js";
+import type { LeadInput, StrategicBriefing } from "../shared/leads.js";
+import { strategicBriefingMaxLengths } from "../shared/leads.js";
 
 interface VercelRequest {
   method?: string;
@@ -44,6 +50,73 @@ function normalizeInput(body: unknown): LeadInput | null {
   return input;
 }
 
+function normalizeBriefing(body: unknown): StrategicBriefing | null {
+  if (!body || typeof body !== "object") return null;
+  const source = body as Record<string, unknown>;
+  const briefing = {} as StrategicBriefing;
+
+  for (const [key, maxLength] of Object.entries(
+    strategicBriefingMaxLengths
+  ) as Array<[keyof StrategicBriefing, number]>) {
+    const value = source[key];
+    if (typeof value !== "string" || value.trim().length > maxLength)
+      return null;
+    briefing[key] = value.trim();
+  }
+
+  return briefing;
+}
+
+async function readBody(request: Request) {
+  try {
+    return await request.json();
+  } catch {
+    return null;
+  }
+}
+
+async function handleSaveBriefing(request: Request, body: unknown) {
+  if (!(await getAuthenticatedAdmin(request))) {
+    return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
+  }
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse(
+      {
+        error:
+          "O armazenamento de leads ainda não foi configurado no Vercel Blob.",
+      },
+      { status: 503 }
+    );
+  }
+
+  if (!body || typeof body !== "object") {
+    return jsonResponse(
+      { error: "Envie os dados do briefing." },
+      { status: 400 }
+    );
+  }
+  const source = body as Record<string, unknown>;
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+  const briefing = normalizeBriefing(source.briefing);
+  if (!leadId || !briefing) {
+    return jsonResponse(
+      { error: "Revise os campos do briefing antes de salvar." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const lead = await updateLeadBriefing(leadId, briefing);
+    return jsonResponse({ success: true, lead });
+  } catch (error) {
+    console.error("[Leads] Falha ao salvar briefing", error);
+    return jsonResponse(
+      { error: "Não foi possível salvar este briefing agora." },
+      { status: 500 }
+    );
+  }
+}
+
 export default async function handler(
   request: VercelRequest,
   response: VercelResponseLike
@@ -51,6 +124,18 @@ export default async function handler(
   const webRequest = toWebRequest(request);
 
   if (webRequest.method === "POST") {
+    const body = await readBody(webRequest);
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "save-briefing"
+    ) {
+      return sendWebResponse(
+        await handleSaveBriefing(webRequest, body),
+        response
+      );
+    }
+
     if (!isLeadStorageConfigured()) {
       return sendWebResponse(
         jsonResponse(
@@ -59,19 +144,6 @@ export default async function handler(
               "O formulário ainda não está conectado ao armazenamento. Configure o Vercel Blob antes de publicar.",
           },
           { status: 503 }
-        ),
-        response
-      );
-    }
-
-    let body: unknown;
-    try {
-      body = await webRequest.json();
-    } catch {
-      return sendWebResponse(
-        jsonResponse(
-          { error: "Não foi possível ler as respostas do formulário." },
-          { status: 400 }
         ),
         response
       );

@@ -17,3 +17,13 @@
 - [x] Persistir cada briefing em objeto privado do Vercel Blob.
 - [x] Adicionar documentação de deploy e variáveis em `.env.example` e `README.md`.
 - [ ] Criar/conectar o Blob Store e cadastrar `ADMIN_EMAIL`, `ADMIN_PASSWORD` e `SESSION_SECRET` no projeto Vercel.
+
+## Briefing estratégico por lead
+
+- [x] Replicar no sistema as seis seções e os campos do PDF briefing.
+- [x] Pré-preencher empresa, responsável e data a partir do lead selecionado.
+- [x] Permitir abrir o formulário pela ação `Gerar briefing` dentro do lead.
+- [x] Salvar e atualizar o documento no mesmo registro privado do lead.
+- [x] Exibir na lista se o briefing está pendente ou preenchido.
+- [x] Fazer `Iniciar conversa` abrir diretamente o WhatsApp.
+- [x] Disponibilizar o PDF modelo em `public/briefing-modelo.pdf`.

@@ -55,6 +55,31 @@ export async function saveLead(input: LeadInput) {
   return lead;
 }
 
+export async function updateLeadBriefing(
+  leadId: string,
+  briefing: Lead["briefing"]
+) {
+  assertStorageConfigured();
+  const pathname = `${LEADS_PREFIX}${leadId}.json`;
+  const lead = await readLead(pathname);
+  if (!lead) throw new Error("Lead não encontrado.");
+
+  const updatedLead: Lead = {
+    ...lead,
+    briefing,
+    briefingUpdatedAt: Date.now(),
+  };
+
+  await put(pathname, JSON.stringify(updatedLead), {
+    access: "private",
+    contentType: "application/json",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+
+  return updatedLead;
+}
+
 async function readLead(pathname: string) {
   const result = await get(pathname, { access: "private", useCache: false });
   if (!result || result.statusCode !== 200) return null;

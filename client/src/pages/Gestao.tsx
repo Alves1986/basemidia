@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   CalendarDays,
   ChevronRight,
+  FilePenLine,
   CircleAlert,
   FileText,
   LayoutDashboard,
@@ -21,6 +22,7 @@ import {
 import { useLocation } from "wouter";
 import officialLogo from "../assets/base-midia-logo.svg";
 import type { Lead } from "@shared/leads";
+import StrategicBriefingForm from "../components/StrategicBriefingForm";
 
 interface AuthState {
   authenticated?: boolean;
@@ -62,6 +64,7 @@ export default function Gestao() {
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [briefingLead, setBriefingLead] = useState<Lead | null>(null);
   const [error, setError] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -156,6 +159,14 @@ export default function Gestao() {
   async function handleLogout() {
     await fetch("/api/auth", { method: "DELETE", credentials: "same-origin" });
     navigate("/auth");
+  }
+
+  function handleBriefingSaved(updatedLead: Lead) {
+    setLeads(current =>
+      current.map(lead => (lead.id === updatedLead.id ? updatedLead : lead))
+    );
+    setSelectedLead(updatedLead);
+    setBriefingLead(null);
   }
 
   if (checkingSession) {
@@ -356,6 +367,7 @@ export default function Gestao() {
                       <th>Lead</th>
                       <th>Segmento</th>
                       <th>Anúncios</th>
+                      <th>Briefing</th>
                       <th>Recebido em</th>
                       <th>
                         <span className="sr-only">Abrir</span>
@@ -383,6 +395,14 @@ export default function Gestao() {
                           <span className="lead-ads">{lead.ads}</span>
                         </td>
                         <td>
+                          <span
+                            className={`briefing-status ${lead.briefing ? "is-ready" : ""}`}
+                          >
+                            <FilePenLine size={13} />{" "}
+                            {lead.briefing ? "Preenchido" : "Pendente"}
+                          </span>
+                        </td>
+                        <td>
                           <span className="lead-date">
                             {formatDate(lead.createdAt)}
                           </span>
@@ -408,6 +428,15 @@ export default function Gestao() {
           </section>
         </div>
       </section>
+
+      {briefingLead && user && (
+        <StrategicBriefingForm
+          lead={briefingLead}
+          adminEmail={user.email}
+          onClose={() => setBriefingLead(null)}
+          onSaved={handleBriefingSaved}
+        />
+      )}
 
       {selectedLead && (
         <div
@@ -472,10 +501,18 @@ export default function Gestao() {
             <div className="lead-modal-footer">
               <a
                 className="primary-cta"
-                href={`mailto:${selectedLead.email}?subject=Sobre seu diagnóstico na BASE MÍDIA`}
+                href={whatsappUrl(selectedLead.whatsapp)}
+                target="_blank"
+                rel="noreferrer"
               >
-                Iniciar conversa <ArrowUpRight size={17} />
+                Iniciar conversa no WhatsApp <MessageCircle size={17} />
               </a>
+              <button
+                className="admin-secondary-button"
+                onClick={() => setBriefingLead(selectedLead)}
+              >
+                <FilePenLine size={15} /> Gerar briefing
+              </button>
               <button
                 className="admin-secondary-button"
                 onClick={() => setSelectedLead(null)}
