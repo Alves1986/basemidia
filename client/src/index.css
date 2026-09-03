@@ -4498,3 +4498,58 @@ h1 em {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* ── Force Light Theme (White Background) for Briefing Workspace (Admin View) ── */
+.briefing-workspace {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+.briefing-form {
+  background: #ffffff !important;
+}
+.briefing-form-hero {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+.briefing-form-hero h2,
+.briefing-form-hero p,
+.briefing-form-hero em,
+.briefing-form-eyebrow,
+.briefing-section-heading h3,
+.briefing-section-heading .section-index,
+.briefing-field strong,
+.briefing-field small,
+.section-index,
+.briefing-progress-card span,
+.briefing-progress-card strong,
+.briefing-progress-card small,
+.briefing-analysis-note p,
+.briefing-analysis-note h4 {
+  color: #111111 !important;
+}
+.briefing-field input,
+.briefing-field textarea {
+  background: #f9f9f9 !important;
+  color: #000000 !important;
+  border: 1px solid #cccccc !important;
+}
+.briefing-field input:focus,
+.briefing-field textarea:focus {
+  border-color: #38ff14 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+.briefing-section-heading {
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+.briefing-form-section {
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+.briefing-progress-bar {
+  background: #e0e0e0 !important;
+}
+.briefing-workspace-topbar {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #333 !important;
+}
