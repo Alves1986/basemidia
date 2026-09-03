@@ -1,5 +1,6 @@
 import { getAuthenticatedAdmin, jsonResponse } from "./_lib/auth.js";
 import { getLeadById, saveLeadAnalysis } from "./_lib/leads.js";
+import { getOperationSettings } from "./_lib/operation.js";
 import {
   sendWebResponse,
   toWebRequest,
@@ -48,8 +49,8 @@ const analysisSchema = {
   additionalProperties: false,
 } as const;
 
-function openRouterConfig() {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+function openRouterConfig(settingsKey?: string) {
+  const apiKey = settingsKey || process.env.OPENROUTER_API_KEY;
   if (!apiKey) return null;
   return {
     apiKey,
@@ -132,7 +133,8 @@ export default async function handler(
       jsonResponse({ error: "Informe o lead para analisar." }, { status: 400 }),
       response
     );
-  const config = openRouterConfig();
+  const settings = await getOperationSettings();
+  const config = openRouterConfig(settings.openRouterApiKey);
   if (!config)
     return sendWebResponse(
       jsonResponse(

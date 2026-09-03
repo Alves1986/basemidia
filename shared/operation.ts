@@ -19,6 +19,7 @@ export interface OperationSettings {
   stages: FunnelStageSettings[];
   messages: OperationMessageSettings;
   defaultFollowUpDays: number;
+  openRouterApiKey?: string;
 }
 
 export interface StrategicAnalysis {
@@ -92,4 +93,5 @@ export const defaultOperationSettings: OperationSettings = {
       "Olá, {{nome}}! Retomando nossa conversa sobre {{objetivo}}. Posso te ajudar a avançar com esse plano?",
   },
   defaultFollowUpDays: 2,
+  openRouterApiKey: "",
 };

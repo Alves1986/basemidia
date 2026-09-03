@@ -81,6 +81,7 @@ function parseSettings(value: unknown): OperationSettings {
       source.defaultFollowUpDays <= 90
         ? source.defaultFollowUpDays
         : defaults.defaultFollowUpDays,
+    openRouterApiKey: cleanText(source.openRouterApiKey, 200, defaults.openRouterApiKey ?? ""),
   };
 }
 

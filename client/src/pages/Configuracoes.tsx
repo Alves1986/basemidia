@@ -286,6 +286,37 @@ export default function Configuracoes() {
               ))}
             </div>
           </section>
+          <section className="settings-card" id="ia">
+            <div className="admin-section-head">
+              <div>
+                <span className="section-index">/ 03 — INTELIGÊNCIA ARTIFICIAL</span>
+                <h2>Leitura Estratégica (OpenRouter)</h2>
+              </div>
+            </div>
+            <p className="settings-intro">
+              Para habilitar o diagnóstico gerado por IA nos briefings, cole sua 
+              chave de API do <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" style={{color: "var(--acid)", textDecoration: "underline"}}>OpenRouter</a> abaixo. 
+              Deixe em branco para usar a chave configurada no servidor (se houver).
+            </p>
+            <div className="settings-message-grid" style={{ marginTop: "20px" }}>
+              <label>
+                OpenRouter API Key
+                <input
+                  type="password"
+                  value={settings.openRouterApiKey ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      openRouterApiKey: event.target.value,
+                    }));
+                  }}
+                  placeholder="sk-or-v1-..."
+                  maxLength={200}
+                />
+              </label>
+            </div>
+          </section>
           <div className="settings-actions">
             <button
               className="primary-cta"
