@@ -91,6 +91,16 @@ function parseSettings(value: unknown): OperationSettings {
       200,
       defaults.openRouterModel ?? "google/gemini-2.5-flash"
     ),
+    agencySettings: source.agencySettings
+      ? {
+          name: cleanText(source.agencySettings.name, 150, defaults.agencySettings?.name ?? ""),
+          cnpj: cleanText(source.agencySettings.cnpj, 30, defaults.agencySettings?.cnpj ?? ""),
+          address: cleanText(source.agencySettings.address, 250, defaults.agencySettings?.address ?? ""),
+          legalRepresentative: cleanText(source.agencySettings.legalRepresentative, 150, defaults.agencySettings?.legalRepresentative ?? ""),
+          email: cleanText(source.agencySettings.email, 150, defaults.agencySettings?.email ?? ""),
+          forumCity: cleanText(source.agencySettings.forumCity, 100, defaults.agencySettings?.forumCity ?? ""),
+        }
+      : defaults.agencySettings,
   };
 }
 
