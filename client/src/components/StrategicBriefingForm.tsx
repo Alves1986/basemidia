@@ -160,20 +160,12 @@ export default function StrategicBriefingForm({
     });
 
     try {
-      const { getHtml2Pdf } = await import("../lib/pdfUtils");
-      const html2pdf = await getHtml2Pdf();
-      
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `briefing_${lead.companyName || lead.name}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], before: '.section-break', avoid: '.briefing-field' }
-      };
-      
-      // @ts-ignore
-      await html2pdf().set(opt).from(formEl).save();
+      const { exportPdfSmartBreaks } = await import("../lib/exportPdfSmartBreaks");
+      await exportPdfSmartBreaks({
+        element: formEl,
+        fileName: `briefing_${lead.companyName || lead.name}.pdf`,
+        atomicSelector: ".briefing-field, .briefing-section-heading, .briefing-form-hero",
+      });
     } catch (e) {
       console.error("Error generating PDF", e);
       toast.error("Erro ao gerar PDF.");
@@ -271,7 +263,7 @@ export default function StrategicBriefingForm({
             </div>
           </div>
 
-          <section className="briefing-form-section briefing-general-section section-break">
+          <section className="briefing-form-section briefing-general-section">
             <div className="briefing-section-heading">
               <span className="briefing-section-number">◆</span>
               <div>
@@ -292,7 +284,7 @@ export default function StrategicBriefingForm({
           </section>
 
           {strategicBriefingSections.map(section => (
-            <section className="briefing-form-section section-break" key={section.number}>
+            <section className="briefing-form-section" key={section.number}>
               <div className="briefing-section-heading">
                 <span className="briefing-section-number">
                   {section.number}
