@@ -160,17 +160,9 @@ export default function Home() {
           <a href="#metodo" onClick={() => setMenuOpen(false)}>
             Como funciona
           </a>
-          <button className="nav-link-button" onClick={openDiagnostic}>
-            Diagnóstico
+          <button className="nav-cta" onClick={openDiagnostic}>
+            Diagnóstico gratuito <ArrowUpRight size={15} />
           </button>
-          <a 
-            className="nav-cta" 
-            href="https://wa.me/5511999999999?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20conversa." 
-            target="_blank" 
-            rel="noreferrer"
-          >
-            Agendar conversa <ArrowUpRight size={15} />
-          </a>
         </div>
         <button
           className="menu-toggle"
