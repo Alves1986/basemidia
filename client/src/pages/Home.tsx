@@ -608,10 +608,6 @@ export default function Home() {
           />
           <p>Planejamento antes da execução.</p>
         </div>
-        <div className="footer-contact">
-          <span>FALE COM A BASE</span>
-          <a href="mailto:contato@basemidia.com.br">contato@basemidia.com.br</a>
-        </div>
         <div className="footer-meta">
           <a className="footer-admin-link" href="/auth">
             Área restrita <ArrowUpRight size={12} />
