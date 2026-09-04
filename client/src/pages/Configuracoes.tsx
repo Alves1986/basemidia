@@ -135,8 +135,8 @@ export default function Configuracoes() {
         </nav>
         <div className="admin-sidebar-foot">
           <button
-            onClick={() => {
-              localStorage.removeItem("adminAuth");
+            onClick={async () => {
+              await fetch("/api/auth", { method: "DELETE", credentials: "same-origin" });
               navigate("/auth");
             }}
             className="admin-logout-button"
@@ -166,8 +166,8 @@ export default function Configuracoes() {
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             <button
-              onClick={() => {
-                localStorage.removeItem("adminAuth");
+              onClick={async () => {
+                await fetch("/api/auth", { method: "DELETE", credentials: "same-origin" });
                 navigate("/auth");
               }}
               className="danger-button mobile-only-inline"
