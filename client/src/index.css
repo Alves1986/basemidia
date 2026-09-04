@@ -2749,10 +2749,21 @@ h1 em {
 }
 .lead-modal-footer {
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 29px;
+  width: 100%;
+}
+.footer-main-actions,
+.footer-secondary-actions {
+  display: flex;
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
-  margin-top: 29px;
+  width: 100%;
+}
+.footer-secondary-actions {
+  justify-content: space-between;
 }
 .lead-modal-footer .primary-cta {
   width: auto;

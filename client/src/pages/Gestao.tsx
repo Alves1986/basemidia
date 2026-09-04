@@ -852,17 +852,18 @@ export default function Gestao() {
               </button>
             </section>
             <div className="lead-modal-footer">
-              <a
-                className="primary-cta"
-                href={whatsappUrl(
-                  selectedLead.whatsapp,
-                  whatsappGreeting(selectedLead, operationSettings)
-                )}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Iniciar conversa no WhatsApp <MessageCircle size={17} />
-              </a>
+              <div className="footer-main-actions">
+                <a
+                  className="primary-cta"
+                  href={whatsappUrl(
+                    selectedLead.whatsapp,
+                    whatsappGreeting(selectedLead, operationSettings)
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Iniciar conversa no WhatsApp <MessageCircle size={17} />
+                </a>
               <button
                 className="admin-secondary-button"
                 onClick={() => {
@@ -885,19 +886,23 @@ export default function Gestao() {
               >
                 <Link size={15} /> Enviar link do briefing
               </button>
-              <button
-                className="admin-secondary-button"
-                onClick={() => setSelectedLead(null)}
-              >
-                <ArrowLeft size={15} /> Voltar para a lista
-              </button>
-              <button
-                className="danger-button"
-                type="button"
-                onClick={() => setDeleteConfirmationOpen(true)}
-              >
-                <Trash2 size={15} /> Excluir duplicado
-              </button>
+                </button>
+              </div>
+              <div className="footer-secondary-actions">
+                <button
+                  className="admin-secondary-button"
+                  onClick={() => setSelectedLead(null)}
+                >
+                  <ArrowLeft size={15} /> Voltar para a lista
+                </button>
+                <button
+                  className="danger-button"
+                  type="button"
+                  onClick={() => setDeleteConfirmationOpen(true)}
+                >
+                  <Trash2 size={15} /> Excluir duplicado
+                </button>
+              </div>
             </div>
             {deleteConfirmationOpen && (
               <div className="delete-confirm">
