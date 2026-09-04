@@ -31,6 +31,7 @@ export interface OperationSettings {
   openRouterApiKey?: string;
   openRouterModel?: string;
   agencySettings?: AgencySettings;
+  googlePixelId?: string;
 }
 
 export interface StrategicAnalysis {

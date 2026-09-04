@@ -101,6 +101,11 @@ function parseSettings(value: unknown): OperationSettings {
           forumCity: cleanText(source.agencySettings.forumCity, 100, defaults.agencySettings?.forumCity ?? ""),
         }
       : defaults.agencySettings,
+    googlePixelId: cleanText(
+      source.googlePixelId,
+      50,
+      defaults.googlePixelId ?? ""
+    ),
   };
 }
 

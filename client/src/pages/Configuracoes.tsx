@@ -400,11 +400,47 @@ export default function Configuracoes() {
             </div>
           </section>
           
+          <section className="settings-card" id="analytics">
+            <div className="admin-section-head">
+              <div>
+                <span className="section-index">
+                  / 04 — RASTREAMENTO
+                </span>
+                <h2>Google Analytics / Tag Manager</h2>
+              </div>
+            </div>
+            <p className="settings-intro">
+              Cole abaixo o seu ID de rastreamento (ex: G-XXXXXXXXXX, GTM-XXXXXX ou AW-XXXXXX)
+              para instalar o pixel nas páginas públicas de captação de leads.
+            </p>
+            <div
+              className="settings-message-grid"
+              style={{ marginTop: "20px" }}
+            >
+              <label>
+                Tracking ID
+                <input
+                  type="text"
+                  value={settings.googlePixelId ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      googlePixelId: event.target.value,
+                    }));
+                  }}
+                  placeholder="G-..."
+                  maxLength={50}
+                />
+              </label>
+            </div>
+          </section>
+
           <section className="settings-card" id="contratos">
             <div className="admin-section-head">
               <div>
                 <span className="section-index">
-                  / 04 — CONTRATOS
+                  / 05 — CONTRATOS
                 </span>
                 <h2>Dados Base da Agência</h2>
               </div>

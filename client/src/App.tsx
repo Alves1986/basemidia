@@ -12,6 +12,8 @@ import Configuracoes from "./pages/Configuracoes";
 import ClientBriefing from "./pages/ClientBriefing";
 import ClientContract from "./pages/ClientContract";
 
+import GoogleTracking from "./components/GoogleTracking";
+
 function Router() {
   return (
     <Switch>
@@ -33,6 +35,7 @@ export default function App() {
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster theme="dark" />
+          <GoogleTracking />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
