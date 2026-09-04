@@ -168,7 +168,8 @@ export default function StrategicBriefingForm({
         filename: `briefing_${lead.companyName || lead.name}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], before: '.section-break', avoid: '.briefing-field' }
       };
       
       // @ts-ignore
@@ -270,7 +271,7 @@ export default function StrategicBriefingForm({
             </div>
           </div>
 
-          <section className="briefing-form-section briefing-general-section">
+          <section className="briefing-form-section briefing-general-section section-break">
             <div className="briefing-section-heading">
               <span className="briefing-section-number">◆</span>
               <div>
@@ -291,7 +292,7 @@ export default function StrategicBriefingForm({
           </section>
 
           {strategicBriefingSections.map(section => (
-            <section className="briefing-form-section" key={section.number}>
+            <section className="briefing-form-section section-break" key={section.number}>
               <div className="briefing-section-heading">
                 <span className="briefing-section-number">
                   {section.number}

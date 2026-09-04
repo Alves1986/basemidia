@@ -570,6 +570,44 @@ export default function Configuracoes() {
             </div>
           </section>
 
+          <section className="settings-card">
+            <h3>Modelo de Contrato (Markdown)</h3>
+            <p className="settings-desc" style={{ marginBottom: "15px" }}>
+              Escreva o contrato padrão usando formatação Markdown. Você pode utilizar as variáveis abaixo que serão preenchidas automaticamente ao gerar o contrato para um lead:
+              <br />
+              <br />
+              <strong>Variáveis disponíveis:</strong><br/>
+              <code>{"{{AGENCIA_NOME}}"}</code>, <code>{"{{AGENCIA_CNPJ}}"}</code>, <code>{"{{AGENCIA_ENDERECO}}"}</code>, <code>{"{{AGENCIA_REPRESENTANTE}}"}</code>, <code>{"{{AGENCIA_EMAIL}}"}</code>, <code>{"{{FORO_COMARCA}}"}</code><br/>
+              <code>{"{{CLIENTE_NOME}}"}</code>, <code>{"{{CLIENTE_CNPJ_CPF}}"}</code>, <code>{"{{CLIENTE_ENDERECO}}"}</code>, <code>{"{{CLIENTE_EMAIL}}"}</code><br/>
+              <code>{"{{DESCRICAO_SERVICO}}"}</code>, <code>{"{{VALOR_MENSAL}}"}</code>, <code>{"{{VALOR_SETUP}}"}</code>, <code>{"{{DURACAO_MESES}}"}</code>, <code>{"{{CONDICOES_PAGAMENTO}}"}</code>, <code>{"{{DIA_VENCIMENTO}}"}</code>
+            </p>
+            <div className="settings-grid" style={{ gridTemplateColumns: "1fr" }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                Conteúdo do Contrato (Markdown)
+                <textarea
+                  style={{
+                    minHeight: "400px",
+                    padding: "12px",
+                    fontFamily: "monospace",
+                    borderRadius: "6px",
+                    border: "1px solid var(--border)",
+                    backgroundColor: "var(--background)",
+                    color: "var(--text)",
+                    resize: "vertical"
+                  }}
+                  value={settings.contractTemplateMd ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      contractTemplateMd: event.target.value,
+                    }));
+                  }}
+                  placeholder="# CONTRATO DE PRESTAÇÃO DE SERVIÇOS&#10;&#10;Entre {{AGENCIA_NOME}} e {{CLIENTE_NOME}}..."
+                />
+              </label>
+            </div>
+          </section>
           <div className="settings-actions">
             <button
               className="primary-cta"

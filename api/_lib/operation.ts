@@ -112,6 +112,7 @@ function parseSettings(value: unknown): OperationSettings {
           .map((s) => s.trim())
           .slice(0, 50)
       : defaults.customSegments || [],
+    contractTemplateMd: typeof source.contractTemplateMd === "string" ? source.contractTemplateMd : defaults.contractTemplateMd,
   };
 }
 

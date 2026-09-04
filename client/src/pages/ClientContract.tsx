@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "wouter";
 import { ShieldCheck, Loader2, Download, AlertTriangle } from "lucide-react";
 import type { Lead } from "@shared/leads";
+import { marked } from "marked";
 
 export default function ClientContract() {
   const { leadId } = useParams<{ leadId: string }>();
@@ -116,7 +117,7 @@ export default function ClientContract() {
            </div>
         </div>
 
-        <div className="bg-white text-black p-8 sm:p-12 rounded shadow-2xl text-[13px] sm:text-[14px] leading-relaxed relative print:shadow-none print:p-0" id="contract-content">
+        <div className="bg-white text-black p-8 sm:p-12 rounded shadow-2xl text-[13px] sm:text-[14px] leading-relaxed relative print:shadow-none print:p-0 contract-preview-wrapper" id="contract-content">
            <style>{`
              @media print {
                body * { visibility: hidden; }
@@ -124,7 +125,16 @@ export default function ClientContract() {
                #contract-content { position: absolute; left: 0; top: 0; width: 100%; padding: 2cm; background: white; }
                .print\\:hidden { display: none !important; }
              }
+             .contract-preview-wrapper h1 { font-size: 1.25rem; font-weight: bold; margin-bottom: 1.5rem; text-align: center; text-transform: uppercase; }
+             .contract-preview-wrapper h2 { font-size: 1rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+             .contract-preview-wrapper p { margin-bottom: 1rem; text-align: justify; }
+             .contract-preview-wrapper strong { font-weight: bold; }
            `}</style>
+           
+           {/* Logotipo discreto no topo */}
+           <div className="flex justify-center mb-8">
+             <img src="/branding/logo_base.jpg" alt="Logo" className="h-10 opacity-40 grayscale" />
+           </div>
 
            {!isSignedByAgency && (
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 print:hidden rounded">
@@ -136,45 +146,31 @@ export default function ClientContract() {
               </div>
            )}
 
-           <h1 className="text-center font-bold text-lg mb-8 uppercase">INSTRUMENTO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS DE {contract.serviceDescription?.toUpperCase()}</h1>
-           
-           <p className="mb-4 text-justify">
-             Pelo presente instrumento particular, de um lado, <strong>{contract.agencyName}</strong>, inscrita no CNPJ sob o nº {contract.agencyCnpj}, sediada em {contract.agencyAddress}, neste ato representada por {contract.agencyRepresentative}, doravante denominada <strong>CONTRATADA</strong>, e, de outro lado, <strong>{contract.clientName}</strong>, inscrito(a) no CPF/CNPJ sob o nº {contract.clientCnpjCpf}, com endereço em {contract.clientAddress}, doravante denominado(a) <strong>CONTRATANTE</strong>.
-           </p>
-
-           <h2 className="font-bold mt-6 mb-2">CLÁUSULA 1 - DO OBJETO</h2>
-           <p className="mb-4 text-justify">
-             O presente contrato tem por objeto a prestação, pela CONTRATADA à CONTRATANTE, de serviços especializados de <strong>{contract.serviceDescription}</strong>, focados em estratégia digital, criação de campanhas, monitoramento e otimização de anúncios em plataformas digitais conforme escopo acordado entre as partes.
-           </p>
-
-           <h2 className="font-bold mt-6 mb-2">CLÁUSULA 2 - DAS OBRIGAÇÕES DA CONTRATADA</h2>
-           <p className="mb-4 text-justify">
-             Compete à CONTRATADA: a) Planejar, executar e monitorar as campanhas de anúncios; b) Fornecer relatórios periódicos de desempenho; c) Prestar o serviço com zelo e diligência, aplicando as melhores práticas de mercado. A CONTRATADA atua em regime de meios (prestação do serviço de gestão) e não de garantia de resultados (faturamento).
-           </p>
-
-           <h2 className="font-bold mt-6 mb-2">CLÁUSULA 3 - DAS OBRIGAÇÕES DA CONTRATANTE</h2>
-           <p className="mb-4 text-justify">
-             Compete à CONTRATANTE: a) Fornecer todas as informações, materiais (criativos, fotos, vídeos) e acessos necessários em tempo hábil; b) Arcar diretamente com os custos de veiculação (orçamento de mídia) cobrados pelas plataformas de anúncios; c) Efetuar o pagamento dos honorários da CONTRATADA nas datas estipuladas.
-           </p>
-
-           <h2 className="font-bold mt-6 mb-2">CLÁUSULA 4 - DA REMUNERAÇÃO E FORMA DE PAGAMENTO</h2>
-           <p className="mb-4 text-justify">
-             Pelos serviços prestados, a CONTRATANTE pagará à CONTRATADA:
-             <br />- <strong>Investimento Mensal (Honorários):</strong> {contract.investmentValue}
-             {contract.setupValue && contract.setupValue !== "R$ 0,00" && <><br />- <strong>Taxa de Setup:</strong> {contract.setupValue}</>}
-             <br />- <strong>Vencimento:</strong> Todo dia {contract.paymentDay} de cada mês.
-             <br />- <strong>Condições:</strong> {contract.paymentConditions}.
-           </p>
-
-           <h2 className="font-bold mt-6 mb-2">CLÁUSULA 5 - DA VIGÊNCIA E RESCISÃO</h2>
-           <p className="mb-4 text-justify">
-             O presente contrato entra em vigor na data de sua assinatura, com validade de <strong>{contract.durationMonths} meses</strong>, renovando-se automaticamente por prazos iguais e sucessivos caso não haja manifestação em contrário. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio por escrito de 30 dias.
-           </p>
-
-           <h2 className="font-bold mt-6 mb-2">CLÁUSULA 6 - DO FORO</h2>
-           <p className="mb-8 text-justify">
-             Fica eleito o foro da comarca de {contract.forumCity} para dirimir quaisquer dúvidas oriundas deste contrato.
-           </p>
+           {contract.markdownTemplate ? (
+             <div dangerouslySetInnerHTML={{
+               __html: marked.parse(
+                 contract.markdownTemplate
+                   .replace(/{{AGENCIA_NOME}}/g, contract.agencyName || "")
+                   .replace(/{{AGENCIA_CNPJ}}/g, contract.agencyCnpj || "")
+                   .replace(/{{AGENCIA_ENDERECO}}/g, contract.agencyAddress || "")
+                   .replace(/{{AGENCIA_REPRESENTANTE}}/g, contract.agencyRepresentative || "")
+                   .replace(/{{AGENCIA_EMAIL}}/g, contract.agencyEmail || "")
+                   .replace(/{{FORO_COMARCA}}/g, contract.forumCity || "")
+                   .replace(/{{CLIENTE_NOME}}/g, contract.clientName || "")
+                   .replace(/{{CLIENTE_CNPJ_CPF}}/g, contract.clientCnpjCpf || "")
+                   .replace(/{{CLIENTE_ENDERECO}}/g, contract.clientAddress || "")
+                   .replace(/{{CLIENTE_EMAIL}}/g, contract.clientEmail || "")
+                   .replace(/{{DESCRICAO_SERVICO}}/g, contract.serviceDescription || "")
+                   .replace(/{{VALOR_MENSAL}}/g, contract.investmentValue || "")
+                   .replace(/{{VALOR_SETUP}}/g, contract.setupValue || "")
+                   .replace(/{{DURACAO_MESES}}/g, contract.durationMonths || "")
+                   .replace(/{{CONDICOES_PAGAMENTO}}/g, contract.paymentConditions || "")
+                   .replace(/{{DIA_VENCIMENTO}}/g, contract.paymentDay || "")
+               ) as string
+             }} />
+           ) : (
+             <div className="text-center text-gray-500 py-10">O contrato não possui um formato definido.</div>
+           )}
 
            <div className="mt-12 pt-8 border-t border-gray-300">
               <h3 className="font-bold text-center mb-6">ASSINATURAS DIGITAIS REGISTRADAS</h3>

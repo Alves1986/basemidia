@@ -82,6 +82,9 @@ export interface Contract {
   paymentConditions: string;
   paymentDay: string;
   forumCity: string;
+  
+  markdownTemplate?: string;
+
   status: "draft" | "signed_by_agency" | "signed_by_client";
   agencySignatureDate?: number;
   clientSignatureDate?: number;

@@ -33,6 +33,7 @@ export interface OperationSettings {
   agencySettings?: AgencySettings;
   googlePixelId?: string;
   customSegments?: string[];
+  contractTemplateMd?: string;
 }
 
 export interface StrategicAnalysis {
