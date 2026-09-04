@@ -226,7 +226,8 @@ async function handleClientGetLead(request: Request, body: unknown) {
     );
   }
 
-  const source = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+  const source =
+    body && typeof body === "object" ? (body as Record<string, unknown>) : {};
   const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
   if (!leadId) {
     return jsonResponse({ error: "Lead ID é obrigatório." }, { status: 400 });
@@ -273,7 +274,7 @@ async function handleClientSaveBriefing(request: Request, body: unknown) {
   const source = body as Record<string, unknown>;
   const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
   const briefing = normalizeBriefing(source.briefing);
-  
+
   if (!leadId || !briefing) {
     return jsonResponse(
       { error: "Revise os campos do briefing antes de salvar." },

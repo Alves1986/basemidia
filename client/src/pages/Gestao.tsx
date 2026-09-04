@@ -39,6 +39,7 @@ import StrategicAIAssistant from "../components/StrategicAIAssistant";
 import {
   defaultOperationSettings,
   type OperationSettings,
+  type StrategicAnalysis,
 } from "@shared/operation";
 
 interface AuthState {
@@ -886,7 +887,6 @@ export default function Gestao() {
               >
                 <Link size={15} /> Enviar link do briefing
               </button>
-                </button>
               </div>
               <div className="footer-secondary-actions">
                 <button

@@ -22,7 +22,10 @@ function openRouterConfig(settingsKey?: string, settingsModel?: string) {
     baseUrl: (
       process.env.OPENROUTER_API_BASE_URL || "https://openrouter.ai/api/v1"
     ).replace(/\/$/, ""),
-    model: settingsModel || process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
+    model:
+      settingsModel ||
+      process.env.OPENROUTER_MODEL ||
+      "google/gemini-2.5-flash",
   };
 }
 
@@ -49,18 +52,24 @@ export default async function handler(
       jsonResponse({ error: "Acesso restrito." }, { status: 401 }),
       response
     );
-  const body = await readBody(webRequest) as any;
+  const body = (await readBody(webRequest)) as any;
   const leadId = typeof body?.leadId === "string" ? body.leadId.trim() : "";
   const messages = Array.isArray(body?.messages) ? body.messages : [];
-  
+
   if (!leadId || messages.length === 0)
     return sendWebResponse(
-      jsonResponse({ error: "Informe o lead e as mensagens." }, { status: 400 }),
+      jsonResponse(
+        { error: "Informe o lead e as mensagens." },
+        { status: 400 }
+      ),
       response
     );
-    
+
   const settings = await getOperationSettings();
-  const config = openRouterConfig(settings.openRouterApiKey, settings.openRouterModel);
+  const config = openRouterConfig(
+    settings.openRouterApiKey,
+    settings.openRouterModel
+  );
   if (!config)
     return sendWebResponse(
       jsonResponse(
@@ -92,10 +101,10 @@ export default async function handler(
       briefing: lead.briefing,
       strategicAnalysis: lead.strategicAnalysis,
     });
-    
+
     const systemMessage = {
       role: "system",
-      content: `Você é estrategista sênior e copywriter da BASE MÍDIA. Você está conversando com o gestor de tráfego (usuário) sobre o seguinte lead:\n${prompt}\n\nAjude o gestor a criar anúncios, quebrar objeções, e planejar a campanha. Seja prático, direto e escreva copies persuasivas quando solicitado.`
+      content: `Você é estrategista sênior e copywriter da BASE MÍDIA. Você está conversando com o gestor de tráfego (usuário) sobre o seguinte lead:\n${prompt}\n\nAjude o gestor a criar anúncios, quebrar objeções, e planejar a campanha. Seja prático, direto e escreva copies persuasivas quando solicitado.`,
     };
 
     const upstream = await fetch(`${config.baseUrl}/chat/completions`, {
@@ -115,15 +124,16 @@ export default async function handler(
       }),
       signal: AbortSignal.timeout(45000), // longer timeout for chat
     });
-    
-    if (!upstream.ok) throw new Error(`OpenRouter respondeu ${upstream.status}`);
+
+    if (!upstream.ok)
+      throw new Error(`OpenRouter respondeu ${upstream.status}`);
     const payload = (await upstream.json()) as {
-      choices?: Array<{ message?: { content?: string, role?: string } }>;
+      choices?: Array<{ message?: { content?: string; role?: string } }>;
     };
-    
+
     const replyMessage = payload.choices?.[0]?.message;
     if (!replyMessage?.content) throw new Error("Resposta de IA vazia");
-    
+
     return sendWebResponse(
       jsonResponse({ success: true, message: replyMessage }),
       response
@@ -132,7 +142,10 @@ export default async function handler(
     console.error("[Chat] Falha ao processar mensagem", error);
     return sendWebResponse(
       jsonResponse(
-        { error: "Não foi possível processar a mensagem agora. Tente novamente." },
+        {
+          error:
+            "Não foi possível processar a mensagem agora. Tente novamente.",
+        },
         { status: 502 }
       ),
       response

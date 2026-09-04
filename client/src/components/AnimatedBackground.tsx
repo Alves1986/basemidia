@@ -41,10 +41,9 @@ export default function AnimatedBackground() {
       }
 
       draw() {
-        if (!ctx) return;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(56, 255, 20, 0.4)"; // Base Midia green
+        ctx.fillStyle = "rgba(56, 255, 20, 0.4)";
         ctx.fill();
       }
     }
@@ -107,7 +106,7 @@ export default function AnimatedBackground() {
         height: "100%",
         pointerEvents: "none",
         zIndex: 0,
-        opacity: 0.25, // Subtle effect
+        opacity: 0.25,
       }}
     />
   );

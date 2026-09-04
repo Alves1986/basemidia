@@ -289,16 +289,30 @@ export default function Configuracoes() {
           <section className="settings-card" id="ia">
             <div className="admin-section-head">
               <div>
-                <span className="section-index">/ 03 — INTELIGÊNCIA ARTIFICIAL</span>
+                <span className="section-index">
+                  / 03 — INTELIGÊNCIA ARTIFICIAL
+                </span>
                 <h2>Leitura Estratégica (OpenRouter)</h2>
               </div>
             </div>
             <p className="settings-intro">
-              Para habilitar o diagnóstico gerado por IA nos briefings, cole sua 
-              chave de API do <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" style={{color: "var(--acid)", textDecoration: "underline"}}>OpenRouter</a> abaixo. 
-              Deixe em branco para usar a chave configurada no servidor (se houver).
+              Para habilitar o diagnóstico gerado por IA nos briefings, cole sua
+              chave de API do{" "}
+              <a
+                href="https://openrouter.ai/keys"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: "var(--acid)", textDecoration: "underline" }}
+              >
+                OpenRouter
+              </a>{" "}
+              abaixo. Deixe em branco para usar a chave configurada no servidor
+              (se houver).
             </p>
-            <div className="settings-message-grid" style={{ marginTop: "20px" }}>
+            <div
+              className="settings-message-grid"
+              style={{ marginTop: "20px" }}
+            >
               <label>
                 OpenRouter API Key
                 <input
@@ -327,12 +341,24 @@ export default function Configuracoes() {
                     }));
                   }}
                 >
-                  <option value="google/gemini-2.5-flash">Gemini 2.5 Flash (Rápido e Inteligente)</option>
-                  <option value="google/gemini-2.5-pro">Gemini 2.5 Pro (Avançado)</option>
-                  <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (Excelente em Copywriting)</option>
-                  <option value="openai/gpt-4o-mini">GPT-4o Mini (Ótimo Custo Benefício)</option>
-                  <option value="openai/gpt-4o">GPT-4o (Máxima Qualidade)</option>
-                  <option value="openrouter/free">Modelos Gratuitos (Pode falhar)</option>
+                  <option value="google/gemini-2.5-flash">
+                    Gemini 2.5 Flash (Rápido e Inteligente)
+                  </option>
+                  <option value="google/gemini-2.5-pro">
+                    Gemini 2.5 Pro (Avançado)
+                  </option>
+                  <option value="anthropic/claude-3.5-sonnet">
+                    Claude 3.5 Sonnet (Excelente em Copywriting)
+                  </option>
+                  <option value="openai/gpt-4o-mini">
+                    GPT-4o Mini (Ótimo Custo Benefício)
+                  </option>
+                  <option value="openai/gpt-4o">
+                    GPT-4o (Máxima Qualidade)
+                  </option>
+                  <option value="openrouter/free">
+                    Modelos Gratuitos (Pode falhar)
+                  </option>
                 </select>
               </label>
             </div>

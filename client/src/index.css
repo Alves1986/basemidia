@@ -1,8 +1,9 @@
 /* Design: Dark Performance Lab â€” fundo #101010, verde Ã¡cido #38FF14, estrutura assimÃ©trica, sinais de dados e motion curto. */
 @import "tailwindcss";
 @import "tw-animate-css";
-@custom-variant dark (&:is(.dark *));/* AI Chat Assistant */
-.ai-intro-state, .ai-active-state {
+@custom-variant dark (&:is(.dark *)); /* AI Chat Assistant */
+.ai-intro-state,
+.ai-active-state {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -643,8 +644,13 @@ h1 em {
   margin-top: 8px;
 }
 @keyframes barBounce {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(0.7); }
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.7);
+  }
 }
 .mini-bars i {
   display: block;
@@ -4482,7 +4488,8 @@ h1 em {
   flex-direction: column;
   gap: 20px;
 }
-.cb-grid label, .cb-grid-full label {
+.cb-grid label,
+.cb-grid-full label {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -4493,7 +4500,9 @@ h1 em {
 .cb-grid .span-full {
   grid-column: 1 / -1;
 }
-.cb-grid input, .cb-grid-full input, .cb-grid-full textarea {
+.cb-grid input,
+.cb-grid-full input,
+.cb-grid-full textarea {
   background: #1a1a1a;
   border: 1px solid rgba(240, 240, 240, 0.15);
   color: #fff;
@@ -4503,7 +4512,9 @@ h1 em {
   border-radius: 4px;
   transition: border-color 0.2s;
 }
-.cb-grid input:focus, .cb-grid-full input:focus, .cb-grid-full textarea:focus {
+.cb-grid input:focus,
+.cb-grid-full input:focus,
+.cb-grid-full textarea:focus {
   outline: none;
   border-color: var(--acid);
 }
@@ -4622,7 +4633,10 @@ h1 em {
   body * {
     visibility: hidden;
   }
-  .briefing-modal-backdrop, .briefing-workspace, .briefing-form, .briefing-form * {
+  .briefing-modal-backdrop,
+  .briefing-workspace,
+  .briefing-form,
+  .briefing-form * {
     visibility: visible;
   }
   .briefing-modal-backdrop {
@@ -4641,7 +4655,9 @@ h1 em {
     box-shadow: none;
     background: #fff;
   }
-  .briefing-workspace-topbar, .briefing-form-footer, .modal-close {
+  .briefing-workspace-topbar,
+  .briefing-form-footer,
+  .modal-close {
     display: none !important;
   }
   .briefing-form {
@@ -4654,7 +4670,8 @@ h1 em {
     padding-bottom: 20px;
     margin-bottom: 20px;
   }
-  .briefing-form-hero p, .briefing-form-hero h2 {
+  .briefing-form-hero p,
+  .briefing-form-hero h2 {
     color: #000;
   }
   .briefing-progress-card {
@@ -4663,13 +4680,16 @@ h1 em {
   .briefing-section-heading {
     border-bottom: 1px solid #ccc;
   }
-  .briefing-section-heading h3, .briefing-section-heading p {
+  .briefing-section-heading h3,
+  .briefing-section-heading p {
     color: #000;
   }
-  .briefing-field label, .briefing-field-label {
+  .briefing-field label,
+  .briefing-field-label {
     color: #333 !important;
   }
-  .briefing-field input, .briefing-field textarea {
+  .briefing-field input,
+  .briefing-field textarea {
     border: 1px solid #ccc;
     background: #f9f9f9;
     color: #000;
@@ -4816,7 +4836,10 @@ h1 em {
   body * {
     visibility: hidden;
   }
-  .briefing-modal-backdrop, .briefing-workspace, .briefing-form, .briefing-form * {
+  .briefing-modal-backdrop,
+  .briefing-workspace,
+  .briefing-form,
+  .briefing-form * {
     visibility: visible;
   }
   .briefing-modal-backdrop {
@@ -4835,7 +4858,9 @@ h1 em {
     box-shadow: none;
     background: #fff;
   }
-  .briefing-workspace-topbar, .briefing-form-footer, .modal-close {
+  .briefing-workspace-topbar,
+  .briefing-form-footer,
+  .modal-close {
     display: none !important;
   }
   .briefing-form {
@@ -4848,7 +4873,8 @@ h1 em {
     padding-bottom: 20px;
     margin-bottom: 20px;
   }
-  .briefing-form-hero p, .briefing-form-hero h2 {
+  .briefing-form-hero p,
+  .briefing-form-hero h2 {
     color: #000;
   }
   .briefing-progress-card {
@@ -4857,13 +4883,16 @@ h1 em {
   .briefing-section-heading {
     border-bottom: 1px solid #ccc;
   }
-  .briefing-section-heading h3, .briefing-section-heading p {
+  .briefing-section-heading h3,
+  .briefing-section-heading p {
     color: #000;
   }
-  .briefing-field label, .briefing-field-label {
+  .briefing-field label,
+  .briefing-field-label {
     color: #333 !important;
   }
-  .briefing-field input, .briefing-field textarea {
+  .briefing-field input,
+  .briefing-field textarea {
     border: 1px solid #ccc;
     background: #f9f9f9;
     color: #000;
@@ -5008,7 +5037,10 @@ h1 em {
 
 /* â”€â”€ Print Media Query for PDF Export â”€â”€ */
 @media print {
-  html, body, #root, .admin-shell {
+  html,
+  body,
+  #root,
+  .admin-shell {
     height: auto !important;
     overflow: visible !important;
     position: static !important;
@@ -5016,7 +5048,10 @@ h1 em {
   body * {
     visibility: hidden;
   }
-  .briefing-modal-backdrop, .briefing-workspace, .briefing-form, .briefing-form * {
+  .briefing-modal-backdrop,
+  .briefing-workspace,
+  .briefing-form,
+  .briefing-form * {
     visibility: visible;
   }
   .briefing-modal-backdrop {
@@ -5035,7 +5070,9 @@ h1 em {
     box-shadow: none;
     background: #fff;
   }
-  .briefing-workspace-topbar, .briefing-form-footer, .modal-close {
+  .briefing-workspace-topbar,
+  .briefing-form-footer,
+  .modal-close {
     display: none !important;
   }
   .briefing-form {
@@ -5048,7 +5085,8 @@ h1 em {
     padding-bottom: 20px;
     margin-bottom: 20px;
   }
-  .briefing-form-hero p, .briefing-form-hero h2 {
+  .briefing-form-hero p,
+  .briefing-form-hero h2 {
     color: #000;
   }
   .briefing-progress-card {
@@ -5057,13 +5095,16 @@ h1 em {
   .briefing-section-heading {
     border-bottom: 1px solid #ccc;
   }
-  .briefing-section-heading h3, .briefing-section-heading p {
+  .briefing-section-heading h3,
+  .briefing-section-heading p {
     color: #000;
   }
-  .briefing-field label, .briefing-field-label {
+  .briefing-field label,
+  .briefing-field-label {
     color: #333 !important;
   }
-  .briefing-field input, .briefing-field textarea {
+  .briefing-field input,
+  .briefing-field textarea {
     border: 1px solid #ccc;
     background: #f9f9f9;
     color: #000;
@@ -5130,7 +5171,6 @@ h1 em {
   color: #ffffff !important;
   border-bottom: 1px solid #333 !important;
 }
-
 
 /* Mobile App Specific Styles */
 .mobile-bottom-nav {

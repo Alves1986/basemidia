@@ -62,11 +62,11 @@ export default function ClientBriefing() {
           body: JSON.stringify({ action: "client-get-lead", leadId }),
         });
         const data = await res.json();
-        
+
         if (data.success && data.lead) {
           setLead(data.lead);
           setForm(data.lead.briefing || emptyBriefing);
-          
+
           // Se o formulário estiver vazio, preencher com os dados do lead
           if (!data.lead.briefing) {
             setForm(prev => ({
@@ -99,7 +99,7 @@ export default function ClientBriefing() {
   }, [success]);
 
   const update = (field: keyof BriefingForm, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm(prev => ({ ...prev, [field]: value }));
   };
 
   const submit = async (e: FormEvent) => {
@@ -164,17 +164,28 @@ export default function ClientBriefing() {
           </div>
           <h2>Briefing Recebido com Sucesso</h2>
           <p>
-            Obrigado, {lead?.name}. Recebemos suas respostas e nosso time estratégico já está analisando o seu cenário.
+            Obrigado, {lead?.name}. Recebemos suas respostas e nosso time
+            estratégico já está analisando o seu cenário.
           </p>
-          <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-            <button 
-              className="cb-button" 
-              onClick={() => window.location.href = "/"}
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <button
+              className="cb-button"
+              onClick={() => (window.location.href = "/")}
               style={{ width: "auto", padding: "10px 24px" }}
             >
               Voltar ao Site
             </button>
-            <span style={{ fontSize: "12px", opacity: 0.7 }}>Redirecionando automaticamente em 10s...</span>
+            <span style={{ fontSize: "12px", opacity: 0.7 }}>
+              Redirecionando automaticamente em 10s...
+            </span>
           </div>
           <div className="cb-success-footer" style={{ marginTop: "30px" }}>
             <span>MÉTODO PRIMEIRO, RESULTADO DEPOIS.</span>
@@ -197,12 +208,18 @@ export default function ClientBriefing() {
 
       <main className="cb-container">
         <div className="cb-intro-card">
-          <div className="cb-intro-tag">MODELO DE PREENCHIMENTO → BASE MÍDIA</div>
+          <div className="cb-intro-tag">
+            MODELO DE PREENCHIMENTO → BASE MÍDIA
+          </div>
           <h1>Briefing Estratégico</h1>
-          <p className="cb-subtitle">Antes de abrir o gerenciador, o jogo começa aqui.</p>
+          <p className="cb-subtitle">
+            Antes de abrir o gerenciador, o jogo começa aqui.
+          </p>
           <div className="cb-intro-quote">
             <p>
-              Quanto melhor o briefing, melhor a estratégia. Preencha com o máximo de detalhes e fuja do óbvio — respostas genéricas geram campanhas genéricas.
+              Quanto melhor o briefing, melhor a estratégia. Preencha com o
+              máximo de detalhes e fuja do óbvio — respostas genéricas geram
+              campanhas genéricas.
             </p>
           </div>
         </div>
@@ -217,19 +234,38 @@ export default function ClientBriefing() {
             <div className="cb-grid">
               <label>
                 Empresa/Cliente
-                <input required value={form.companyClient} onChange={(e) => update("companyClient", e.target.value)} />
+                <input
+                  required
+                  value={form.companyClient}
+                  onChange={e => update("companyClient", e.target.value)}
+                />
               </label>
               <label>
                 Preenchido por
-                <input required value="BASE MIDIA" readOnly className="read-only-field" />
+                <input
+                  required
+                  value="BASE MIDIA"
+                  readOnly
+                  className="read-only-field"
+                />
               </label>
               <label>
                 Data do Briefing
-                <input type="date" required value={form.briefingDate} onChange={(e) => update("briefingDate", e.target.value)} />
+                <input
+                  type="date"
+                  required
+                  value={form.briefingDate}
+                  onChange={e => update("briefingDate", e.target.value)}
+                />
               </label>
               <label>
                 Site e Instagram principal
-                <input required value={form.siteInstagram} onChange={(e) => update("siteInstagram", e.target.value)} placeholder="Ex: basemidia.com / @basemidia" />
+                <input
+                  required
+                  value={form.siteInstagram}
+                  onChange={e => update("siteInstagram", e.target.value)}
+                  placeholder="Ex: basemidia.com / @basemidia"
+                />
               </label>
             </div>
           </div>
@@ -243,11 +279,21 @@ export default function ClientBriefing() {
             <div className="cb-grid-full">
               <label>
                 O que a empresa vende? Qual o problema principal que resolve?
-                <textarea required value={form.companyDescription} onChange={(e) => update("companyDescription", e.target.value)} rows={3} />
+                <textarea
+                  required
+                  value={form.companyDescription}
+                  onChange={e => update("companyDescription", e.target.value)}
+                  rows={3}
+                />
               </label>
               <label>
                 Onde capta clientes hoje? (Quais canais dão mais resultado?)
-                <textarea required value={form.currentChannels} onChange={(e) => update("currentChannels", e.target.value)} rows={2} />
+                <textarea
+                  required
+                  value={form.currentChannels}
+                  onChange={e => update("currentChannels", e.target.value)}
+                  rows={2}
+                />
               </label>
             </div>
           </div>
@@ -261,19 +307,39 @@ export default function ClientBriefing() {
             <div className="cb-grid-full">
               <label>
                 O que exatamente vamos anunciar?
-                <textarea required value={form.productService} onChange={(e) => update("productService", e.target.value)} rows={2} />
+                <textarea
+                  required
+                  value={form.productService}
+                  onChange={e => update("productService", e.target.value)}
+                  rows={2}
+                />
               </label>
               <label>
                 O que está incluso na entrega? (Entregáveis, escopo, bônus)
-                <textarea required value={form.includedItems} onChange={(e) => update("includedItems", e.target.value)} rows={3} />
+                <textarea
+                  required
+                  value={form.includedItems}
+                  onChange={e => update("includedItems", e.target.value)}
+                  rows={3}
+                />
               </label>
               <label>
-                Quais os diferenciais competitivos DESSE produto/serviço? (Por que comprar de vocês e não do concorrente?)
-                <textarea required value={form.productDifferentials} onChange={(e) => update("productDifferentials", e.target.value)} rows={3} />
+                Quais os diferenciais competitivos DESSE produto/serviço? (Por
+                que comprar de vocês e não do concorrente?)
+                <textarea
+                  required
+                  value={form.productDifferentials}
+                  onChange={e => update("productDifferentials", e.target.value)}
+                  rows={3}
+                />
               </label>
               <label>
                 Existe garantia? Se sim, como funciona?
-                <input required value={form.guarantees} onChange={(e) => update("guarantees", e.target.value)} />
+                <input
+                  required
+                  value={form.guarantees}
+                  onChange={e => update("guarantees", e.target.value)}
+                />
               </label>
             </div>
           </div>
@@ -287,31 +353,59 @@ export default function ClientBriefing() {
             <div className="cb-grid">
               <label>
                 Preço / Ticket Médio
-                <input required value={form.priceTicket} onChange={(e) => update("priceTicket", e.target.value)} />
+                <input
+                  required
+                  value={form.priceTicket}
+                  onChange={e => update("priceTicket", e.target.value)}
+                />
               </label>
               <label>
                 Condições de Pagamento
-                <input required value={form.paymentConditions} onChange={(e) => update("paymentConditions", e.target.value)} />
+                <input
+                  required
+                  value={form.paymentConditions}
+                  onChange={e => update("paymentConditions", e.target.value)}
+                />
               </label>
               <label className="span-full">
                 Existe alguma oferta ativa ou desconto agressivo para captação?
-                <input required value={form.activeOffer} onChange={(e) => update("activeOffer", e.target.value)} />
+                <input
+                  required
+                  value={form.activeOffer}
+                  onChange={e => update("activeOffer", e.target.value)}
+                />
               </label>
               <label>
                 Região atendida (Local, Nacional, Global?)
-                <input required value={form.servedRegion} onChange={(e) => update("servedRegion", e.target.value)} />
+                <input
+                  required
+                  value={form.servedRegion}
+                  onChange={e => update("servedRegion", e.target.value)}
+                />
               </label>
               <label>
                 Logística/Entrega (Se for produto físico)
-                <input value={form.deliveryLogistics} onChange={(e) => update("deliveryLogistics", e.target.value)} placeholder="Deixe em branco se não aplicável" />
+                <input
+                  value={form.deliveryLogistics}
+                  onChange={e => update("deliveryLogistics", e.target.value)}
+                  placeholder="Deixe em branco se não aplicável"
+                />
               </label>
               <label className="span-full">
                 A venda acontece por onde? (Site, WhatsApp, Ligação, Presencial)
-                <input required value={form.salesChannels} onChange={(e) => update("salesChannels", e.target.value)} />
+                <input
+                  required
+                  value={form.salesChannels}
+                  onChange={e => update("salesChannels", e.target.value)}
+                />
               </label>
               <label className="span-full">
                 Como é o tempo de resposta do comercial hoje?
-                <input required value={form.customerService} onChange={(e) => update("customerService", e.target.value)} />
+                <input
+                  required
+                  value={form.customerService}
+                  onChange={e => update("customerService", e.target.value)}
+                />
               </label>
             </div>
           </div>
@@ -324,16 +418,32 @@ export default function ClientBriefing() {
             </div>
             <div className="cb-grid-full">
               <label>
-                A empresa se posiciona como Mais Barata, Melhor Custo-Benefício ou Premium/Exclusiva?
-                <input required value={form.brandPositioning} onChange={(e) => update("brandPositioning", e.target.value)} />
+                A empresa se posiciona como Mais Barata, Melhor Custo-Benefício
+                ou Premium/Exclusiva?
+                <input
+                  required
+                  value={form.brandPositioning}
+                  onChange={e => update("brandPositioning", e.target.value)}
+                />
               </label>
               <label>
-                Temos prova social forte? (Avaliações, depoimentos em vídeo, clientes famosos, anos de mercado)
-                <textarea required value={form.existingProof} onChange={(e) => update("existingProof", e.target.value)} rows={2} />
+                Temos prova social forte? (Avaliações, depoimentos em vídeo,
+                clientes famosos, anos de mercado)
+                <textarea
+                  required
+                  value={form.existingProof}
+                  onChange={e => update("existingProof", e.target.value)}
+                  rows={2}
+                />
               </label>
               <label>
-                Temos material visual de qualidade? (Fotos, vídeos bons do produto/serviço)
-                <input required value={form.availableMaterials} onChange={(e) => update("availableMaterials", e.target.value)} />
+                Temos material visual de qualidade? (Fotos, vídeos bons do
+                produto/serviço)
+                <input
+                  required
+                  value={form.availableMaterials}
+                  onChange={e => update("availableMaterials", e.target.value)}
+                />
               </label>
             </div>
           </div>
@@ -346,26 +456,52 @@ export default function ClientBriefing() {
             </div>
             <div className="cb-grid-full">
               <label>
-                Qual o objetivo exato da campanha? (Ex: Gerar 50 leads por semana no WhatsApp para serviço X)
-                <textarea required value={form.campaignObjective} onChange={(e) => update("campaignObjective", e.target.value)} rows={2} />
+                Qual o objetivo exato da campanha? (Ex: Gerar 50 leads por
+                semana no WhatsApp para serviço X)
+                <textarea
+                  required
+                  value={form.campaignObjective}
+                  onChange={e => update("campaignObjective", e.target.value)}
+                  rows={2}
+                />
               </label>
               <div className="cb-grid">
                 <label>
                   Orçamento de Mídia disponível (Mensal)
-                  <input required value={form.availableBudget} onChange={(e) => update("availableBudget", e.target.value)} />
+                  <input
+                    required
+                    value={form.availableBudget}
+                    onChange={e => update("availableBudget", e.target.value)}
+                  />
                 </label>
                 <label>
                   Existe sazonalidade forte neste nicho?
-                  <input required value={form.seasonality} onChange={(e) => update("seasonality", e.target.value)} />
+                  <input
+                    required
+                    value={form.seasonality}
+                    onChange={e => update("seasonality", e.target.value)}
+                  />
                 </label>
               </div>
               <label>
-                Quem são os 3 principais concorrentes diretos? (Links se possível)
-                <textarea required value={form.directCompetitors} onChange={(e) => update("directCompetitors", e.target.value)} rows={2} />
+                Quem são os 3 principais concorrentes diretos? (Links se
+                possível)
+                <textarea
+                  required
+                  value={form.directCompetitors}
+                  onChange={e => update("directCompetitors", e.target.value)}
+                  rows={2}
+                />
               </label>
               <label>
-                Existe alguma regra ou restrição do que NÃO PODEMOS fazer de jeito nenhum?
-                <textarea required value={form.restrictions} onChange={(e) => update("restrictions", e.target.value)} rows={2} />
+                Existe alguma regra ou restrição do que NÃO PODEMOS fazer de
+                jeito nenhum?
+                <textarea
+                  required
+                  value={form.restrictions}
+                  onChange={e => update("restrictions", e.target.value)}
+                  rows={2}
+                />
               </label>
             </div>
           </div>
@@ -373,7 +509,11 @@ export default function ClientBriefing() {
           {error && <div className="cb-error-msg">{error}</div>}
 
           <div className="cb-submit-area">
-            <button type="submit" className="cb-submit-btn" disabled={submitting}>
+            <button
+              type="submit"
+              className="cb-submit-btn"
+              disabled={submitting}
+            >
               {submitting ? (
                 <>
                   <Loader2 className="spin" size={18} /> Enviando Informações...
@@ -384,7 +524,10 @@ export default function ClientBriefing() {
                 </>
               )}
             </button>
-            <p className="cb-secure">Seus dados estão seguros e serão utilizados exclusivamente para planejamento estratégico.</p>
+            <p className="cb-secure">
+              Seus dados estão seguros e serão utilizados exclusivamente para
+              planejamento estratégico.
+            </p>
           </div>
         </form>
       </main>

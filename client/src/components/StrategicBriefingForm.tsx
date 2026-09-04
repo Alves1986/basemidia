@@ -6,7 +6,7 @@ import {
   FileText,
   MessageCircle,
   X,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import type {
   BriefingFieldDefinition,
@@ -39,7 +39,7 @@ function formatWhatsAppHref(value: string, message?: string) {
   if (!normalized) return "#";
   const isMobile = /iPhone|Android|iPad|iPod/i.test(navigator.userAgent);
   const textParam = message ? `text=${encodeURIComponent(message)}` : "";
-  
+
   if (isMobile) {
     return `https://wa.me/${normalized}${message ? `?${textParam}` : ""}`;
   }
@@ -60,7 +60,8 @@ function createInitialBriefing(
   adminEmail: string
 ): StrategicBriefing {
   return {
-    companyClient: lead.briefing?.companyClient || lead.companyName || lead.name,
+    companyClient:
+      lead.briefing?.companyClient || lead.companyName || lead.name,
     filledBy: lead.briefing?.filledBy || lead.name,
     briefingDate: lead.briefing?.briefingDate || today(),
     siteInstagram: lead.briefing?.siteInstagram || "",
@@ -108,19 +109,9 @@ function BriefingField({
       <span className="briefing-field-label">{field.label}</span>
       <span className="briefing-field-helper">{field.helper}</span>
       {isLong ? (
-        <textarea
-          id={id}
-          value={value}
-          readOnly
-          rows={4}
-        />
+        <textarea id={id} value={value} readOnly rows={4} />
       ) : (
-        <input
-          id={id}
-          type={field.type ?? "text"}
-          value={value}
-          readOnly
-        />
+        <input id={id} type={field.type ?? "text"} value={value} readOnly />
       )}
     </label>
   );
@@ -142,7 +133,9 @@ export default function StrategicBriefingForm({
     ],
     []
   );
-  const filledFields = allFields.filter(field => form[field.key]?.trim()).length;
+  const filledFields = allFields.filter(field =>
+    form[field.key]?.trim()
+  ).length;
   const progress = Math.round((filledFields / allFields.length) * 100);
 
   const formRef = useRef<HTMLDivElement>(null);
@@ -150,10 +143,10 @@ export default function StrategicBriefingForm({
 
   const handleExportPDF = () => {
     if (!formRef.current) return;
-    
+
     const formEl = formRef.current;
     const textareas = formEl.querySelectorAll("textarea");
-    
+
     // Temporarily expand all textareas to their full content height for printing
     const originalHeights = Array.from(textareas).map(ta => ta.style.height);
     textareas.forEach(ta => {
@@ -163,7 +156,7 @@ export default function StrategicBriefingForm({
 
     // Use native browser print which allows saving as PDF
     window.print();
-    
+
     // Restore original styles
     textareas.forEach((ta, i) => {
       ta.style.height = originalHeights[i];
@@ -196,12 +189,19 @@ export default function StrategicBriefingForm({
               type="button"
               onClick={handleExportPDF}
               disabled={isExporting}
-              style={{ opacity: isExporting ? 0.5 : 1, cursor: isExporting ? "wait" : "pointer" }}
+              style={{
+                opacity: isExporting ? 0.5 : 1,
+                cursor: isExporting ? "wait" : "pointer",
+              }}
             >
               {isExporting ? (
-                <>Gerando PDF... <Loader2 size={13} className="animate-spin" /></>
+                <>
+                  Gerando PDF... <Loader2 size={13} className="animate-spin" />
+                </>
               ) : (
-                <>Exportar PDF <ArrowUpRight size={13} /></>
+                <>
+                  Exportar PDF <ArrowUpRight size={13} />
+                </>
               )}
             </button>
             <span className="briefing-private-status">
@@ -290,8 +290,6 @@ export default function StrategicBriefingForm({
               </div>
             </section>
           ))}
-
-
 
           <footer className="briefing-form-footer">
             <div>

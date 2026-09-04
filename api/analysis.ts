@@ -42,7 +42,10 @@ function openRouterConfig(settingsKey?: string, settingsModel?: string) {
     baseUrl: (
       process.env.OPENROUTER_API_BASE_URL || "https://openrouter.ai/api/v1"
     ).replace(/\/$/, ""),
-    model: settingsModel || process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
+    model:
+      settingsModel ||
+      process.env.OPENROUTER_MODEL ||
+      "google/gemini-2.5-flash",
   };
 }
 
@@ -66,7 +69,7 @@ function cleanAnalysis(value: unknown): StrategicAnalysis {
           .filter(Boolean)
           .slice(0, 12)
       : [];
-  
+
   return {
     funnelDiagnosis: text(source.funnelDiagnosis),
     irresistibleOffer: text(source.irresistibleOffer),
@@ -105,7 +108,10 @@ export default async function handler(
       response
     );
   const settings = await getOperationSettings();
-  const config = openRouterConfig(settings.openRouterApiKey, settings.openRouterModel);
+  const config = openRouterConfig(
+    settings.openRouterApiKey,
+    settings.openRouterModel
+  );
   if (!config)
     return sendWebResponse(
       jsonResponse(
@@ -176,11 +182,11 @@ export default async function handler(
     };
     const content = payload.choices?.[0]?.message?.content;
     if (!content) throw new Error("Resposta de IA vazia");
-    
+
     // Attempt to extract JSON if model included markdown blocks
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     const rawJson = jsonMatch ? jsonMatch[0] : content;
-    
+
     const analysis = cleanAnalysis(JSON.parse(rawJson));
     const updatedLead = await saveLeadAnalysis(leadId, analysis);
     return sendWebResponse(

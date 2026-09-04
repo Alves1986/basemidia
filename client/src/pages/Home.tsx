@@ -78,7 +78,13 @@ const goalOptions = [
   "Começar do zero",
 ];
 
-const AnimatedNumber = ({ value, suffix = "" }: { value: number; suffix?: string }) => {
+const AnimatedNumber = ({
+  value,
+  suffix = "",
+}: {
+  value: number;
+  suffix?: string;
+}) => {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
@@ -403,25 +409,97 @@ export default function Home() {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="proof-image">
-          <div style={{ width: '100%', height: '100%', position: 'absolute', opacity: 0.8 }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              opacity: 0.8,
+            }}
+          >
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={generateData()} margin={{ top: 120, right: 0, left: 0, bottom: 40 }}>
+              <AreaChart
+                data={generateData()}
+                margin={{ top: 120, right: 0, left: 0, bottom: 40 }}
+              >
                 <defs>
                   <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#38FF14" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#38FF14" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#38FF14" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#38FF14" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <Area type="monotone" dataKey="y" stroke="#38FF14" strokeWidth={3} fillOpacity={1} fill="url(#colorGreen)" isAnimationActive={true} animationDuration={2000} />
+                <Area
+                  type="monotone"
+                  dataKey="y"
+                  stroke="#38FF14"
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorGreen)"
+                  isAnimationActive={true}
+                  animationDuration={2000}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          
-          <div style={{ position: 'absolute', top: '24px', left: '24px', color: '#38FF14', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace' }}>SINAL / LEITURA / DECISÃO</div>
-          <div style={{ position: 'absolute', top: '44px', left: '24px', color: '#806060', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace' }}>FINDING_01 / CONVERSÃO</div>
-          
-          <div style={{ position: 'absolute', bottom: '24px', left: '24px', border: '1px solid #38FF14', padding: '6px 12px', borderRadius: '4px', background: 'rgba(56, 255, 20, 0.1)', color: '#38FF14', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace', fontWeight: 'bold' }}>LEITURA ATIVA</div>
-          <div style={{ position: 'absolute', bottom: '24px', right: '24px', color: '#806060', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace' }}>ATUALIZAÇÃO / 24H</div>
+
+          <div
+            style={{
+              position: "absolute",
+              top: "24px",
+              left: "24px",
+              color: "#38FF14",
+              fontSize: "10px",
+              letterSpacing: "0.14em",
+              fontFamily: "monospace",
+            }}
+          >
+            SINAL / LEITURA / DECISÃO
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              top: "44px",
+              left: "24px",
+              color: "#806060",
+              fontSize: "10px",
+              letterSpacing: "0.14em",
+              fontFamily: "monospace",
+            }}
+          >
+            FINDING_01 / CONVERSÃO
+          </div>
+
+          <div
+            style={{
+              position: "absolute",
+              bottom: "24px",
+              left: "24px",
+              border: "1px solid #38FF14",
+              padding: "6px 12px",
+              borderRadius: "4px",
+              background: "rgba(56, 255, 20, 0.1)",
+              color: "#38FF14",
+              fontSize: "10px",
+              letterSpacing: "0.14em",
+              fontFamily: "monospace",
+              fontWeight: "bold",
+            }}
+          >
+            LEITURA ATIVA
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              bottom: "24px",
+              right: "24px",
+              color: "#806060",
+              fontSize: "10px",
+              letterSpacing: "0.14em",
+              fontFamily: "monospace",
+            }}
+          >
+            ATUALIZAÇÃO / 24H
+          </div>
         </div>
         <div className="proof-copy">
           <div className="section-index">/ 03 — CREDIBILIDADE</div>
@@ -435,7 +513,8 @@ export default function Home() {
           <div className="proof-grid">
             <div>
               <strong>
-                <AnimatedNumber value={3} /><span>×</span>
+                <AnimatedNumber value={3} />
+                <span>×</span>
               </strong>
               <small>
                 camadas de
@@ -444,7 +523,9 @@ export default function Home() {
               </small>
             </div>
             <div>
-              <strong><AnimatedNumber value={90} /></strong>
+              <strong>
+                <AnimatedNumber value={90} />
+              </strong>
               <small>
                 dias para uma
                 <br />
@@ -452,7 +533,9 @@ export default function Home() {
               </small>
             </div>
             <div>
-              <strong><AnimatedNumber value={1} /></strong>
+              <strong>
+                <AnimatedNumber value={1} />
+              </strong>
               <small>
                 próximo movimento
                 <br />
@@ -619,7 +702,9 @@ export default function Home() {
                           Nome da Empresa
                           <input
                             value={form.companyName}
-                            onChange={e => update("companyName", e.target.value)}
+                            onChange={e =>
+                              update("companyName", e.target.value)
+                            }
                             placeholder="Sua empresa"
                           />
                         </label>
