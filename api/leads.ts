@@ -350,6 +350,18 @@ async function handleClientSignContract(request: Request, body: unknown) {
        nextAction: "Planejar onboarding",
     });
 
+    // Send push notification
+    try {
+      const { sendPushNotification } = await import("../api/push.js");
+      await sendPushNotification({
+        title: "Contrato Assinado!",
+        body: `O contrato do lead ${lead.name} foi assinado.`,
+        url: `/gestao?lead=${lead.id}`
+      });
+    } catch (err) {
+      console.error("[Leads] Failed to send push notification", err);
+    }
+
     return jsonResponse({ success: true, contract: signedContract });
   } catch (error) {
     console.error("[Leads] Falha ao assinar contrato pelo cliente", error);
@@ -387,6 +399,19 @@ async function handleClientSaveBriefing(request: Request, body: unknown) {
 
   try {
     const lead = await updateLeadBriefing(leadId, briefing);
+
+    // Send push notification
+    try {
+      const { sendPushNotification } = await import("../api/push.js");
+      await sendPushNotification({
+        title: "Briefing Recebido!",
+        body: `O briefing do lead ${lead.name} foi preenchido.`,
+        url: `/gestao?lead=${lead.id}`
+      });
+    } catch (err) {
+      console.error("[Leads] Failed to send push notification", err);
+    }
+
     return jsonResponse({ success: true, lead: { id: lead.id } });
   } catch (error) {
     console.error("[Leads] Falha ao salvar briefing pelo cliente", error);
@@ -511,6 +536,32 @@ export default async function handler(
 
     try {
       const lead = await saveLead(input);
+      
+      // Update custom segments if needed
+      try {
+        const { getOperationSettings, saveOperationSettings } = await import("./_lib/operation.js");
+        const settings = await getOperationSettings();
+        const defaultSegments = ["Beleza e estética", "Imobiliário", "Saúde", "Varejo local", "Outro"];
+        if (!defaultSegments.includes(input.segment) && !settings.customSegments?.includes(input.segment)) {
+           const newSegments = [...(settings.customSegments || []), input.segment].slice(0, 50);
+           await saveOperationSettings({ ...settings, customSegments: newSegments });
+        }
+      } catch (err) {
+        console.error("[Leads] Failed to update custom segments", err);
+      }
+
+      // Send push notification
+      try {
+        const { sendPushNotification } = await import("../api/push.js");
+        await sendPushNotification({
+          title: "Novo Lead Capturado!",
+          body: `${lead.name} da empresa ${lead.companyName} solicitou um diagnóstico.`,
+          url: `/gestao?lead=${lead.id}`
+        });
+      } catch (err) {
+        console.error("[Leads] Failed to send push notification", err);
+      }
+
       let boltenSync: "skipped" | "synced" | "failed" = "skipped";
       if (isBoltenConfigured()) {
         try {

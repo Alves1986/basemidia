@@ -38,7 +38,7 @@ export async function runAgent(
       ...(process.env.OPENROUTER_SITE_URL
         ? { "HTTP-Referer": process.env.OPENROUTER_SITE_URL }
         : {}),
-      "X-OpenRouter-Title": `BASE MÍDIA — Agente: ${agentName}`,
+      "X-OpenRouter-Title": `Base Midia - Agente: ${agentName}`,
     },
     body: JSON.stringify({
       model: config.model,

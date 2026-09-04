@@ -141,10 +141,15 @@ export default function StrategicBriefingForm({
   const formRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (!formRef.current) return;
 
+    setIsExporting(true);
     const formEl = formRef.current;
+    
+    // Add print class for styling overrides during PDF generation
+    formEl.classList.add("print-mode");
+    
     const textareas = formEl.querySelectorAll("textarea");
 
     // Temporarily expand all textareas to their full content height for printing
@@ -154,13 +159,31 @@ export default function StrategicBriefingForm({
       ta.style.height = `${ta.scrollHeight + 10}px`;
     });
 
-    // Use native browser print which allows saving as PDF
-    window.print();
-
-    // Restore original styles
-    textareas.forEach((ta, i) => {
-      ta.style.height = originalHeights[i];
-    });
+    try {
+      const { getHtml2Pdf } = await import("../lib/pdfUtils");
+      const html2pdf = await getHtml2Pdf();
+      
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `briefing_${lead.companyName || lead.name}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      // @ts-ignore
+      await html2pdf().set(opt).from(formEl).save();
+    } catch (e) {
+      console.error("Error generating PDF", e);
+      toast.error("Erro ao gerar PDF.");
+    } finally {
+      // Restore original styles
+      textareas.forEach((ta, i) => {
+        ta.style.height = originalHeights[i];
+      });
+      formEl.classList.remove("print-mode");
+      setIsExporting(false);
+    }
   };
 
   return (

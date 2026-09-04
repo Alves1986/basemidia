@@ -106,6 +106,12 @@ function parseSettings(value: unknown): OperationSettings {
       50,
       defaults.googlePixelId ?? ""
     ),
+    customSegments: Array.isArray(source.customSegments)
+      ? source.customSegments
+          .filter((s) => typeof s === "string" && s.trim().length > 0)
+          .map((s) => s.trim())
+          .slice(0, 50)
+      : defaults.customSegments || [],
   };
 }
 

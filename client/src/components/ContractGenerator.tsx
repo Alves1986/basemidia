@@ -86,8 +86,30 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    const el = document.getElementById("contract-content");
+    if (!el) return;
+    
+    // Add a wrapper class or adjust styles temporarily
+    const originalDisplay = el.style.display;
+    
+    try {
+      const { getHtml2Pdf } = await import("../lib/pdfUtils");
+      const html2pdf = await getHtml2Pdf();
+      
+      const opt = {
+        margin: [15, 15, 15, 15],
+        filename: `contrato_${lead.companyName || lead.name}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      // @ts-ignore
+      await html2pdf().set(opt).from(el).save();
+    } catch (e) {
+      console.error("Error generating PDF", e);
+      toast.error("Erro ao gerar PDF.");
+    }
   };
 
   const isSignedByAgency = contract.status === "signed_by_agency" || contract.status === "signed_by_client";

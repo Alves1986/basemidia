@@ -32,6 +32,7 @@ export interface OperationSettings {
   openRouterModel?: string;
   agencySettings?: AgencySettings;
   googlePixelId?: string;
+  customSegments?: string[];
 }
 
 export interface StrategicAnalysis {
@@ -109,4 +110,5 @@ export const defaultOperationSettings: OperationSettings = {
     email: "",
     forumCity: "São Paulo - SP",
   },
+  customSegments: [],
 };

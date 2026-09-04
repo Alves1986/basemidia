@@ -124,16 +124,32 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [formStep, setFormStep] = useState(1);
+  const [customSegmentsList, setCustomSegmentsList] = useState<string[]>([]);
   const [form, setForm] = useState({
     companyName: "",
     name: "",
     whatsapp: "",
     email: "",
     segment: "",
+    customSegment: "",
     ads: "",
     pain: "",
     goal: "",
   });
+
+  useEffect(() => {
+    fetch("/api/public-settings")
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => {
+        if (data.settings?.customSegments) {
+          setCustomSegmentsList(data.settings.customSegments);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const openDiagnostic = () => {
     setMenuOpen(false);
@@ -149,16 +165,24 @@ export default function Home() {
     form.name.trim() !== "" &&
     form.whatsapp.trim() !== "" &&
     form.segment !== "" &&
+    (form.segment !== "Outro" || form.customSegment.trim() !== "") &&
     form.ads !== "";
   const canSubmit = form.pain !== "" && form.goal !== "";
   const submitForm = async () => {
     setSubmitError("");
     setIsSubmitting(true);
+    
+    // Process segment: use customSegment if 'Outro' is selected
+    const payload = { ...form };
+    if (payload.segment === "Outro" && payload.customSegment.trim()) {
+      payload.segment = payload.customSegment.trim();
+    }
+    
     try {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const body = (await response.json()) as { error?: string };
       if (!response.ok) {
@@ -732,9 +756,23 @@ export default function Home() {
                             <option>Imobiliário</option>
                             <option>Saúde</option>
                             <option>Varejo local</option>
+                            {customSegmentsList.map(seg => (
+                              <option key={seg}>{seg}</option>
+                            ))}
                             <option>Outro</option>
                           </select>
                         </label>
+                        {form.segment === "Outro" && (
+                          <label className="full-label animate-fade-in" style={{ animation: "fadeIn 0.2s ease-out forwards" }}>
+                            Qual o seu segmento?
+                            <input
+                              value={form.customSegment}
+                              onChange={e => update("customSegment", e.target.value)}
+                              placeholder="Digite seu segmento"
+                              autoFocus
+                            />
+                          </label>
+                        )}
                         <label className="full-label">
                           Você já anuncia hoje?
                           <select

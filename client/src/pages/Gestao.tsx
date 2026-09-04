@@ -24,6 +24,7 @@ import {
   Users,
   X,
   Save,
+  Bell,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -138,6 +139,85 @@ export default function Gestao() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [deletingLead, setDeletingLead] = useState(false);
   const [contractGeneratorLead, setContractGeneratorLead] = useState<Lead | null>(null);
+  
+  const [pushSubscribed, setPushSubscribed] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      navigator.serviceWorker.register("/sw.js").then((reg) => {
+        reg.pushManager.getSubscription().then((sub) => {
+          setPushSubscribed(!!sub);
+        });
+      });
+    }
+  }, []);
+
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
+  const handleTogglePush = async () => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      toast.error("Seu navegador não suporta notificações Push.");
+      return;
+    }
+    setPushLoading(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      if (pushSubscribed) {
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          await sub.unsubscribe();
+          await fetch("/api/push", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "unsubscribe", endpoint: sub.endpoint }),
+          });
+        }
+        setPushSubscribed(false);
+        toast.success("Notificações desativadas.");
+      } else {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          toast.error("Permissão de notificação negada.");
+          setPushLoading(false);
+          return;
+        }
+        const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+        if (!vapidPublicKey) {
+          toast.error("Chave VAPID não configurada no cliente.");
+          setPushLoading(false);
+          return;
+        }
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        });
+        await fetch("/api/push", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "subscribe", subscription: sub }),
+        });
+        setPushSubscribed(true);
+        toast.success("Notificações ativadas com sucesso!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao configurar notificações.");
+    } finally {
+      setPushLoading(false);
+    }
+  };
 
   async function loadSettings() {
     try {
@@ -458,6 +538,19 @@ export default function Gestao() {
             <h1>Briefings Recebidos</h1>
           </div>
           <div className="admin-top-actions">
+            <button
+              className={`admin-refresh ${pushSubscribed ? "text-[#a6e3a1]" : "text-gray-400"}`}
+              onClick={handleTogglePush}
+              disabled={pushLoading}
+              title={pushSubscribed ? "Desativar notificações" : "Ativar notificações Push"}
+            >
+              {pushLoading ? (
+                <Loader2 className="spin" size={16} />
+              ) : (
+                <Bell size={16} />
+              )}
+              <span className="hide-on-mobile">{pushSubscribed ? " Notificações Ativas" : " Ativar Notificações"}</span>
+            </button>
             <span className="secure-status hide-on-mobile">
               <ShieldCheck size={15} /> Dados privados
             </span>

@@ -31,6 +31,7 @@ export default async function handler(
       jsonResponse({
         settings: {
           googlePixelId: settings.googlePixelId,
+          customSegments: settings.customSegments || [],
         },
       }),
       response
