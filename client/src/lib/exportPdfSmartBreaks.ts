@@ -53,16 +53,18 @@ export async function exportPdfSmartBreaks({
     logging: false,
     windowWidth: element.scrollWidth,
     windowHeight: element.scrollHeight,
+    scrollX: 0,
+    scrollY: 0,
   });
 
   const canvasWidthPx = canvas.width;
   const canvasHeightPx = canvas.height;
 
-  // Fator: pixels do canvas -> mm reais na página
-  const pxPerMm = canvasWidthPx / A4_WIDTH_MM;
-
   const usableWidthMm = A4_WIDTH_MM - marginMm * 2;
   const usableHeightMm = A4_HEIGHT_MM - marginMm * 2;
+
+  // Fator: pixels do canvas -> mm reais na página útil
+  const pxPerMm = canvasWidthPx / usableWidthMm;
   const usableHeightPx = usableHeightMm * pxPerMm;
 
   // 2) Pega a posição Y (em px do canvas) de cada elemento "atômico"
