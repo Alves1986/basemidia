@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Diagnóstico Gratuito</title>
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --panel:#131313;
+    --field:#1a1a1a;
+    --border:#2a2a2a;
+    --green:#7CFF3C;
+    --green-dim:#4a9c22;
+    --text:#f2f2f2;
+    --muted:#8a8a8a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',Arial,sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px;
+  }
+  .card{
+    width:100%;
+    max-width:520px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:32px 28px 28px;
+    position:relative;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.12em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  h1{
+    font-size:26px;
+    line-height:1.25;
+    margin:0 0 6px;
+    font-weight:700;
+  }
+  .sub{
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:22px;
+  }
+  .progress-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .progress-label{
+    font-size:12px;
+    color:var(--green);
+    font-weight:600;
+  }
+  .progress-label span{color:var(--muted);font-weight:400;}
+  .steps-hint{font-size:12px;color:var(--muted);}
+  .track{
+    height:3px;
+    background:var(--border);
+    border-radius:2px;
+    overflow:hidden;
+    margin-bottom:26px;
+  }
+  .fill{
+    height:100%;
+    background:var(--green);
+    width:50%;
+    transition:width .35s ease;
+  }
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%;
+    background:var(--field);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+    color:var(--text);
+    font-size:14px;
+  }
+  .field input::placeholder{color:#5c5c5c;}
+  .row2{display:flex;gap:12px;}
+  .row2 .field{flex:1;}
+  .chip-group{margin-bottom:20px;}
+  .chip-group > label{
+    display:block;
+    font-size:13px;
+    color:var(--text);
+    margin-bottom:10px;
+    font-weight:600;
+  }
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .chip{
+    border:1px solid var(--border);
+    background:var(--field);
+    color:var(--text);
+    font-size:13px;
+    padding:10px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .chip:hover{border-color:var(--green-dim);}
+  .chip.selected{
+    background:rgba(124,255,60,.12);
+    border-color:var(--green);
+    color:var(--green);
+  }
+  .actions{
+    display:flex;
+    gap:10px;
+    margin-top:6px;
+  }
+  .btn{
+    flex:1;
+    border:none;
+    border-radius:8px;
+    padding:14px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    text-align:center;
+  }
+  .btn-primary{background:var(--green);color:#0a0a0a;}
+  .btn-primary:hover{background:#8fff5c;}
+  .btn-ghost{
+    background:transparent;
+    color:var(--muted);
+    border:1px solid var(--border);
+    flex:0 0 90px;
+  }
+  .btn-ghost:hover{border-color:var(--muted);}
+  .lock{
+    text-align:center;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:14px;
+  }
+  .step{display:none;}
+  .step.active{display:block;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="eyebrow">Diagnóstico Gratuito</div>
+  <h1>Conte o cenário.<br>A gente organiza o próximo movimento.</h1>
+  <div class="sub">4 perguntas rápidas, sem letra miúda.</div>
+
+  <div class="progress-row">
+    <div class="progress-label">Etapa <span id="stepNum">1</span> de 2</div>
+    <div class="steps-hint" id="stepHint">Seus dados</div>
+  </div>
+  <div class="track"><div class="fill" id="fill"></div></div>
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <div class="row2">
+      <div class="field">
+        <label>Seu nome</label>
+        <input type="text" placeholder="Como podemos te chamar?">
+      </div>
+      <div class="field">
+        <label>WhatsApp</label>
+        <input type="text" placeholder="(00) 00000-0000">
+      </div>
+    </div>
+    <div class="field">
+      <label>Segmento</label>
+      <select>
+        <option>Selecione o segmento</option>
+        <option>Beleza e estética</option>
+        <option>Imobiliário</option>
+        <option>Saúde</option>
+        <option>Varejo local</option>
+        <option>Outro</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Você já anuncia hoje?</label>
+      <select>
+        <option>Escolha uma opção</option>
+        <option>Sim, com agência ou gestor</option>
+        <option>Sim, faço por conta própria</option>
+        <option>Não, nunca anunciei</option>
+      </select>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="goStep(2)">Continuar</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="chip-group">
+      <label>Qual é hoje o maior problema com tráfego pago?</label>
+      <div class="chips" data-group="problema">
+        <div class="chip" onclick="selectChip(this)">Poucos cliques</div>
+        <div class="chip" onclick="selectChip(this)">Cliques sem contato</div>
+        <div class="chip" onclick="selectChip(this)">Contato sem venda</div>
+        <div class="chip" onclick="selectChip(this)">Não sei o que priorizar</div>
+      </div>
+    </div>
+    <div class="chip-group">
+      <label>O que você quer melhorar nos próximos 90 dias?</label>
+      <div class="chips" data-group="meta">
+        <div class="chip" onclick="selectChip(this)">Mais previsibilidade</div>
+        <div class="chip" onclick="selectChip(this)">Reduzir custo por lead</div>
+        <div class="chip" onclick="selectChip(this)">Escalar o que já funciona</div>
+        <div class="chip" onclick="selectChip(this)">Começar do zero</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="goStep(1)">Voltar</button>
+      <button class="btn btn-primary" onclick="submitForm()">Quero meu diagnóstico →</button>
+    </div>
+  </div>
+
+  <div class="lock">🔒 Seus dados ficam seguros e são usados apenas para este contato.</div>
+</div>
+
+<script>
+function goStep(n){
+  document.getElementById('step1').classList.toggle('active', n===1);
+  document.getElementById('step2').classList.toggle('active', n===2);
+  document.getElementById('stepNum').textContent = n;
+  document.getElementById('fill').style.width = n===1 ? '50%' : '100%';
+  document.getElementById('stepHint').textContent = n===1 ? 'Seus dados' : 'Seu contexto';
+}
+function selectChip(el){
+  const group = el.parentElement.querySelectorAll('.chip');
+  group.forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function submitForm(){
+  alert('Formulário enviado! (demonstração)');
+}
+</script>
+
+</body>
+</html>

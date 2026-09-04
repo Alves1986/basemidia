@@ -1,6 +1,7 @@
 // Design: Dark Performance Lab — neo-brutalist digital, assimetria editorial, verde ácido como sinal de ação e prova.
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { motion, animate, useInView } from "framer-motion";
+import { AreaChart, Area, ResponsiveContainer } from "recharts";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -18,7 +19,7 @@ import {
 import AnimatedBackground from "../components/AnimatedBackground";
 import heroDashboard from "../assets/base-midia-hero-dashboard.svg";
 import signalDetail from "../assets/base-midia-signal-detail.svg";
-import officialLogo from "../assets/logo_base.jpg";
+import officialLogo from "../assets/logo_bm.png";
 
 const painPoints = [
   "Você investe em anúncios e não sabe exatamente onde está o problema?",
@@ -76,6 +77,39 @@ const goalOptions = [
   "Escalar o que já funciona",
   "Começar do zero",
 ];
+
+const AnimatedNumber = ({ value, suffix = "" }: { value: number; suffix?: string }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (inView && ref.current) {
+      const controls = animate(0, value, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate(v) {
+          if (ref.current) {
+            ref.current.textContent = Math.round(v).toString() + suffix;
+          }
+        },
+      });
+      return () => controls.stop();
+    }
+  }, [value, inView, suffix]);
+
+  return <span ref={ref}>0{suffix}</span>;
+};
+
+const generateData = () => {
+  const data = [];
+  let currentVal = 10;
+  for (let i = 0; i < 30; i++) {
+    currentVal += (Math.random() - 0.4) * 15;
+    if (currentVal < 0) currentVal = 0;
+    data.push({ x: i, y: currentVal });
+  }
+  return data;
+};
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -367,11 +401,25 @@ export default function Home() {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="proof-image">
-          <img
-            src={signalDetail}
-            alt="Linha de sinal representando análise de performance"
-          />
-          <div className="image-caption">SINAL / LEITURA / DECISÃO</div>
+          <div style={{ width: '100%', height: '100%', position: 'absolute', opacity: 0.8 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={generateData()} margin={{ top: 120, right: 0, left: 0, bottom: 40 }}>
+                <defs>
+                  <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#38FF14" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#38FF14" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="y" stroke="#38FF14" strokeWidth={3} fillOpacity={1} fill="url(#colorGreen)" isAnimationActive={true} animationDuration={2000} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          
+          <div style={{ position: 'absolute', top: '24px', left: '24px', color: '#38FF14', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace' }}>SINAL / LEITURA / DECISÃO</div>
+          <div style={{ position: 'absolute', top: '44px', left: '24px', color: '#806060', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace' }}>FINDING_01 / CONVERSÃO</div>
+          
+          <div style={{ position: 'absolute', bottom: '24px', left: '24px', border: '1px solid #38FF14', padding: '6px 12px', borderRadius: '4px', background: 'rgba(56, 255, 20, 0.1)', color: '#38FF14', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace', fontWeight: 'bold' }}>LEITURA ATIVA</div>
+          <div style={{ position: 'absolute', bottom: '24px', right: '24px', color: '#806060', fontSize: '10px', letterSpacing: '0.14em', fontFamily: 'monospace' }}>ATUALIZAÇÃO / 24H</div>
         </div>
         <div className="proof-copy">
           <div className="section-index">/ 03 — CREDIBILIDADE</div>
@@ -385,7 +433,7 @@ export default function Home() {
           <div className="proof-grid">
             <div>
               <strong>
-                3<span>×</span>
+                <AnimatedNumber value={3} /><span>×</span>
               </strong>
               <small>
                 camadas de
@@ -394,7 +442,7 @@ export default function Home() {
               </small>
             </div>
             <div>
-              <strong>90</strong>
+              <strong><AnimatedNumber value={90} /></strong>
               <small>
                 dias para uma
                 <br />
@@ -402,7 +450,7 @@ export default function Home() {
               </small>
             </div>
             <div>
-              <strong>1</strong>
+              <strong><AnimatedNumber value={1} /></strong>
               <small>
                 próximo movimento
                 <br />

@@ -415,7 +415,7 @@ export default function Gestao() {
           <a href="/" aria-label="Voltar para a página inicial">
             <img src={officialLogo} alt="BASE MÍDIA" className="brand-logo" />
           </a>
-          <span>OPERAÇÕES / 01</span>
+          <span>APP DO GESTOR</span>
         </div>
         <nav className="admin-nav" aria-label="Navegação da gestão">
           <a
@@ -438,7 +438,7 @@ export default function Gestao() {
               {user.email.slice(0, 1).toUpperCase()}
             </div>
             <div>
-              <strong>Admin</strong>
+              <strong>Gestor</strong>
               <span>{user.email}</span>
             </div>
           </div>
@@ -451,11 +451,11 @@ export default function Gestao() {
       <section className="admin-main">
         <header className="admin-topbar">
           <div>
-            <span className="section-index">/ CENTRAL DE LEADS</span>
-            <h1>Gestão de briefings</h1>
+            <span className="section-index">/ MEUS LEADS</span>
+            <h1>Briefings Recebidos</h1>
           </div>
           <div className="admin-top-actions">
-            <span className="secure-status">
+            <span className="secure-status hide-on-mobile">
               <ShieldCheck size={15} /> Dados privados
             </span>
             <button
@@ -469,13 +469,6 @@ export default function Gestao() {
                 <RefreshCw size={16} />
               )}{" "}
               Atualizar
-            </button>
-            <button
-              className="admin-mobile-toggle"
-              aria-label="Abrir menu de gestão"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <Menu size={20} />
             </button>
           </div>
         </header>
@@ -939,6 +932,22 @@ export default function Gestao() {
           </article>
         </div>
       )}
+
+      <nav className="mobile-bottom-nav">
+        <a href="#resumo" className="nav-item is-active">
+          <LayoutDashboard size={20} />
+          <span>Resumo</span>
+        </a>
+        <a href="#briefings" className="nav-item">
+          <FileText size={20} />
+          <span>Briefings</span>
+          {leads.length > 0 && <span className="nav-badge">{leads.length}</span>}
+        </a>
+        <a href="/configuracoes" className="nav-item">
+          <Settings2 size={20} />
+          <span>Ajustes</span>
+        </a>
+      </nav>
     </main>
   );
 }
