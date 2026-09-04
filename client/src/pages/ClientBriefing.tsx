@@ -71,7 +71,7 @@ export default function ClientBriefing() {
           if (!data.lead.briefing) {
             setForm(prev => ({
               ...prev,
-              companyClient: data.lead.name || "",
+              companyClient: data.lead.companyName || data.lead.name || "",
               filledBy: data.lead.name || "",
               briefingDate: new Date().toISOString().split("T")[0],
             }));
@@ -244,7 +244,7 @@ export default function ClientBriefing() {
                 Preenchido por
                 <input
                   required
-                  value="BASE MIDIA"
+                  value={form.filledBy}
                   readOnly
                   className="read-only-field"
                 />
