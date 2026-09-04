@@ -120,14 +120,26 @@ export default function Configuracoes() {
           <span>OPERAÇÕES / 02</span>
         </div>
         <nav className="admin-nav" aria-label="Navegação da gestão">
-          <a href="/gestao">
+          <button
+            onClick={() => navigate("/gestao")}
+            className="admin-link-button"
+          >
             <ArrowLeft size={17} /> Voltar para gestão
-          </a>
+          </button>
           <a className="is-active" href="#funil">
             <Settings2 size={17} /> Configurações
           </a>
         </nav>
         <div className="admin-sidebar-foot">
+          <button
+            onClick={() => {
+              localStorage.removeItem("adminAuth");
+              navigate("/auth");
+            }}
+            className="admin-logout-button"
+          >
+            Sair da Conta
+          </button>
           <span className="secure-status">
             <ShieldCheck size={15} /> Área restrita
           </span>
@@ -135,11 +147,31 @@ export default function Configuracoes() {
       </aside>
       <section className="admin-main">
         <header className="admin-topbar">
-          <div>
-            <span className="section-index">/ OPERAÇÃO / CONFIGURAÇÕES</span>
-            <h1>Como a operação avança</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 15 }}>
+            <button
+              onClick={() => navigate("/gestao")}
+              className="admin-secondary-button mobile-only-inline"
+              aria-label="Voltar"
+              style={{ padding: "8px" }}
+            >
+              <ArrowLeft size={16} />
+            </button>
+            <div>
+              <span className="section-index">/ OPERAÇÃO / CONFIGURAÇÕES</span>
+              <h1>Como a operação avança</h1>
+            </div>
           </div>
-          <button
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={() => {
+                localStorage.removeItem("adminAuth");
+                navigate("/auth");
+              }}
+              className="danger-button mobile-only-inline"
+            >
+              Sair
+            </button>
+            <button
             className="admin-refresh"
             onClick={() => void handleSave()}
             disabled={saving}
@@ -151,6 +183,7 @@ export default function Configuracoes() {
             )}{" "}
             {saving ? "Salvando..." : "Salvar alterações"}
           </button>
+          </div>
         </header>
         <div className="admin-content operation-settings-page">
           {error && (

@@ -83,10 +83,10 @@ function whatsappUrl(value: string, message?: string) {
       ? `55${digits}`
       : digits;
   if (!normalized) return "#";
-  
+
   const isMobile = /iPhone|Android|iPad|iPod/i.test(navigator.userAgent);
   const textParam = message ? `text=${encodeURIComponent(message)}` : "";
-  
+
   if (isMobile) {
     return `https://wa.me/${normalized}${message ? `?${textParam}` : ""}`;
   }
@@ -633,9 +633,9 @@ export default function Gestao() {
                   <thead>
                     <tr>
                       <th>Lead</th>
-                      <th>Segmento</th>
+                      <th className="hide-on-mobile">Segmento</th>
                       <th>Anúncios</th>
-                      <th>Briefing</th>
+                      <th className="hide-on-mobile">Briefing</th>
                       <th>Recebido em</th>
                       <th>
                         <span className="sr-only">Abrir</span>
@@ -653,16 +653,21 @@ export default function Gestao() {
                             <div>
                               <strong>{lead.name}</strong>
                               <span>{lead.email}</span>
+                              <div style={{ marginTop: 4 }}>
+                                <span className={`briefing-status ${lead.briefing ? "is-ready" : ""}`}>
+                                  {lead.briefing ? "✅ Briefing Pronto" : "⏳ Aguardando Briefing"}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </td>
-                        <td>
+                        <td className="hide-on-mobile">
                           <span className="lead-tag">{lead.segment}</span>
                         </td>
                         <td>
                           <span className="lead-ads">{lead.ads}</span>
                         </td>
-                        <td>
+                        <td className="hide-on-mobile">
                           <span
                             className={`briefing-status ${lead.briefing ? "is-ready" : ""}`}
                           >
@@ -743,6 +748,33 @@ export default function Gestao() {
                 href={whatsappUrl(selectedLead.whatsapp)}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => {
+                  if (selectedLead.status === "novo") {
+                    setSavingPipeline(true);
+                    fetch("/api/leads", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        action: "update-pipeline",
+                        leadId: selectedLead.id,
+                        status: "contato",
+                        nextAction: selectedLead.nextAction || "Acompanhar contato inicial",
+                      }),
+                    })
+                      .then(res => res.json())
+                      .then(data => {
+                        if (data.success && data.lead) {
+                          setLeads(current =>
+                            current.map(lead =>
+                              lead.id === data.lead.id ? data.lead : lead
+                            )
+                          );
+                          setSelectedLead(data.lead);
+                        }
+                      })
+                      .finally(() => setSavingPipeline(false));
+                  }
+                }}
               >
                 <MessageCircle size={15} /> {selectedLead.whatsapp}
               </a>
@@ -865,28 +897,31 @@ export default function Gestao() {
                 >
                   Iniciar conversa no WhatsApp <MessageCircle size={17} />
                 </a>
-              <button
-                className="admin-secondary-button"
-                onClick={() => {
-                  setBriefingLead(selectedLead);
-                  setSelectedLead(null);
-                }}
-                disabled={!selectedLead.briefing}
-              >
-                <FileText size={15} /> Ver briefing
-              </button>
-              <button
-                className="admin-secondary-button"
-                onClick={() => {
-                  const link = `${window.location.origin}/briefing/${selectedLead.id}`;
-                  const msg = `Olá, ${selectedLead.name.split(" ")[0]}! Segue o link para o nosso briefing estratégico:\n${link}`;
-                  navigator.clipboard.writeText(link);
-                  toast.success("Link copiado para a área de transferência!");
-                  window.open(whatsappUrl(selectedLead.whatsapp, msg), "_blank");
-                }}
-              >
-                <Link size={15} /> Enviar link do briefing
-              </button>
+                <button
+                  className="admin-secondary-button"
+                  onClick={() => {
+                    setBriefingLead(selectedLead);
+                    setSelectedLead(null);
+                  }}
+                  disabled={!selectedLead.briefing}
+                >
+                  <FileText size={15} /> Ver briefing
+                </button>
+                <button
+                  className="admin-secondary-button"
+                  onClick={() => {
+                    const link = `${window.location.origin}/briefing/${selectedLead.id}`;
+                    const msg = `Olá, ${selectedLead.name.split(" ")[0]}! Segue o link para o nosso briefing estratégico:\n${link}`;
+                    navigator.clipboard.writeText(link);
+                    toast.success("Link copiado para a área de transferência!");
+                    window.open(
+                      whatsappUrl(selectedLead.whatsapp, msg),
+                      "_blank"
+                    );
+                  }}
+                >
+                  <Link size={15} /> Enviar link do briefing
+                </button>
               </div>
               <div className="footer-secondary-actions">
                 <button
@@ -947,7 +982,9 @@ export default function Gestao() {
         <a href="#briefings" className="nav-item">
           <FileText size={20} />
           <span>Briefings</span>
-          {leads.length > 0 && <span className="nav-badge">{leads.length}</span>}
+          {leads.length > 0 && (
+            <span className="nav-badge">{leads.length}</span>
+          )}
         </a>
         <a href="/configuracoes" className="nav-item">
           <Settings2 size={20} />

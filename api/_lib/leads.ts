@@ -106,7 +106,7 @@ export async function updateLeadBriefing(
 
   const updatedLead: Lead = {
     ...lead,
-    status: lead.status === "novo" ? "briefing" : lead.status,
+    status: ["novo", "contato"].includes(lead.status) ? "briefing" : lead.status,
     briefing,
     briefingUpdatedAt: Date.now(),
   };

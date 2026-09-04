@@ -1,7 +1,11 @@
 import { getAuthenticatedAdmin, jsonResponse } from "../_lib/auth.js";
 import { getLeadById } from "../_lib/leads.js";
 import { runAgent } from "../_lib/agent.js";
-import { sendWebResponse, toWebRequest, type VercelResponseLike } from "../_lib/vercel.js";
+import {
+  sendWebResponse,
+  toWebRequest,
+  type VercelResponseLike,
+} from "../_lib/vercel.js";
 
 interface VercelRequest {
   method?: string;
@@ -20,14 +24,16 @@ export default async function handler(
       jsonResponse({ error: "Método não permitido." }, { status: 405 }),
       response
     );
-  
+
   if (!(await getAuthenticatedAdmin(webRequest)))
     return sendWebResponse(
       jsonResponse({ error: "Acesso restrito." }, { status: 401 }),
       response
     );
 
-  const body = (await webRequest.json().catch(() => null)) as { leadId?: string };
+  const body = (await webRequest.json().catch(() => null)) as {
+    leadId?: string;
+  };
   if (!body?.leadId) {
     return sendWebResponse(
       jsonResponse({ error: "Informe o lead para analisar." }, { status: 400 }),
@@ -43,7 +49,7 @@ export default async function handler(
         response
       );
     }
-    
+
     if (!lead.briefing) {
       return sendWebResponse(
         jsonResponse(

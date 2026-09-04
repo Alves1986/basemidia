@@ -1,6 +1,10 @@
 import { getAuthenticatedAdmin, jsonResponse } from "../_lib/auth.js";
 import { runAgent } from "../_lib/agent.js";
-import { sendWebResponse, toWebRequest, type VercelResponseLike } from "../_lib/vercel.js";
+import {
+  sendWebResponse,
+  toWebRequest,
+  type VercelResponseLike,
+} from "../_lib/vercel.js";
 
 interface VercelRequest {
   method?: string;
@@ -15,14 +19,28 @@ export default async function handler(
 ) {
   const webRequest = toWebRequest(request);
   if (webRequest.method !== "POST")
-    return sendWebResponse(jsonResponse({ error: "Método não permitido." }, { status: 405 }), response);
-  
-  if (!(await getAuthenticatedAdmin(webRequest)))
-    return sendWebResponse(jsonResponse({ error: "Acesso restrito." }, { status: 401 }), response);
+    return sendWebResponse(
+      jsonResponse({ error: "Método não permitido." }, { status: 405 }),
+      response
+    );
 
-  const body = (await webRequest.json().catch(() => null)) as { context?: string };
+  if (!(await getAuthenticatedAdmin(webRequest)))
+    return sendWebResponse(
+      jsonResponse({ error: "Acesso restrito." }, { status: 401 }),
+      response
+    );
+
+  const body = (await webRequest.json().catch(() => null)) as {
+    context?: string;
+  };
   if (!body?.context) {
-    return sendWebResponse(jsonResponse({ error: "Faltou o contexto do estrategista." }, { status: 400 }), response);
+    return sendWebResponse(
+      jsonResponse(
+        { error: "Faltou o contexto do estrategista." },
+        { status: 400 }
+      ),
+      response
+    );
   }
 
   try {

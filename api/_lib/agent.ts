@@ -60,7 +60,7 @@ export async function runAgent(
     choices?: Array<{ message?: { content?: string } }>;
   };
   const content = payload.choices?.[0]?.message?.content;
-  
+
   if (!content) throw new Error(`Resposta vazia do agente ${agentName}`);
 
   return content;

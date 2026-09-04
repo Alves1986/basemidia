@@ -12,9 +12,12 @@ export default function AnimatedBackground() {
     let particles: Particle[] = [];
     let animationFrameId: number;
 
+    const c = canvas;
+    const x = ctx;
+
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
       initParticles();
     };
 
@@ -26,31 +29,31 @@ export default function AnimatedBackground() {
       radius: number;
 
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        this.x = Math.random() * c.width;
+        this.y = Math.random() * c.height;
         this.vx = (Math.random() - 0.5) * 1.5;
         this.vy = (Math.random() - 0.5) * 1.5;
         this.radius = Math.random() * 2 + 1;
       }
 
       update() {
-        if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
-        if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+        if (this.x < 0 || this.x > c.width) this.vx = -this.vx;
+        if (this.y < 0 || this.y > c.height) this.vy = -this.vy;
         this.x += this.vx;
         this.y += this.vy;
       }
 
       draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(56, 255, 20, 0.4)";
-        ctx.fill();
+        x.beginPath();
+        x.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        x.fillStyle = "rgba(56, 255, 20, 0.4)";
+        x.fill();
       }
     }
 
     const initParticles = () => {
       particles = [];
-      const numParticles = Math.floor((canvas.width * canvas.height) / 15000);
+      const numParticles = Math.floor((c.width * c.height) / 15000);
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle());
       }
@@ -64,19 +67,19 @@ export default function AnimatedBackground() {
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < 150) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = `rgba(56, 255, 20, ${1 - distance / 150})`;
-            ctx.stroke();
+            x.beginPath();
+            x.moveTo(particles[i].x, particles[i].y);
+            x.lineTo(particles[j].x, particles[j].y);
+            x.lineWidth = 1;
+            x.strokeStyle = `rgba(56, 255, 20, ${1 - distance / 150})`;
+            x.stroke();
           }
         }
       }
     };
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      x.clearRect(0, 0, c.width, c.height);
       particles.forEach(p => {
         p.update();
         p.draw();

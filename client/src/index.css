@@ -3899,13 +3899,21 @@ h1 em {
   }
   .pipeline-stage {
     min-height: 87px;
-    padding: 10px 10px;
+    padding: 15px 12px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid #333;
+  }
+  .pipeline-stage.is-active {
+    background: rgba(56, 255, 20, 0.05);
+    border-color: #38ff14;
   }
   .pipeline-stage strong {
-    font-size: 11px;
+    font-size: 13px;
+    color: #eee;
   }
   .pipeline-stage b {
-    font-size: 20px;
+    font-size: 22px;
   }
   .admin-leads-section {
     margin-top: 45px;
@@ -3915,10 +3923,15 @@ h1 em {
     font-size: 25px;
   }
   .leads-table-wrap {
-    margin-top: 17px;
+    margin: 0 -20px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
   }
-  .leads-table th {
-    padding: 10px 11px;
+  .lead-pipeline-fields select {
+    padding: 15px;
+    font-size: 16px; /* Evita zoom automático no iOS e melhora o toque */
+    height: 50px;
   }
   .leads-table td {
     padding: 12px 11px;
@@ -5179,13 +5192,15 @@ h1 em {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 65px;
+  min-height: 65px;
+  height: auto;
   background: #111111;
   border-top: 1px solid rgba(240, 240, 240, 0.1);
   z-index: 100;
   justify-content: space-around;
   align-items: center;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: 10px;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 .mobile-bottom-nav .nav-item {
   display: flex;
@@ -5198,7 +5213,8 @@ h1 em {
   text-decoration: none;
   position: relative;
   width: 100%;
-  height: 100%;
+  height: auto;
+  padding: 5px 0;
 }
 .mobile-bottom-nav .nav-item.is-active {
   color: var(--acid);
@@ -5230,4 +5246,13 @@ h1 em {
   .admin-shell {
     padding-bottom: calc(65px + env(safe-area-inset-bottom));
   }
+  .mobile-only-inline {
+    display: inline-flex !important;
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+.mobile-only-inline {
+  display: none;
 }

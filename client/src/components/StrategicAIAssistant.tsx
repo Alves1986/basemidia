@@ -9,7 +9,7 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import type { StrategicAnalysis } from "@shared/operation";
 import type { Lead } from "@shared/leads";
@@ -58,16 +58,18 @@ export default function StrategicAIAssistant({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isChatting, setIsChatting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"strategist" | "copywriter" | "designer" | "traffic">("strategist");
+  const [activeTab, setActiveTab] = useState<
+    "strategist" | "copywriter" | "designer" | "traffic"
+  >("strategist");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [pipelineState, setPipelineState] = useState<WarRoomState>({
     strategist: { status: "idle", result: "" },
     copywriter: { status: "idle", result: "" },
     designer: { status: "idle", result: "" },
-    traffic: { status: "idle", result: "" }
+    traffic: { status: "idle", result: "" },
   });
-  
+
   const [isPipelineRunning, setIsPipelineRunning] = useState(false);
   const [pipelineError, setPipelineError] = useState("");
 
@@ -89,7 +91,7 @@ export default function StrategicAIAssistant({
       strategist: { status: "loading", result: "" },
       copywriter: { status: "idle", result: "" },
       designer: { status: "idle", result: "" },
-      traffic: { status: "idle", result: "" }
+      traffic: { status: "idle", result: "" },
     });
 
     try {
@@ -100,13 +102,14 @@ export default function StrategicAIAssistant({
         body: JSON.stringify({ leadId }),
       });
       const dataStrat = await resStrat.json();
-      if (!resStrat.ok) throw new Error(dataStrat.error || "Erro no Estrategista");
+      if (!resStrat.ok)
+        throw new Error(dataStrat.error || "Erro no Estrategista");
       const stratResult = dataStrat.result;
-      
+
       setPipelineState(prev => ({
         ...prev,
         strategist: { status: "success", result: stratResult },
-        copywriter: { status: "loading", result: "" }
+        copywriter: { status: "loading", result: "" },
       }));
       setActiveTab("strategist");
 
@@ -123,7 +126,7 @@ export default function StrategicAIAssistant({
       setPipelineState(prev => ({
         ...prev,
         copywriter: { status: "success", result: copyResult },
-        designer: { status: "loading", result: "" }
+        designer: { status: "loading", result: "" },
       }));
       setActiveTab("copywriter");
 
@@ -134,13 +137,14 @@ export default function StrategicAIAssistant({
         body: JSON.stringify({ context: copyResult }),
       });
       const dataDesigner = await resDesigner.json();
-      if (!resDesigner.ok) throw new Error(dataDesigner.error || "Erro no Designer");
+      if (!resDesigner.ok)
+        throw new Error(dataDesigner.error || "Erro no Designer");
       const designerResult = dataDesigner.result;
 
       setPipelineState(prev => ({
         ...prev,
         designer: { status: "success", result: designerResult },
-        traffic: { status: "loading", result: "" }
+        traffic: { status: "loading", result: "" },
       }));
       setActiveTab("designer");
 
@@ -148,24 +152,29 @@ export default function StrategicAIAssistant({
       const resTraffic = await fetch("/api/agents/traffic", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contextCopy: copyResult, contextStrategy: stratResult }),
+        body: JSON.stringify({
+          contextCopy: copyResult,
+          contextStrategy: stratResult,
+        }),
       });
       const dataTraffic = await resTraffic.json();
-      if (!resTraffic.ok) throw new Error(dataTraffic.error || "Erro no Gestor");
+      if (!resTraffic.ok)
+        throw new Error(dataTraffic.error || "Erro no Gestor");
       const trafficResult = dataTraffic.result;
 
       setPipelineState(prev => ({
         ...prev,
-        traffic: { status: "success", result: trafficResult }
+        traffic: { status: "success", result: trafficResult },
       }));
       setActiveTab("traffic");
-
     } catch (err: any) {
       setPipelineError(err.message);
       setPipelineState(prev => {
         const next = { ...prev };
-        if (next.strategist.status === "loading") next.strategist.status = "error";
-        if (next.copywriter.status === "loading") next.copywriter.status = "error";
+        if (next.strategist.status === "loading")
+          next.strategist.status = "error";
+        if (next.copywriter.status === "loading")
+          next.copywriter.status = "error";
         if (next.designer.status === "loading") next.designer.status = "error";
         if (next.traffic.status === "loading") next.traffic.status = "error";
         return next;
@@ -219,9 +228,20 @@ export default function StrategicAIAssistant({
 
   const renderStatusIcon = (status: AgentStatus) => {
     if (status === "loading") return <Loader2 className="spin" size={16} />;
-    if (status === "success") return <CheckCircle2 size={16} style={{ color: "#22c55e" }} />;
-    if (status === "error") return <AlertCircle size={16} style={{ color: "#ef4444" }} />;
-    return <div style={{ width: 16, height: 16, borderRadius: "50%", border: "2px solid #ccc" }} />;
+    if (status === "success")
+      return <CheckCircle2 size={16} style={{ color: "#22c55e" }} />;
+    if (status === "error")
+      return <AlertCircle size={16} style={{ color: "#ef4444" }} />;
+    return (
+      <div
+        style={{
+          width: 16,
+          height: 16,
+          borderRadius: "50%",
+          border: "2px solid #ccc",
+        }}
+      />
+    );
   };
 
   return (
@@ -238,7 +258,10 @@ export default function StrategicAIAssistant({
       {!hasResults && !isPipelineRunning && (
         <div className="ai-intro-state">
           <p className="settings-intro">
-            A <strong>Sala de Guerra</strong> reúne seus agentes especializados: Estrategista, Copywriter, Designer e Gestor de Tráfego. Eles vão analisar o briefing em sequência para montar toda a campanha do lead.
+            A <strong>Sala de Guerra</strong> reúne seus agentes especializados:
+            Estrategista, Copywriter, Designer e Gestor de Tráfego. Eles vão
+            analisar o briefing em sequência para montar toda a campanha do
+            lead.
           </p>
           <div className="analysis-inline-action">
             <button
@@ -263,76 +286,166 @@ export default function StrategicAIAssistant({
 
       {(hasResults || isPipelineRunning) && (
         <div className="war-room-active-state" style={{ marginTop: 20 }}>
-          
-          <div className="war-room-pipeline" style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
-            <div className="agent-step" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 15px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8 }}>
+          <div
+            className="war-room-pipeline"
+            style={{
+              display: "flex",
+              gap: 10,
+              marginBottom: 20,
+              flexWrap: "wrap",
+            }}
+          >
+            <div
+              className="agent-step"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 15px",
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 8,
+              }}
+            >
               {renderStatusIcon(pipelineState.strategist.status)}
               <span>1. Estrategista</span>
             </div>
-            <div className="agent-step" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 15px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8 }}>
+            <div
+              className="agent-step"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 15px",
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 8,
+              }}
+            >
               {renderStatusIcon(pipelineState.copywriter.status)}
               <span>2. Copywriter</span>
             </div>
-            <div className="agent-step" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 15px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8 }}>
+            <div
+              className="agent-step"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 15px",
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 8,
+              }}
+            >
               {renderStatusIcon(pipelineState.designer.status)}
               <span>3. Designer</span>
             </div>
-            <div className="agent-step" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 15px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8 }}>
+            <div
+              className="agent-step"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 15px",
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 8,
+              }}
+            >
               {renderStatusIcon(pipelineState.traffic.status)}
               <span>4. Gestor Ads</span>
             </div>
           </div>
 
-          <div className="war-room-tabs" style={{ display: 'flex', gap: 5, borderBottom: '1px solid #e2e8f0', marginBottom: 20 }}>
-            {['strategist', 'copywriter', 'designer', 'traffic'].map((tab) => (
-              <button 
+          <div
+            className="war-room-tabs"
+            style={{
+              display: "flex",
+              gap: 5,
+              borderBottom: "1px solid #e2e8f0",
+              marginBottom: 20,
+            }}
+          >
+            {["strategist", "copywriter", "designer", "traffic"].map(tab => (
+              <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
                 style={{
-                  padding: '10px 20px',
-                  background: activeTab === tab ? '#eff6ff' : 'transparent',
-                  color: activeTab === tab ? '#2563eb' : '#64748b',
-                  border: 'none',
-                  borderBottom: activeTab === tab ? '2px solid #2563eb' : '2px solid transparent',
-                  cursor: 'pointer',
+                  padding: "10px 20px",
+                  background: activeTab === tab ? "#eff6ff" : "transparent",
+                  color: activeTab === tab ? "#2563eb" : "#64748b",
+                  border: "none",
+                  borderBottom:
+                    activeTab === tab
+                      ? "2px solid #2563eb"
+                      : "2px solid transparent",
+                  cursor: "pointer",
                   fontWeight: 500,
-                  textTransform: 'capitalize'
+                  textTransform: "capitalize",
                 }}
               >
-                {tab === 'traffic' ? 'Gestor' : tab}
+                {tab === "traffic" ? "Gestor" : tab}
               </button>
             ))}
           </div>
 
-          <div className="war-room-result" style={{ background: '#fff', padding: 20, border: '1px solid #e2e8f0', borderRadius: 8, maxHeight: 400, overflowY: 'auto' }}>
-            {pipelineState[activeTab].status === 'loading' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#64748b' }}>
-                <Loader2 className="spin" size={18} /> O agente está trabalhando...
+          <div
+            className="war-room-result"
+            style={{
+              background: "#fff",
+              padding: 20,
+              border: "1px solid #e2e8f0",
+              borderRadius: 8,
+              maxHeight: 400,
+              overflowY: "auto",
+            }}
+          >
+            {pipelineState[activeTab].status === "loading" && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  color: "#64748b",
+                }}
+              >
+                <Loader2 className="spin" size={18} /> O agente está
+                trabalhando...
               </div>
             )}
-            {pipelineState[activeTab].status === 'idle' && (
-              <div style={{ color: '#64748b' }}>Aguardando a etapa anterior...</div>
+            {pipelineState[activeTab].status === "idle" && (
+              <div style={{ color: "#64748b" }}>
+                Aguardando a etapa anterior...
+              </div>
             )}
-            {pipelineState[activeTab].status === 'success' && (
-              <div className="markdown-content" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+            {pipelineState[activeTab].status === "success" && (
+              <div
+                className="markdown-content"
+                style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}
+              >
                 {pipelineState[activeTab].result}
               </div>
             )}
-            {pipelineState[activeTab].status === 'error' && (
-              <div style={{ color: '#ef4444' }}>Ocorreu um erro nesta etapa. {pipelineError}</div>
+            {pipelineState[activeTab].status === "error" && (
+              <div style={{ color: "#ef4444" }}>
+                Ocorreu um erro nesta etapa. {pipelineError}
+              </div>
             )}
           </div>
 
           {/* CHAT INTERFACE - Somente se finalizou (ou se pelo menos 1 já acabou) */}
           {hasResults && (
             <div className="ai-chat-container" style={{ marginTop: 30 }}>
-              <h4 style={{ marginBottom: 15, fontSize: 14, color: '#475569' }}>Conversar com a Equipe:</h4>
+              <h4 style={{ marginBottom: 15, fontSize: 14, color: "#475569" }}>
+                Conversar com a Equipe:
+              </h4>
               <div className="chat-messages">
                 {messages.length === 0 ? (
                   <div className="chat-empty">
                     <Bot size={24} />
                     <p>
-                      Pergunte sobre ajustes na estratégia, copy ou criativos. A IA já tem todo o contexto.
+                      Pergunte sobre ajustes na estratégia, copy ou criativos. A
+                      IA já tem todo o contexto.
                     </p>
                   </div>
                 ) : (
