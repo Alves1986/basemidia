@@ -1,6 +1,4 @@
 import { useMemo, useState, useRef } from "react";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -39,7 +37,13 @@ function formatWhatsAppHref(value: string, message?: string) {
       ? `55${digits}`
       : digits;
   if (!normalized) return "#";
-  return `https://wa.me/${normalized}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
+  const isMobile = /iPhone|Android|iPad|iPod/i.test(navigator.userAgent);
+  const textParam = message ? `text=${encodeURIComponent(message)}` : "";
+  
+  if (isMobile) {
+    return `https://wa.me/${normalized}${message ? `?${textParam}` : ""}`;
+  }
+  return `https://web.whatsapp.com/send?phone=${normalized}${message ? `&${textParam}` : ""}`;
 }
 
 function whatsappGreeting(lead: Lead) {
@@ -144,62 +148,26 @@ export default function StrategicBriefingForm({
   const formRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = () => {
     if (!formRef.current) return;
-    try {
-      setIsExporting(true);
-      toast.loading("Gerando PDF, aguarde...", { id: "pdf-export" });
-      
-      const formEl = formRef.current;
-      
-      // Temporarily expand the element to capture its full height
-      const originalMaxHeight = formEl.style.maxHeight;
-      const originalOverflow = formEl.style.overflow;
-      formEl.style.maxHeight = "none";
-      formEl.style.overflow = "visible";
+    
+    const formEl = formRef.current;
+    const textareas = formEl.querySelectorAll("textarea");
+    
+    // Temporarily expand all textareas to their full content height for printing
+    const originalHeights = Array.from(textareas).map(ta => ta.style.height);
+    textareas.forEach(ta => {
+      ta.style.height = "auto";
+      ta.style.height = `${ta.scrollHeight + 10}px`;
+    });
 
-      // Expand all textareas to their full content height
-      const textareas = formEl.querySelectorAll("textarea");
-      const originalHeights = Array.from(textareas).map(ta => ta.style.height);
-      textareas.forEach(ta => {
-        ta.style.height = "auto";
-        ta.style.height = `${ta.scrollHeight + 10}px`;
-      });
-
-      const canvas = await html2canvas(formEl, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-        windowWidth: formEl.scrollWidth
-      });
-      
-      // Restore original styles
-      formEl.style.maxHeight = originalMaxHeight;
-      formEl.style.overflow = originalOverflow;
-      textareas.forEach((ta, i) => {
-        ta.style.height = originalHeights[i];
-      });
-      
-      const imgData = canvas.toDataURL("image/png");
-      
-      // Generate a single continuous PDF page to prevent text cutoff
-      const pdf = new jsPDF({
-        orientation: "p",
-        unit: "px",
-        format: [canvas.width / 2, canvas.height / 2]
-      });
-      
-      pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
-      
-      pdf.save(`Briefing-${lead.name.replace(/\s+/g, "-")}.pdf`);
-      toast.success("PDF exportado com sucesso!", { id: "pdf-export" });
-    } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      toast.error("Ocorreu um erro ao exportar o PDF.", { id: "pdf-export" });
-    } finally {
-      setIsExporting(false);
-    }
+    // Use native browser print which allows saving as PDF
+    window.print();
+    
+    // Restore original styles
+    textareas.forEach((ta, i) => {
+      ta.style.height = originalHeights[i];
+    });
   };
 
   return (
