@@ -315,6 +315,26 @@ export default function Configuracoes() {
                   maxLength={200}
                 />
               </label>
+              <label>
+                Modelo de IA
+                <select
+                  value={settings.openRouterModel ?? "google/gemini-2.5-flash"}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      openRouterModel: event.target.value,
+                    }));
+                  }}
+                >
+                  <option value="google/gemini-2.5-flash">Gemini 2.5 Flash (Rápido e Inteligente)</option>
+                  <option value="google/gemini-2.5-pro">Gemini 2.5 Pro (Avançado)</option>
+                  <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (Excelente em Copywriting)</option>
+                  <option value="openai/gpt-4o-mini">GPT-4o Mini (Ótimo Custo Benefício)</option>
+                  <option value="openai/gpt-4o">GPT-4o (Máxima Qualidade)</option>
+                  <option value="openrouter/free">Modelos Gratuitos (Pode falhar)</option>
+                </select>
+              </label>
             </div>
           </section>
           <div className="settings-actions">

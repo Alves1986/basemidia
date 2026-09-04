@@ -20,20 +20,15 @@ export interface OperationSettings {
   messages: OperationMessageSettings;
   defaultFollowUpDays: number;
   openRouterApiKey?: string;
+  openRouterModel?: string;
 }
 
 export interface StrategicAnalysis {
-  diagnosis: string;
-  campaignAngles: Array<{
-    title: string;
-    rationale: string;
-    hook: string;
-    callToAction: string;
-  }>;
-  audienceHypotheses: string[];
-  meetingQuestions: string[];
-  risksAndGaps: string[];
-  recommendedNextStep: string;
+  funnelDiagnosis: string;
+  irresistibleOffer: string;
+  audienceAndTargeting: string[];
+  copywritingHooks: string[];
+  closingScript: string;
   generatedAt: number;
 }
 
@@ -94,4 +89,5 @@ export const defaultOperationSettings: OperationSettings = {
   },
   defaultFollowUpDays: 2,
   openRouterApiKey: "",
+  openRouterModel: "google/gemini-2.5-flash",
 };

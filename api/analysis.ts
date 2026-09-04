@@ -18,38 +18,23 @@ interface VercelRequest {
 const analysisSchema = {
   type: "object",
   properties: {
-    diagnosis: { type: "string" },
-    campaignAngles: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          title: { type: "string" },
-          rationale: { type: "string" },
-          hook: { type: "string" },
-          callToAction: { type: "string" },
-        },
-        required: ["title", "rationale", "hook", "callToAction"],
-        additionalProperties: false,
-      },
-    },
-    audienceHypotheses: { type: "array", items: { type: "string" } },
-    meetingQuestions: { type: "array", items: { type: "string" } },
-    risksAndGaps: { type: "array", items: { type: "string" } },
-    recommendedNextStep: { type: "string" },
+    funnelDiagnosis: { type: "string" },
+    irresistibleOffer: { type: "string" },
+    audienceAndTargeting: { type: "array", items: { type: "string" } },
+    copywritingHooks: { type: "array", items: { type: "string" } },
+    closingScript: { type: "string" },
   },
   required: [
-    "diagnosis",
-    "campaignAngles",
-    "audienceHypotheses",
-    "meetingQuestions",
-    "risksAndGaps",
-    "recommendedNextStep",
+    "funnelDiagnosis",
+    "irresistibleOffer",
+    "audienceAndTargeting",
+    "copywritingHooks",
+    "closingScript",
   ],
   additionalProperties: false,
 } as const;
 
-function openRouterConfig(settingsKey?: string) {
+function openRouterConfig(settingsKey?: string, settingsModel?: string) {
   const apiKey = settingsKey || process.env.OPENROUTER_API_KEY;
   if (!apiKey) return null;
   return {
@@ -57,7 +42,7 @@ function openRouterConfig(settingsKey?: string) {
     baseUrl: (
       process.env.OPENROUTER_API_BASE_URL || "https://openrouter.ai/api/v1"
     ).replace(/\/$/, ""),
-    model: process.env.OPENROUTER_MODEL || "openrouter/free",
+    model: settingsModel || process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
   };
 }
 
@@ -81,27 +66,13 @@ function cleanAnalysis(value: unknown): StrategicAnalysis {
           .filter(Boolean)
           .slice(0, 12)
       : [];
-  const campaignAngles = Array.isArray(source.campaignAngles)
-    ? source.campaignAngles.slice(0, 6).flatMap(item => {
-        if (!item || typeof item !== "object") return [];
-        const angle = item as Record<string, unknown>;
-        return [
-          {
-            title: text(angle.title),
-            rationale: text(angle.rationale),
-            hook: text(angle.hook),
-            callToAction: text(angle.callToAction),
-          },
-        ];
-      })
-    : [];
+  
   return {
-    diagnosis: text(source.diagnosis),
-    campaignAngles,
-    audienceHypotheses: strings(source.audienceHypotheses),
-    meetingQuestions: strings(source.meetingQuestions),
-    risksAndGaps: strings(source.risksAndGaps),
-    recommendedNextStep: text(source.recommendedNextStep),
+    funnelDiagnosis: text(source.funnelDiagnosis),
+    irresistibleOffer: text(source.irresistibleOffer),
+    audienceAndTargeting: strings(source.audienceAndTargeting),
+    copywritingHooks: strings(source.copywritingHooks),
+    closingScript: text(source.closingScript),
     generatedAt: Date.now(),
   };
 }
@@ -134,13 +105,13 @@ export default async function handler(
       response
     );
   const settings = await getOperationSettings();
-  const config = openRouterConfig(settings.openRouterApiKey);
+  const config = openRouterConfig(settings.openRouterApiKey, settings.openRouterModel);
   if (!config)
     return sendWebResponse(
       jsonResponse(
         {
           error:
-            "A análise por IA ainda não foi configurada. Insira OPENROUTER_API_KEY no Vercel.",
+            "A análise por IA ainda não foi configurada. Insira OPENROUTER_API_KEY no Vercel ou Configurações.",
         },
         { status: 503 }
       ),
@@ -180,21 +151,22 @@ export default async function handler(
         ...(process.env.OPENROUTER_SITE_URL
           ? { "HTTP-Referer": process.env.OPENROUTER_SITE_URL }
           : {}),
-        "X-OpenRouter-Title": "BASE MÍDIA — Análise estratégica",
+        "X-OpenRouter-Title": "BASE MÍDIA — Playbook de Aceleração",
       },
       body: JSON.stringify({
         model: config.model,
+        response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
-            content: `Você é estrategista sênior da BASE MÍDIA. Analise o contexto comercial e o briefing. Seja prático, específico e responsável: não invente dados, sinalize lacunas e não trate hipóteses como fatos. Responda EXCLUSIVAMENTE em formato JSON válido, aderindo estritamente a esta estrutura (sem markdown ou texto adicional):\n${JSON.stringify(analysisSchema)}`,
+            content: `Você é estrategista sênior da BASE MÍDIA, focado em acelerar vendas através de tráfego pago. Construa um Playbook de Aceleração para este lead com base no briefing. Seja ultra-específico, sem jargões genéricos. Responda EXCLUSIVAMENTE em formato JSON aderindo a esta estrutura:\n${JSON.stringify(analysisSchema)}`,
           },
           {
             role: "user",
-            content: `Transforme este lead e briefing em um diagnóstico para reunião e planejamento de campanha:\n${prompt}`,
+            content: `Gere o Playbook de Aceleração para o seguinte lead:\n${prompt}`,
           },
         ],
-        max_tokens: 2800,
+        max_tokens: 3000,
       }),
       signal: AbortSignal.timeout(30000),
     });

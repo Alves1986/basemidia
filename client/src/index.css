@@ -1,7 +1,152 @@
-/* Design: Dark Performance Lab — fundo #101010, verde ácido #38FF14, estrutura assimétrica, sinais de dados e motion curto. */
+/* Design: Dark Performance Lab â€” fundo #101010, verde Ã¡cido #38FF14, estrutura assimÃ©trica, sinais de dados e motion curto. */
 @import "tailwindcss";
 @import "tw-animate-css";
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *));/* AI Chat Assistant */
+.ai-intro-state, .ai-active-state {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.playbook-accordion {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.playbook-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 15px;
+  background: var(--surface-light);
+  border: none;
+  color: var(--text-base);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.playbook-toggle:hover {
+  background: var(--hover);
+}
+.playbook-content {
+  padding: 20px;
+  border-top: 1px solid var(--border);
+}
+.script-box {
+  background: var(--background);
+  padding: 15px;
+  border-left: 3px solid var(--acid);
+  border-radius: 4px;
+  font-style: italic;
+  margin-top: 10px;
+}
+.ai-chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  height: 400px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  gap: 10px;
+  text-align: center;
+}
+.chat-bubble {
+  display: flex;
+  gap: 10px;
+  max-width: 85%;
+}
+.chat-bubble.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+.chat-bubble.assistant {
+  align-self: flex-start;
+}
+.chat-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  color: var(--text-base);
+  flex-shrink: 0;
+}
+.chat-bubble.user .chat-avatar {
+  background: var(--acid);
+  color: #000;
+}
+.chat-bubble.assistant .chat-avatar {
+  background: var(--primary);
+  color: #fff;
+}
+.chat-content {
+  background: var(--background);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-base);
+}
+.chat-bubble.user .chat-content {
+  background: var(--surface-light);
+}
+.chat-input-form {
+  display: flex;
+  padding: 15px;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-light);
+}
+.chat-input-form input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--background);
+  color: var(--text-base);
+  outline: none;
+}
+.chat-input-form input:focus {
+  border-color: var(--acid);
+}
+.chat-input-form button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--acid);
+  color: #000;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.chat-input-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 @theme inline {
   --radius-sm: 3px;
   --radius-md: 5px;
@@ -971,7 +1116,7 @@ h1 em {
   color: var(--acid);
 }
 
-/* ── Stepped Form Wizard ── */
+/* â”€â”€ Stepped Form Wizard â”€â”€ */
 .modal-form-stepped {
   display: flex;
   flex-direction: column;
@@ -1077,7 +1222,7 @@ h1 em {
   color: #f0f0f0;
 }
 
-/* ── Chip selection ── */
+/* â”€â”€ Chip selection â”€â”€ */
 .chip-group {
   margin-bottom: 20px;
 }
@@ -1680,7 +1825,7 @@ h1 em {
   }
 }
 
-/* Área restrita e gestão — mesma linguagem Dark Performance Lab, com hierarquia operacional. */
+/* Ãrea restrita e gestÃ£o â€” mesma linguagem Dark Performance Lab, com hierarquia operacional. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -2957,7 +3102,7 @@ h1 em {
   font-weight: 600;
 }
 .briefing-field-label::before {
-  content: "◆";
+  content: "â—†";
   margin-right: 7px;
   color: #74ed00;
   font-size: 8px;
@@ -4185,7 +4330,7 @@ h1 em {
   }
 }
 
-/* ── Client Briefing Page ── */
+/* â”€â”€ Client Briefing Page â”€â”€ */
 .cb-wrap {
   min-height: 100vh;
   background: var(--bg);
@@ -4461,7 +4606,7 @@ h1 em {
   }
 }
 
-/* ── Print Media Query for PDF Export ── */
+/* â”€â”€ Print Media Query for PDF Export â”€â”€ */
 @media print {
   body * {
     visibility: hidden;
@@ -4527,7 +4672,7 @@ h1 em {
   pointer-events: none;
 }
 
-/* ── Force Light Theme (White Background) for Briefing Workspace (Admin View) ── */
+/* â”€â”€ Force Light Theme (White Background) for Briefing Workspace (Admin View) â”€â”€ */
 .briefing-workspace {
   background: #ffffff !important;
   color: #111111 !important;
@@ -4655,7 +4800,7 @@ h1 em {
   }
 }
 
-/* ── Print Media Query for PDF Export ── */
+/* â”€â”€ Print Media Query for PDF Export â”€â”€ */
 @media print {
   body * {
     visibility: hidden;
@@ -4721,7 +4866,7 @@ h1 em {
   pointer-events: none;
 }
 
-/* ── Force Light Theme (White Background) for Briefing Workspace (Admin View) ── */
+/* â”€â”€ Force Light Theme (White Background) for Briefing Workspace (Admin View) â”€â”€ */
 .briefing-workspace {
   background: #ffffff !important;
   color: #111111 !important;
@@ -4850,7 +4995,7 @@ h1 em {
   }
 }
 
-/* ── Print Media Query for PDF Export ── */
+/* â”€â”€ Print Media Query for PDF Export â”€â”€ */
 @media print {
   html, body, #root, .admin-shell {
     height: auto !important;
@@ -4921,7 +5066,7 @@ h1 em {
   pointer-events: none;
 }
 
-/* ── Force Light Theme (White Background) for Briefing Workspace (Admin View) ── */
+/* â”€â”€ Force Light Theme (White Background) for Briefing Workspace (Admin View) â”€â”€ */
 .briefing-workspace {
   background: #ffffff !important;
   color: #111111 !important;

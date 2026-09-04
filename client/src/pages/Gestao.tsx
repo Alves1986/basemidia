@@ -35,7 +35,7 @@ import {
   type LeadStatus,
 } from "@shared/leads";
 import StrategicBriefingForm from "../components/StrategicBriefingForm";
-import StrategicAnalysisPanel from "../components/StrategicAnalysisPanel";
+import StrategicAIAssistant from "../components/StrategicAIAssistant";
 import {
   defaultOperationSettings,
   type OperationSettings,
@@ -764,9 +764,10 @@ export default function Gestao() {
                 <p>{selectedLead.goal}</p>
               </div>
             </div>
-            <StrategicAnalysisPanel
-              analysis={selectedLead.strategicAnalysis}
-              hasBriefing={Boolean(selectedLead.briefing)}
+            <StrategicAIAssistant
+              leadId={selectedLead.id}
+              analysis={selectedLead.strategicAnalysis as StrategicAnalysis}
+              hasBriefing={!!selectedLead.briefing}
               loading={analyzingLeadId === selectedLead.id}
               error={analysisError}
               onGenerate={() => void handleGenerateAnalysis()}
