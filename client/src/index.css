@@ -2976,6 +2976,9 @@ h1 em {
 }
 .briefing-workspace-topbar .modal-close {
   padding: 8px;
+  position: relative;
+  top: auto;
+  right: auto;
 }
 .briefing-workspace-actions,
 .briefing-form-footer-actions {
