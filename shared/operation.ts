@@ -15,12 +15,22 @@ export interface OperationMessageSettings {
   followUp: string;
 }
 
+export interface AgencySettings {
+  name: string;
+  cnpj: string;
+  address: string;
+  legalRepresentative: string;
+  email: string;
+  forumCity: string;
+}
+
 export interface OperationSettings {
   stages: FunnelStageSettings[];
   messages: OperationMessageSettings;
   defaultFollowUpDays: number;
   openRouterApiKey?: string;
   openRouterModel?: string;
+  agencySettings?: AgencySettings;
 }
 
 export interface StrategicAnalysis {
@@ -90,4 +100,12 @@ export const defaultOperationSettings: OperationSettings = {
   defaultFollowUpDays: 2,
   openRouterApiKey: "",
   openRouterModel: "google/gemini-2.5-flash",
+  agencySettings: {
+    name: "",
+    cnpj: "",
+    address: "",
+    legalRepresentative: "",
+    email: "",
+    forumCity: "São Paulo - SP",
+  },
 };

@@ -39,21 +39,37 @@ function parseStoredLead(value: unknown): Lead | null {
   ) {
     return null;
   }
-  const statusCandidate = lead.status as LeadStatus | undefined;
+  const resultLead: Lead = {
+    id: lead.id,
+    createdAt: lead.createdAt,
+    name: lead.name,
+    whatsapp: lead.whatsapp,
+    email: lead.email,
+    companyName: lead.companyName ?? lead.name,
+    segment: lead.segment,
+    ads: lead.ads,
+    pain: lead.pain,
+    goal: lead.goal,
+    status: lead.status as LeadStatus,
+    nextAction: lead.nextAction || "",
+    nextActionAt: typeof lead.nextActionAt === "string" ? lead.nextActionAt : undefined,
+    briefing: lead.briefing,
+    briefingUpdatedAt: typeof lead.briefingUpdatedAt === "number" ? lead.briefingUpdatedAt : undefined,
+    strategicAnalysis: lead.strategicAnalysis,
+    contract: lead.contract,
+  };
+
   const status =
-    statusCandidate && leadStatuses.includes(statusCandidate)
-      ? statusCandidate
-      : lead.briefing
+    leadStatuses.includes(resultLead.status)
+      ? resultLead.status
+      : resultLead.briefing
         ? "briefing"
         : "novo";
+
   return {
-    ...lead,
+    ...resultLead,
     status,
-    nextAction: typeof lead.nextAction === "string" ? lead.nextAction : "",
-    ...(typeof lead.nextActionAt === "string"
-      ? { nextActionAt: lead.nextActionAt }
-      : {}),
-  } as Lead;
+  };
 }
 
 export async function saveLead(input: LeadInput) {
@@ -142,6 +158,24 @@ export async function saveLeadAnalysis(
   const lead = await readLead(pathname);
   if (!lead) throw new Error("Lead não encontrado.");
   const updatedLead: Lead = { ...lead, strategicAnalysis };
+  await put(pathname, JSON.stringify(updatedLead), {
+    access: "private",
+    contentType: "application/json",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+  return updatedLead;
+}
+
+export async function updateLeadContract(
+  leadId: string,
+  contract: Lead["contract"]
+) {
+  assertStorageConfigured();
+  const pathname = `${LEADS_PREFIX}${leadId}.json`;
+  const lead = await readLead(pathname);
+  if (!lead) throw new Error("Lead não encontrado.");
+  const updatedLead: Lead = { ...lead, contract };
   await put(pathname, JSON.stringify(updatedLead), {
     access: "private",
     contentType: "application/json",

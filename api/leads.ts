@@ -257,6 +257,109 @@ async function handleClientGetLead(request: Request, body: unknown) {
   }
 }
 
+async function handleSaveContract(request: Request, body: unknown) {
+  if (!(await getAuthenticatedAdmin(request))) {
+    return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
+  }
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse(
+      {
+        error: "O armazenamento de leads ainda não foi configurado.",
+      },
+      { status: 503 }
+    );
+  }
+
+  if (!body || typeof body !== "object") {
+    return jsonResponse({ error: "Envie os dados do contrato." }, { status: 400 });
+  }
+  const source = body as Record<string, unknown>;
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+  const contract = source.contract as any;
+
+  if (!leadId || !contract) {
+    return jsonResponse(
+      { error: "Revise os campos do contrato antes de salvar." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const { updateLeadContract } = await import("./_lib/leads.js");
+    const lead = await updateLeadContract(leadId, contract);
+    return jsonResponse({ success: true, lead });
+  } catch (error) {
+    console.error("[Leads] Falha ao salvar contrato", error);
+    return jsonResponse(
+      { error: "Não foi possível salvar este contrato agora." },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleClientSignContract(request: Request, body: unknown) {
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse(
+      { error: "O armazenamento de leads ainda não foi configurado." },
+      { status: 503 }
+    );
+  }
+
+  if (!body || typeof body !== "object") {
+    return jsonResponse(
+      { error: "Dados inválidos." },
+      { status: 400 }
+    );
+  }
+  const source = body as Record<string, unknown>;
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+
+  if (!leadId) {
+    return jsonResponse(
+      { error: "Lead ID obrigatório." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const lead = await getLeadById(leadId);
+    if (!lead || !lead.contract) {
+      return jsonResponse({ error: "Contrato não encontrado." }, { status: 404 });
+    }
+
+    if (lead.contract.status === "signed_by_client") {
+       return jsonResponse({ error: "Este contrato já foi assinado." }, { status: 400 });
+    }
+
+    const ip = request.headers.get("x-forwarded-for") || "IP desconhecido";
+    const date = Date.now();
+
+    const signedContract = {
+      ...lead.contract,
+      status: "signed_by_client" as const,
+      clientSignatureDate: date,
+      clientSignatureIP: ip,
+    };
+
+    const { updateLeadContract, updateLeadPipeline } = await import("./_lib/leads.js");
+    await updateLeadContract(leadId, signedContract);
+    
+    // Automatically move to 'cliente' stage if signed
+    await updateLeadPipeline(leadId, {
+       status: "cliente",
+       nextAction: "Planejar onboarding",
+    });
+
+    return jsonResponse({ success: true, contract: signedContract });
+  } catch (error) {
+    console.error("[Leads] Falha ao assinar contrato pelo cliente", error);
+    return jsonResponse(
+      { error: "Não foi possível assinar este contrato agora." },
+      { status: 500 }
+    );
+  }
+}
+
 async function handleClientSaveBriefing(request: Request, body: unknown) {
   if (!isLeadStorageConfigured()) {
     return jsonResponse(
@@ -353,6 +456,28 @@ export default async function handler(
     ) {
       return sendWebResponse(
         await handleClientSaveBriefing(webRequest, body),
+        response
+      );
+    }
+
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "save-contract"
+    ) {
+      return sendWebResponse(
+        await handleSaveContract(webRequest, body),
+        response
+      );
+    }
+
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "client-sign-contract"
+    ) {
+      return sendWebResponse(
+        await handleClientSignContract(webRequest, body),
         response
       );
     }

@@ -129,6 +129,9 @@ export default function Configuracoes() {
           <a className="is-active" href="#funil">
             <Settings2 size={17} /> Configurações
           </a>
+          <a href="#contratos">
+            <Settings2 size={17} /> Base Agência
+          </a>
         </nav>
         <div className="admin-sidebar-foot">
           <button
@@ -396,6 +399,141 @@ export default function Configuracoes() {
               </label>
             </div>
           </section>
+          
+          <section className="settings-card" id="contratos">
+            <div className="admin-section-head">
+              <div>
+                <span className="section-index">
+                  / 04 — CONTRATOS
+                </span>
+                <h2>Dados Base da Agência</h2>
+              </div>
+            </div>
+            <p className="settings-intro">
+              Preencha os dados da sua empresa. Eles serão puxados automaticamente
+              ao gerar um novo contrato para o lead.
+            </p>
+            <div
+              className="settings-message-grid"
+              style={{ marginTop: "20px" }}
+            >
+              <label>
+                Razão Social
+                <input
+                  type="text"
+                  value={settings.agencySettings?.name ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      agencySettings: {
+                        ...(current.agencySettings || defaultOperationSettings.agencySettings!),
+                        name: event.target.value,
+                      },
+                    }));
+                  }}
+                  placeholder="Nome da sua Agência LTDA"
+                  maxLength={150}
+                />
+              </label>
+              <label>
+                CNPJ
+                <input
+                  type="text"
+                  value={settings.agencySettings?.cnpj ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      agencySettings: {
+                        ...(current.agencySettings || defaultOperationSettings.agencySettings!),
+                        cnpj: event.target.value,
+                      },
+                    }));
+                  }}
+                  placeholder="00.000.000/0000-00"
+                  maxLength={20}
+                />
+              </label>
+              <label>
+                Endereço Completo
+                <input
+                  type="text"
+                  value={settings.agencySettings?.address ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      agencySettings: {
+                        ...(current.agencySettings || defaultOperationSettings.agencySettings!),
+                        address: event.target.value,
+                      },
+                    }));
+                  }}
+                  placeholder="Av. Exemplo, 123, Sala 4, São Paulo - SP"
+                  maxLength={250}
+                />
+              </label>
+              <label>
+                Nome do Representante Legal
+                <input
+                  type="text"
+                  value={settings.agencySettings?.legalRepresentative ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      agencySettings: {
+                        ...(current.agencySettings || defaultOperationSettings.agencySettings!),
+                        legalRepresentative: event.target.value,
+                      },
+                    }));
+                  }}
+                  placeholder="Seu Nome Completo"
+                  maxLength={100}
+                />
+              </label>
+              <label>
+                E-mail de Contato
+                <input
+                  type="email"
+                  value={settings.agencySettings?.email ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      agencySettings: {
+                        ...(current.agencySettings || defaultOperationSettings.agencySettings!),
+                        email: event.target.value,
+                      },
+                    }));
+                  }}
+                  placeholder="contato@suaagencia.com"
+                  maxLength={100}
+                />
+              </label>
+              <label>
+                Foro (Comarca)
+                <input
+                  type="text"
+                  value={settings.agencySettings?.forumCity ?? ""}
+                  onChange={event => {
+                    setSaved(false);
+                    setSettings(current => ({
+                      ...current,
+                      agencySettings: {
+                        ...(current.agencySettings || defaultOperationSettings.agencySettings!),
+                        forumCity: event.target.value,
+                      },
+                    }));
+                  }}
+                  placeholder="São Paulo - SP"
+                  maxLength={100}
+                />
+              </label>
+            </div>
+          </section>
+
           <div className="settings-actions">
             <button
               className="primary-cta"

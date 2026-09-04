@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Gestao from "./pages/Gestao";
 import Configuracoes from "./pages/Configuracoes";
 import ClientBriefing from "./pages/ClientBriefing";
+import ClientContract from "./pages/ClientContract";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/gestao" component={Gestao} />
       <Route path="/configuracoes" component={Configuracoes} />
       <Route path="/briefing/:leadId" component={ClientBriefing} />
+      <Route path="/contrato/:leadId" component={ClientContract} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

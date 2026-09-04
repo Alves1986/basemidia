@@ -41,6 +41,7 @@ import {
   type OperationSettings,
   type StrategicAnalysis,
 } from "@shared/operation";
+import { ContractGenerator } from "../components/ContractGenerator";
 
 interface AuthState {
   authenticated?: boolean;
@@ -136,6 +137,7 @@ export default function Gestao() {
   const [analysisError, setAnalysisError] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [deletingLead, setDeletingLead] = useState(false);
+  const [contractGeneratorLead, setContractGeneratorLead] = useState<Lead | null>(null);
 
   async function loadSettings() {
     try {
@@ -922,6 +924,12 @@ export default function Gestao() {
                 >
                   <Link size={15} /> Enviar link do briefing
                 </button>
+                <button
+                  className="admin-secondary-button"
+                  onClick={() => setContractGeneratorLead(selectedLead)}
+                >
+                  <FilePenLine size={15} /> {selectedLead.contract ? "Ver Contrato" : "Gerar Contrato"}
+                </button>
               </div>
               <div className="footer-secondary-actions">
                 <button
@@ -991,6 +999,24 @@ export default function Gestao() {
           <span>Ajustes</span>
         </a>
       </nav>
+
+      {contractGeneratorLead && (
+        <ContractGenerator
+          lead={contractGeneratorLead}
+          isOpen={!!contractGeneratorLead}
+          onClose={() => setContractGeneratorLead(null)}
+          onSuccess={(updatedLead) => {
+            setLeads(current =>
+              current.map(lead =>
+                lead.id === updatedLead.id ? updatedLead : lead
+              )
+            );
+            if (selectedLead?.id === updatedLead.id) {
+              setSelectedLead(updatedLead);
+            }
+          }}
+        />
+      )}
     </main>
   );
 }

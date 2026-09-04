@@ -65,6 +65,29 @@ export const leadStatuses: LeadStatus[] = [
   "perdido",
 ];
 
+export interface Contract {
+  agencyName: string;
+  agencyCnpj: string;
+  agencyAddress: string;
+  agencyRepresentative: string;
+  agencyEmail: string;
+  clientName: string;
+  clientCnpjCpf: string;
+  clientAddress: string;
+  clientEmail: string;
+  serviceDescription: string;
+  investmentValue: string;
+  setupValue: string;
+  durationMonths: string;
+  paymentConditions: string;
+  paymentDay: string;
+  forumCity: string;
+  status: "draft" | "signed_by_agency" | "signed_by_client";
+  agencySignatureDate?: number;
+  clientSignatureDate?: number;
+  clientSignatureIP?: string;
+}
+
 export interface Lead extends LeadInput {
   id: string;
   createdAt: number;
@@ -74,6 +97,7 @@ export interface Lead extends LeadInput {
   briefing?: StrategicBriefing;
   briefingUpdatedAt?: number;
   strategicAnalysis?: StrategicAnalysis;
+  contract?: Contract;
 }
 
 export const leadFieldLabels: Record<keyof LeadInput, string> = {
