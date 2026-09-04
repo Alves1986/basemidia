@@ -1,6 +1,6 @@
 {
-  "name": "App do Gestor - Base Mídia",
-  "short_name": "App Base Mídia",
+  "name": "BASE MÍDIA",
+  "short_name": "BASE MÍDIA",
   "description": "Workspace do Gestor de Tráfego",
   "start_url": "/gestao",
   "display": "standalone",
