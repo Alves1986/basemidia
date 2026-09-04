@@ -1,6 +1,7 @@
 import type { StrategicAnalysis } from "./operation.js";
 
 export interface LeadInput {
+  companyName: string;
   name: string;
   whatsapp: string;
   email: string;
@@ -76,6 +77,7 @@ export interface Lead extends LeadInput {
 }
 
 export const leadFieldLabels: Record<keyof LeadInput, string> = {
+  companyName: "Nome da Empresa",
   name: "Nome",
   whatsapp: "WhatsApp",
   email: "E-mail",
@@ -86,6 +88,7 @@ export const leadFieldLabels: Record<keyof LeadInput, string> = {
 };
 
 export const leadInputKeys: Array<keyof LeadInput> = [
+  "companyName",
   "name",
   "whatsapp",
   "email",

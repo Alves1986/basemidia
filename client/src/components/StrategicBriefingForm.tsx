@@ -60,8 +60,8 @@ function createInitialBriefing(
   adminEmail: string
 ): StrategicBriefing {
   return {
-    companyClient: lead.briefing?.companyClient || lead.name,
-    filledBy: lead.briefing?.filledBy || adminEmail,
+    companyClient: lead.briefing?.companyClient || lead.companyName || lead.name,
+    filledBy: lead.briefing?.filledBy || lead.name,
     briefingDate: lead.briefing?.briefingDate || today(),
     siteInstagram: lead.briefing?.siteInstagram || "",
     companyDescription: lead.briefing?.companyDescription || "",

@@ -119,6 +119,7 @@ export default function Home() {
   const [submitError, setSubmitError] = useState("");
   const [formStep, setFormStep] = useState(1);
   const [form, setForm] = useState({
+    companyName: "",
     name: "",
     whatsapp: "",
     email: "",
@@ -138,6 +139,7 @@ export default function Home() {
     setForm(current => ({ ...current, [field]: value }));
   const goToStep = (step: number) => setFormStep(step);
   const canAdvance =
+    form.companyName.trim() !== "" &&
     form.name.trim() !== "" &&
     form.whatsapp.trim() !== "" &&
     form.segment !== "" &&
@@ -613,6 +615,14 @@ export default function Home() {
                   {formStep === 1 && (
                     <div className="stepped-step">
                       <div className="form-grid">
+                        <label>
+                          Nome da Empresa
+                          <input
+                            value={form.companyName}
+                            onChange={e => update("companyName", e.target.value)}
+                            placeholder="Sua empresa"
+                          />
+                        </label>
                         <label>
                           Seu nome
                           <input

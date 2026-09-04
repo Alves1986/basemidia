@@ -31,6 +31,7 @@ interface VercelRequest {
 }
 
 const MAX_LENGTHS: Record<keyof LeadInput, number> = {
+  companyName: 120,
   name: 120,
   whatsapp: 40,
   email: 160,
