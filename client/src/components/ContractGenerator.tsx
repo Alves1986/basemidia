@@ -24,16 +24,91 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
   const DEFAULT_CONTRACT = `
 # CONTRATO DE PRESTAÇÃO DE SERVIÇOS
 
-**CONTRATADA:** {{AGENCIA_NOME}}, inscrita no CNPJ sob o n° {{AGENCIA_CNPJ}}, sediada em {{AGENCIA_ENDERECO}}, representada por {{AGENCIA_REPRESENTANTE}}.
-**E-mail:** {{AGENCIA_EMAIL}}
+**Gestão Recorrente de Tráfego Pago (Meta Ads)**
 
-**CONTRATANTE:** {{CLIENTE_NOME}}, inscrito no CNPJ/CPF sob o n° {{CLIENTE_CNPJ_CPF}}, sediado em {{CLIENTE_ENDERECO}}.
-**E-mail:** {{CLIENTE_EMAIL}}
+---
 
-**1. OBJETO:** O presente instrumento tem como objeto a prestação de serviços de {{DESCRICAO_SERVICO}}.
-**2. VALORES E PAGAMENTO:** O investimento mensal será de {{VALOR_MENSAL}} e uma taxa de setup inicial de {{VALOR_SETUP}}. Os pagamentos serão realizados via {{CONDICOES_PAGAMENTO}}, com vencimento todo dia {{DIA_VENCIMENTO}}.
-**3. PRAZO:** Este contrato possui vigência de {{DURACAO_MESES}} meses, a contar da data de sua assinatura.
-**4. FORO:** As partes elegem o foro de {{FORO_COMARCA}} para dirimir quaisquer dúvidas oriundas deste contrato.
+## PARTES
+
+**CONTRATADA:** {{AGENCIA_NOME}}, {{AGENCIA_REPRESENTANTE}}, inscrito(a) no CPF/CNPJ sob o nº {{AGENCIA_CNPJ}}, com sede/domicílio em {{AGENCIA_ENDERECO}}, e-mail {{AGENCIA_EMAIL}}, doravante denominada **CONTRATADA**.
+
+**CONTRATANTE:** {{CLIENTE_NOME}}, inscrita no CPF/CNPJ sob o nº {{CLIENTE_CNPJ_CPF}}, com sede/domicílio em {{CLIENTE_ENDERECO}}, Instagram {{CLIENTE_INSTAGRAM}}, WhatsApp {{CLIENTE_WHATSAPP}}, e-mail {{CLIENTE_EMAIL}}, doravante denominada **CONTRATANTE**.
+
+---
+
+## CLÁUSULA 1ª – DO OBJETO
+
+Prestação de serviços contínuos de gestão de tráfego pago via Meta Ads, incluindo: {{DESCRICAO_SERVICO}}.
+
+Não estão incluídos, salvo acordo em contrário por escrito: produção de fotos/vídeos originais, tráfego orgânico (postagens de feed/stories), ou gestão de outras plataformas de anúncios não especificadas.
+
+## CLÁUSULA 2ª – DAS OBRIGAÇÕES DA CONTRATADA
+
+Planejar, criar, monitorar e otimizar as campanhas de forma contínua durante a vigência do contrato.
+
+Entregar os criativos (peças/textos das campanhas) à CONTRATANTE em até {{PRAZO_ENTREGA_CRIATIVOS}} dias, contados do início dos trabalhos ou da solicitação de novo material.
+
+Enviar relatório de desempenho com periodicidade {{PERIODICIDADE_RELATORIO}}.
+
+Não garantir resultado específico de vendas, agendamentos ou faturamento — o serviço contratado é de gestão e otimização de tráfego, cujo desempenho depende de fatores externos ao controle da CONTRATADA.
+
+## CLÁUSULA 3ª – DAS OBRIGAÇÕES DA CONTRATANTE
+
+Disponibilizar acesso à conta de anúncios (Gerenciador de Anúncios, Business Manager) e à página/perfil do Instagram ({{CLIENTE_INSTAGRAM}}) necessários à execução do serviço.
+
+Aprovar criativos, ofertas e textos em prazo de até {{PRAZO_APROVACAO_CRIATIVOS}} dias úteis, sob pena de suspensão temporária das entregas sem prejuízo do valor mensal.
+
+Manter ativa e disponível a verba de mídia (Cláusula 5ª) durante todo o período de veiculação.
+
+## CLÁUSULA 4ª – DO VALOR, FORMA DE PAGAMENTO E REAJUSTE
+
+Pela gestão mensal, a CONTRATANTE pagará à CONTRATADA o valor de {{VALOR_MENSAL}} por mês, com vencimento todo dia {{DIA_VENCIMENTO}}, via {{CONDICOES_PAGAMENTO}}.
+
+Será cobrada uma taxa de implantação (setup) única de {{VALOR_SETUP}}, referente à configuração inicial da conta de anúncios (Meta Ads), pixel/eventos de conversão e primeira estrutura de campanhas, a ser paga {{CONDICAO_PAGAMENTO_SETUP}}.
+
+O valor mensal poderá ser reajustado ao final do período de vigência (Cláusula 6ª), ou em caso de aumento relevante da verba de mídia gerida, mediante aviso prévio de {{PRAZO_AVISO_REAJUSTE}} dias.
+
+## CLÁUSULA 5ª – DA VERBA DE MÍDIA
+
+A verba investida em anúncios é de responsabilidade exclusiva da CONTRATANTE, paga diretamente à plataforma (Meta Ads) via cartão ou faturamento próprio, não integrando o valor da Cláusula 4ª.
+
+Verba mensal acordada: {{VERBA_MIDIA_MENSAL}}.
+
+## CLÁUSULA 6ª – DA VIGÊNCIA E RENOVAÇÃO
+
+Este contrato vigora por prazo de {{DURACAO_MESES}} meses, contados da assinatura, correspondendo também ao período de permanência mínima, renovando-se automaticamente por períodos iguais e sucessivos, salvo manifestação em contrário de qualquer das partes com {{PRAZO_AVISO_RENOVACAO}} dias de antecedência ao término do período vigente.
+
+## CLÁUSULA 7ª – DA RESCISÃO E CANCELAMENTO
+
+Após o período de permanência mínima, qualquer parte poderá rescindir este contrato mediante aviso prévio por escrito de {{PRAZO_AVISO_RESCISAO}} dias.
+
+Em caso de cancelamento antes do fim da permanência mínima por iniciativa da CONTRATANTE, poderá ser cobrada multa equivalente a {{MULTA_RESCISAO_PERCENTUAL}}% do valor restante do período mínimo.
+
+O descumprimento de pagamento por mais de {{PRAZO_INADIMPLENCIA}} dias autoriza a suspensão imediata dos serviços, incluindo pausa das campanhas ativas.
+
+## CLÁUSULA 8ª – DA CONFIDENCIALIDADE E DADOS
+
+As partes comprometem-se a manter sigilo sobre dados estratégicos, financeiros e de desempenho de campanhas, mesmo após o encerramento do contrato.
+
+## CLÁUSULA 9ª – DA PROPRIEDADE E TRANSFERÊNCIA DE ACESSOS
+
+A conta de anúncios, pixel, públicos salvos e dados de campanha pertencem à CONTRATANTE. Ao final do contrato, os acessos concedidos à CONTRATADA serão revogados, e a CONTRATADA deverá entregar relatório final de desempenho.
+
+## CLÁUSULA 10ª – DO FORO
+
+Fica eleito o foro da comarca de {{FORO_COMARCA}} para dirimir quaisquer controvérsias oriundas deste contrato.
+
+---
+
+{{FORO_COMARCA}}, {{DATA_ASSINATURA}}.
+
+_________________________________________
+
+**{{AGENCIA_NOME}} — CONTRATADA**
+
+_________________________________________
+
+**{{CLIENTE_NOME}} — CONTRATANTE**
 `;
 
   const renderMarkdown = (md: string) => {
