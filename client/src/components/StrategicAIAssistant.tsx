@@ -63,11 +63,21 @@ export default function StrategicAIAssistant({
   >("strategist");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [pipelineState, setPipelineState] = useState<WarRoomState>({
-    strategist: { status: "idle", result: "" },
-    copywriter: { status: "idle", result: "" },
-    designer: { status: "idle", result: "" },
-    traffic: { status: "idle", result: "" },
+  const [pipelineState, setPipelineState] = useState<WarRoomState>(() => {
+    if (analysis && (analysis.strategist || analysis.copywriter || analysis.designer || analysis.traffic)) {
+      return {
+        strategist: { status: analysis.strategist ? "success" : "idle", result: analysis.strategist || "" },
+        copywriter: { status: analysis.copywriter ? "success" : "idle", result: analysis.copywriter || "" },
+        designer: { status: analysis.designer ? "success" : "idle", result: analysis.designer || "" },
+        traffic: { status: analysis.traffic ? "success" : "idle", result: analysis.traffic || "" },
+      };
+    }
+    return {
+      strategist: { status: "idle", result: "" },
+      copywriter: { status: "idle", result: "" },
+      designer: { status: "idle", result: "" },
+      traffic: { status: "idle", result: "" },
+    };
   });
 
   const [isPipelineRunning, setIsPipelineRunning] = useState(false);
@@ -162,11 +172,35 @@ export default function StrategicAIAssistant({
         throw new Error(dataTraffic.error || "Erro no Gestor");
       const trafficResult = dataTraffic.result;
 
-      setPipelineState(prev => ({
-        ...prev,
+      const finalState: WarRoomState = {
+        strategist: { status: "success", result: stratResult },
+        copywriter: { status: "success", result: copyResult },
+        designer: { status: "success", result: designerResult },
         traffic: { status: "success", result: trafficResult },
-      }));
+      };
+
+      setPipelineState(finalState);
       setActiveTab("traffic");
+
+      try {
+        await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "save-analysis",
+            leadId,
+            analysis: {
+              strategist: stratResult,
+              copywriter: copyResult,
+              designer: designerResult,
+              traffic: trafficResult,
+              generatedAt: Date.now()
+            }
+          })
+        });
+      } catch (err) {
+        console.error("Erro ao salvar sala de guerra no banco de dados:", err);
+      }
     } catch (err: any) {
       setPipelineError(err.message);
       setPipelineState(prev => {
@@ -295,66 +329,29 @@ export default function StrategicAIAssistant({
               flexWrap: "wrap",
             }}
           >
-            <div
-              className="agent-step"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "10px 15px",
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: 8,
-              }}
-            >
-              {renderStatusIcon(pipelineState.strategist.status)}
-              <span>1. Estrategista</span>
-            </div>
-            <div
-              className="agent-step"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "10px 15px",
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: 8,
-              }}
-            >
-              {renderStatusIcon(pipelineState.copywriter.status)}
-              <span>2. Copywriter</span>
-            </div>
-            <div
-              className="agent-step"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "10px 15px",
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: 8,
-              }}
-            >
-              {renderStatusIcon(pipelineState.designer.status)}
-              <span>3. Designer</span>
-            </div>
-            <div
-              className="agent-step"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "10px 15px",
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: 8,
-              }}
-            >
-              {renderStatusIcon(pipelineState.traffic.status)}
-              <span>4. Gestor Ads</span>
-            </div>
+            {['strategist', 'copywriter', 'designer', 'traffic'].map((key, idx) => {
+              const labels = ['1. Estrategista', '2. Copywriter', '3. Designer', '4. Gestor Ads'];
+              const status = pipelineState[key as keyof WarRoomState].status;
+              return (
+                <div
+                  key={key}
+                  className="agent-step"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 15px",
+                    background: "var(--card, #171717)",
+                    border: "1px solid var(--border, rgba(240,240,240,0.13))",
+                    borderRadius: 8,
+                    color: status === "success" ? "var(--foreground, #f0f0f0)" : "#887e7e",
+                  }}
+                >
+                  {renderStatusIcon(status)}
+                  <span>{labels[idx]}</span>
+                </div>
+              );
+            })}
           </div>
 
           <div
@@ -362,7 +359,7 @@ export default function StrategicAIAssistant({
             style={{
               display: "flex",
               gap: 5,
-              borderBottom: "1px solid #e2e8f0",
+              borderBottom: "1px solid var(--border, rgba(240,240,240,0.13))",
               marginBottom: 20,
             }}
           >
@@ -372,12 +369,12 @@ export default function StrategicAIAssistant({
                 onClick={() => setActiveTab(tab as any)}
                 style={{
                   padding: "10px 20px",
-                  background: activeTab === tab ? "#eff6ff" : "transparent",
-                  color: activeTab === tab ? "#2563eb" : "#64748b",
+                  background: activeTab === tab ? "rgba(56, 255, 20, 0.05)" : "transparent",
+                  color: activeTab === tab ? "var(--acid, #38ff14)" : "#887e7e",
                   border: "none",
                   borderBottom:
                     activeTab === tab
-                      ? "2px solid #2563eb"
+                      ? "2px solid var(--acid, #38ff14)"
                       : "2px solid transparent",
                   cursor: "pointer",
                   fontWeight: 500,
@@ -392,12 +389,13 @@ export default function StrategicAIAssistant({
           <div
             className="war-room-result"
             style={{
-              background: "#fff",
+              background: "var(--card, #171717)",
               padding: 20,
-              border: "1px solid #e2e8f0",
+              border: "1px solid var(--border, rgba(240,240,240,0.13))",
               borderRadius: 8,
               maxHeight: 400,
               overflowY: "auto",
+              color: "var(--foreground, #f0f0f0)",
             }}
           >
             {pipelineState[activeTab].status === "loading" && (
@@ -406,7 +404,7 @@ export default function StrategicAIAssistant({
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
-                  color: "#64748b",
+                  color: "#887e7e",
                 }}
               >
                 <Loader2 className="spin" size={18} /> O agente está
@@ -414,7 +412,7 @@ export default function StrategicAIAssistant({
               </div>
             )}
             {pipelineState[activeTab].status === "idle" && (
-              <div style={{ color: "#64748b" }}>
+              <div style={{ color: "#887e7e" }}>
                 Aguardando a etapa anterior...
               </div>
             )}

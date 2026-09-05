@@ -37,11 +37,17 @@ export interface OperationSettings {
 }
 
 export interface StrategicAnalysis {
-  funnelDiagnosis: string;
-  irresistibleOffer: string;
-  audienceAndTargeting: string[];
-  copywritingHooks: string[];
-  closingScript: string;
+  funnelDiagnosis?: string;
+  irresistibleOffer?: string;
+  audienceAndTargeting?: string[];
+  copywritingHooks?: string[];
+  closingScript?: string;
+  
+  strategist?: string;
+  copywriter?: string;
+  designer?: string;
+  traffic?: string;
+  
   generatedAt: number;
 }
 

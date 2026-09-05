@@ -150,13 +150,43 @@ export default function StrategicBriefingForm({
     // Add print class for styling overrides during PDF generation
     formEl.classList.add("print-mode");
     
-    const textareas = formEl.querySelectorAll("textarea");
-
-    // Temporarily expand all textareas to their full content height for printing
-    const originalHeights = Array.from(textareas).map(ta => ta.style.height);
-    textareas.forEach(ta => {
-      ta.style.height = "auto";
-      ta.style.height = `${ta.scrollHeight + 10}px`;
+    // Convert inputs and textareas to divs for html2canvas to render text properly without clipping
+    const formFields = formEl.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input, textarea");
+    const replacements = Array.from(formFields).map(el => {
+      const div = document.createElement("div");
+      const computedStyle = window.getComputedStyle(el);
+      
+      div.className = el.className;
+      
+      // Iterate over computed styles and apply them to the div (more reliable than cssText in some browsers)
+      for (let i = 0; i < computedStyle.length; i++) {
+        const propName = computedStyle[i];
+        div.style.setProperty(propName, computedStyle.getPropertyValue(propName), computedStyle.getPropertyPriority(propName));
+      }
+      
+      // Override specific styles to ensure full visibility and correct rendering
+      div.style.height = "auto";
+      div.style.minHeight = el.tagName.toLowerCase() === "textarea" ? `${el.scrollHeight + 10}px` : computedStyle.height;
+      div.style.whiteSpace = "pre-wrap";
+      div.style.wordBreak = "break-word";
+      div.style.overflow = "visible";
+      div.style.display = "flex";
+      div.style.alignItems = el.tagName.toLowerCase() === "textarea" ? "flex-start" : "center";
+      // Textareas often need a bit of padding adjustment for visual parity in divs
+      if (el.tagName.toLowerCase() === "textarea") {
+          div.style.paddingTop = computedStyle.paddingTop;
+      }
+      
+      // Preserve the text content
+      div.innerText = el.value || " ";
+      
+      el.parentNode?.insertBefore(div, el);
+      
+      // Hide the original element
+      const originalDisplay = el.style.display;
+      el.style.display = "none";
+      
+      return { el, div, originalDisplay };
     });
 
     try {
@@ -170,9 +200,10 @@ export default function StrategicBriefingForm({
       console.error("Error generating PDF", e);
       toast.error("Erro ao gerar PDF.");
     } finally {
-      // Restore original styles
-      textareas.forEach((ta, i) => {
-        ta.style.height = originalHeights[i];
+      // Restore original elements and remove replacements
+      replacements.forEach(({ el, div, originalDisplay }) => {
+        el.style.display = originalDisplay;
+        div.remove();
       });
       formEl.classList.remove("print-mode");
       setIsExporting(false);
@@ -251,15 +282,20 @@ export default function StrategicBriefingForm({
                 matéria-prima do negócio com contexto e fuja do óbvio.
               </p>
             </div>
-            <div className="briefing-progress-card">
-              <span>PROGRESSO DO BRIEFING</span>
-              <strong>{progress}%</strong>
-              <div className="briefing-progress-bar">
-                <span style={{ width: `${progress}%` }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px", width: "100%" }}>
+              <div style={{ background: "#111", padding: "16px", borderRadius: "8px", alignSelf: "flex-end", display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
+                <img src="/branding/logo_bm.png" alt="Base Mídia" style={{ width: "150px", height: "auto", display: "block" }} />
               </div>
-              <small>
-                {filledFields} de {allFields.length} campos preenchidos
-              </small>
+              <div className="briefing-progress-card">
+                <span>PROGRESSO DO BRIEFING</span>
+                <strong>{progress}%</strong>
+                <div className="briefing-progress-bar">
+                  <span style={{ width: `${progress}%` }} />
+                </div>
+                <small>
+                  {filledFields} de {allFields.length} campos preenchidos
+                </small>
+              </div>
             </div>
           </div>
 

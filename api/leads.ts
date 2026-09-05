@@ -257,6 +257,35 @@ async function handleClientGetLead(request: Request, body: unknown) {
   }
 }
 
+async function handleSaveAnalysis(request: Request, body: unknown) {
+  if (!(await getAuthenticatedAdmin(request))) {
+    return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
+  }
+  if (!isLeadStorageConfigured()) {
+    return jsonResponse({ error: "O armazenamento de leads ainda não foi configurado." }, { status: 503 });
+  }
+
+  if (!body || typeof body !== "object") {
+    return jsonResponse({ error: "Envie os dados da análise." }, { status: 400 });
+  }
+  const source = body as Record<string, unknown>;
+  const leadId = typeof source.leadId === "string" ? source.leadId.trim() : "";
+  const analysis = source.analysis as any;
+
+  if (!leadId || !analysis) {
+    return jsonResponse({ error: "Revise os campos antes de salvar." }, { status: 400 });
+  }
+
+  try {
+    const { saveLeadAnalysis } = await import("./_lib/leads.js");
+    const lead = await saveLeadAnalysis(leadId, analysis);
+    return jsonResponse({ success: true, lead });
+  } catch (error) {
+    console.error("[Leads] Falha ao salvar análise", error);
+    return jsonResponse({ error: "Não foi possível salvar esta análise agora." }, { status: 500 });
+  }
+}
+
 async function handleSaveContract(request: Request, body: unknown) {
   if (!(await getAuthenticatedAdmin(request))) {
     return jsonResponse({ error: "Acesso restrito." }, { status: 401 });
@@ -459,6 +488,17 @@ export default async function handler(
     ) {
       return sendWebResponse(
         await handleSaveBriefing(webRequest, body),
+        response
+      );
+    }
+
+    if (
+      body &&
+      typeof body === "object" &&
+      (body as Record<string, unknown>).action === "save-analysis"
+    ) {
+      return sendWebResponse(
+        await handleSaveAnalysis(webRequest, body),
         response
       );
     }

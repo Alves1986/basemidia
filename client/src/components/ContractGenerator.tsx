@@ -17,7 +17,7 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
   const [loadingSettings, setLoadingSettings] = useState(true);
   const [saving, setSaving] = useState(false);
   const [contract, setContract] = useState<Partial<Contract>>(lead.contract || {});
-  const [step, setStep] = useState<"edit" | "preview">("edit");
+  const [step, setStep] = useState<"edit" | "preview">("preview");
   const [agencyName, setAgencyName] = useState("");
   const [templateMd, setTemplateMd] = useState("");
 
@@ -38,7 +38,20 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
       .replace(/{{VALOR_SETUP}}/g, contract.setupValue || "")
       .replace(/{{DURACAO_MESES}}/g, contract.durationMonths || "")
       .replace(/{{CONDICOES_PAGAMENTO}}/g, contract.paymentConditions || "")
-      .replace(/{{DIA_VENCIMENTO}}/g, contract.paymentDay || "");
+      .replace(/{{DIA_VENCIMENTO}}/g, contract.paymentDay || "")
+      .replace(/{{CLIENTE_INSTAGRAM}}/g, lead.briefing?.siteInstagram || "")
+      .replace(/{{CLIENTE_WHATSAPP}}/g, lead.whatsapp || "")
+      .replace(/{{PRAZO_ENTREGA_CRIATIVOS}}/g, "7")
+      .replace(/{{PERIODICIDADE_RELATORIO}}/g, "mensal")
+      .replace(/{{PRAZO_APROVACAO_CRIATIVOS}}/g, "3")
+      .replace(/{{CONDICAO_PAGAMENTO_SETUP}}/g, "na assinatura")
+      .replace(/{{PRAZO_AVISO_REAJUSTE}}/g, "30")
+      .replace(/{{VERBA_MIDIA_MENSAL}}/g, "a definir pelo cliente")
+      .replace(/{{PRAZO_AVISO_RENOVACAO}}/g, "30")
+      .replace(/{{PRAZO_AVISO_RESCISAO}}/g, "30")
+      .replace(/{{MULTA_RESCISAO_PERCENTUAL}}/g, "30")
+      .replace(/{{PRAZO_INADIMPLENCIA}}/g, "5")
+      .replace(/{{DATA_ASSINATURA}}/g, contract.agencySignatureDate ? new Date(contract.agencySignatureDate).toLocaleDateString("pt-BR") : new Date().toLocaleDateString("pt-BR"));
     return marked.parse(replaced) as string;
   };
   
@@ -121,18 +134,11 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
     const originalDisplay = el.style.display;
     
     try {
-      const { getHtml2Pdf } = await import("../lib/pdfUtils");
-      const html2pdf = await getHtml2Pdf();
-      
-      const opt = {
-        margin: [15, 15, 15, 15],
-        filename: `contrato_${lead.companyName || lead.name}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      // @ts-ignore
-      await html2pdf().set(opt).from(el).save();
+      const { exportPdfSmartBreaks } = await import("../lib/exportPdfSmartBreaks");
+      await exportPdfSmartBreaks({
+        element: el,
+        fileName: `contrato_${lead.companyName || lead.name}.pdf`,
+      });
     } catch (e) {
       console.error("Error generating PDF", e);
       toast.error("Erro ao gerar PDF.");
@@ -309,7 +315,7 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
                      </button>
                      <button disabled={saving} onClick={() => handleSave(true)} className="px-4 py-2 bg-[#f6c85f] text-black rounded font-bold hover:brightness-110 flex items-center gap-2">
                        {saving ? <Loader2 className="animate-spin" size={16} /> : <ShieldCheck size={16} />}
-                       Assinar como Agência
+                       Gerar Contrato
                      </button>
                    </>
                  )}
