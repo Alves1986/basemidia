@@ -21,6 +21,21 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
   const [agencyName, setAgencyName] = useState("");
   const [templateMd, setTemplateMd] = useState("");
 
+  const DEFAULT_CONTRACT = `
+# CONTRATO DE PRESTAÇÃO DE SERVIÇOS
+
+**CONTRATADA:** {{AGENCIA_NOME}}, inscrita no CNPJ sob o n° {{AGENCIA_CNPJ}}, sediada em {{AGENCIA_ENDERECO}}, representada por {{AGENCIA_REPRESENTANTE}}.
+**E-mail:** {{AGENCIA_EMAIL}}
+
+**CONTRATANTE:** {{CLIENTE_NOME}}, inscrito no CNPJ/CPF sob o n° {{CLIENTE_CNPJ_CPF}}, sediado em {{CLIENTE_ENDERECO}}.
+**E-mail:** {{CLIENTE_EMAIL}}
+
+**1. OBJETO:** O presente instrumento tem como objeto a prestação de serviços de {{DESCRICAO_SERVICO}}.
+**2. VALORES E PAGAMENTO:** O investimento mensal será de {{VALOR_MENSAL}} e uma taxa de setup inicial de {{VALOR_SETUP}}. Os pagamentos serão realizados via {{CONDICOES_PAGAMENTO}}, com vencimento todo dia {{DIA_VENCIMENTO}}.
+**3. PRAZO:** Este contrato possui vigência de {{DURACAO_MESES}} meses, a contar da data de sua assinatura.
+**4. FORO:** As partes elegem o foro de {{FORO_COMARCA}} para dirimir quaisquer dúvidas oriundas deste contrato.
+`;
+
   const renderMarkdown = (md: string) => {
     let replaced = md
       .replace(/{{AGENCIA_NOME}}/g, contract.agencyName || "")
@@ -64,7 +79,7 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
           setAgencyName(settings.agencySettings?.name || "Agência Não Configurada");
           
           if (!lead.contract) {
-             setTemplateMd(settings.contractTemplateMd || "");
+             setTemplateMd(settings.contractTemplateMd || DEFAULT_CONTRACT);
              // Pre-fill
              setContract({
                 agencyName: settings.agencySettings?.name || "",
@@ -86,12 +101,42 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
                 status: "draft"
              });
           } else {
-             setTemplateMd(lead.contract.markdownTemplate || settings.contractTemplateMd || "");
+             setTemplateMd(lead.contract.markdownTemplate || settings.contractTemplateMd || DEFAULT_CONTRACT);
           }
         })
         .finally(() => setLoadingSettings(false));
     }
   }, [isOpen, lead]);
+
+  const handlePrint = async () => {
+    const el = document.getElementById("contract-content");
+    if (!el) return;
+    
+    // Add a wrapper class or adjust styles temporarily
+    const originalDisplay = el.style.display;
+    
+    try {
+      const { exportPdfSmartBreaks } = await import("../lib/exportPdfSmartBreaks");
+      
+      // Temporarily expand height to ensure all content is visible for html2canvas
+      const originalMaxHeight = el.style.maxHeight;
+      const originalOverflow = el.style.overflow;
+      el.style.maxHeight = 'none';
+      el.style.overflow = 'visible';
+
+      await exportPdfSmartBreaks({
+        element: el,
+        fileName: `contrato_${lead.companyName || lead.name}.pdf`,
+      });
+
+      // Restore original styles
+      el.style.maxHeight = originalMaxHeight;
+      el.style.overflow = originalOverflow;
+    } catch (e) {
+      console.error("Error generating PDF", e);
+      toast.error("Erro ao gerar PDF.");
+    }
+  };
 
   const handleSave = async (signAsAgency: boolean = false) => {
     setSaving(true);
@@ -116,32 +161,19 @@ export function ContractGenerator({ lead, isOpen, onClose, onSuccess }: Props) {
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "Erro ao salvar contrato");
       
-      toast.success(signAsAgency ? "Contrato assinado!" : "Rascunho salvo!");
+      toast.success(signAsAgency ? "Contrato gerado com sucesso!" : "Rascunho salvo!");
+      
+      if (signAsAgency) {
+         // Generate the PDF automatically before closing
+         await handlePrint();
+      }
+
       onSuccess(body.lead);
       if (signAsAgency) onClose();
     } catch (error) {
        toast.error(error instanceof Error ? error.message : "Erro desconhecido");
     } finally {
        setSaving(false);
-    }
-  };
-
-  const handlePrint = async () => {
-    const el = document.getElementById("contract-content");
-    if (!el) return;
-    
-    // Add a wrapper class or adjust styles temporarily
-    const originalDisplay = el.style.display;
-    
-    try {
-      const { exportPdfSmartBreaks } = await import("../lib/exportPdfSmartBreaks");
-      await exportPdfSmartBreaks({
-        element: el,
-        fileName: `contrato_${lead.companyName || lead.name}.pdf`,
-      });
-    } catch (e) {
-      console.error("Error generating PDF", e);
-      toast.error("Erro ao gerar PDF.");
     }
   };
 
