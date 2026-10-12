@@ -224,7 +224,7 @@ export default function ClientBriefing() {
           </div>
         </div>
 
-        <form className="cb-form" onSubmit={submit}>
+        <form className="cb-form" onSubmit={submit} noValidate>
           {/* Seção 1 */}
           <div className="cb-section">
             <div className="cb-section-header">
@@ -235,7 +235,6 @@ export default function ClientBriefing() {
               <label>
                 Empresa/Cliente
                 <input
-                  required
                   value={form.companyClient}
                   onChange={e => update("companyClient", e.target.value)}
                 />
@@ -243,7 +242,6 @@ export default function ClientBriefing() {
               <label>
                 Preenchido por
                 <input
-                  required
                   value={form.filledBy}
                   readOnly
                   className="read-only-field"
@@ -253,7 +251,6 @@ export default function ClientBriefing() {
                 Data do Briefing
                 <input
                   type="date"
-                  required
                   value={form.briefingDate}
                   onChange={e => update("briefingDate", e.target.value)}
                 />
@@ -261,7 +258,6 @@ export default function ClientBriefing() {
               <label>
                 Site e Instagram principal
                 <input
-                  required
                   value={form.siteInstagram}
                   onChange={e => update("siteInstagram", e.target.value)}
                   placeholder="Ex: basemidia.com / @basemidia"
@@ -280,7 +276,6 @@ export default function ClientBriefing() {
               <label>
                 O que a empresa vende? Qual o problema principal que resolve?
                 <textarea
-                  required
                   value={form.companyDescription}
                   onChange={e => update("companyDescription", e.target.value)}
                   rows={3}
@@ -289,7 +284,6 @@ export default function ClientBriefing() {
               <label>
                 Onde capta clientes hoje? (Quais canais dão mais resultado?)
                 <textarea
-                  required
                   value={form.currentChannels}
                   onChange={e => update("currentChannels", e.target.value)}
                   rows={2}
@@ -308,7 +302,6 @@ export default function ClientBriefing() {
               <label>
                 O que exatamente vamos anunciar?
                 <textarea
-                  required
                   value={form.productService}
                   onChange={e => update("productService", e.target.value)}
                   rows={2}
@@ -317,7 +310,6 @@ export default function ClientBriefing() {
               <label>
                 O que está incluso na entrega? (Entregáveis, escopo, bônus)
                 <textarea
-                  required
                   value={form.includedItems}
                   onChange={e => update("includedItems", e.target.value)}
                   rows={3}
@@ -327,7 +319,6 @@ export default function ClientBriefing() {
                 Quais os diferenciais competitivos DESSE produto/serviço? (Por
                 que comprar de vocês e não do concorrente?)
                 <textarea
-                  required
                   value={form.productDifferentials}
                   onChange={e => update("productDifferentials", e.target.value)}
                   rows={3}
@@ -336,7 +327,6 @@ export default function ClientBriefing() {
               <label>
                 Existe garantia? Se sim, como funciona?
                 <input
-                  required
                   value={form.guarantees}
                   onChange={e => update("guarantees", e.target.value)}
                 />
@@ -354,7 +344,6 @@ export default function ClientBriefing() {
               <label>
                 Preço / Ticket Médio
                 <input
-                  required
                   value={form.priceTicket}
                   onChange={e => update("priceTicket", e.target.value)}
                 />
@@ -362,7 +351,6 @@ export default function ClientBriefing() {
               <label>
                 Condições de Pagamento
                 <input
-                  required
                   value={form.paymentConditions}
                   onChange={e => update("paymentConditions", e.target.value)}
                 />
@@ -370,7 +358,6 @@ export default function ClientBriefing() {
               <label className="span-full">
                 Existe alguma oferta ativa ou desconto agressivo para captação?
                 <input
-                  required
                   value={form.activeOffer}
                   onChange={e => update("activeOffer", e.target.value)}
                 />
@@ -378,7 +365,6 @@ export default function ClientBriefing() {
               <label>
                 Região atendida (Local, Nacional, Global?)
                 <input
-                  required
                   value={form.servedRegion}
                   onChange={e => update("servedRegion", e.target.value)}
                 />
@@ -394,7 +380,6 @@ export default function ClientBriefing() {
               <label className="span-full">
                 A venda acontece por onde? (Site, WhatsApp, Ligação, Presencial)
                 <input
-                  required
                   value={form.salesChannels}
                   onChange={e => update("salesChannels", e.target.value)}
                 />
@@ -402,7 +387,6 @@ export default function ClientBriefing() {
               <label className="span-full">
                 Como é o tempo de resposta do comercial hoje?
                 <input
-                  required
                   value={form.customerService}
                   onChange={e => update("customerService", e.target.value)}
                 />
@@ -421,7 +405,6 @@ export default function ClientBriefing() {
                 A empresa se posiciona como Mais Barata, Melhor Custo-Benefício
                 ou Premium/Exclusiva?
                 <input
-                  required
                   value={form.brandPositioning}
                   onChange={e => update("brandPositioning", e.target.value)}
                 />
@@ -430,7 +413,6 @@ export default function ClientBriefing() {
                 Temos prova social forte? (Avaliações, depoimentos em vídeo,
                 clientes famosos, anos de mercado)
                 <textarea
-                  required
                   value={form.existingProof}
                   onChange={e => update("existingProof", e.target.value)}
                   rows={2}
@@ -440,7 +422,6 @@ export default function ClientBriefing() {
                 Temos material visual de qualidade? (Fotos, vídeos bons do
                 produto/serviço)
                 <input
-                  required
                   value={form.availableMaterials}
                   onChange={e => update("availableMaterials", e.target.value)}
                 />
@@ -459,7 +440,6 @@ export default function ClientBriefing() {
                 Qual o objetivo exato da campanha? (Ex: Gerar 50 leads por
                 semana no WhatsApp para serviço X)
                 <textarea
-                  required
                   value={form.campaignObjective}
                   onChange={e => update("campaignObjective", e.target.value)}
                   rows={2}
@@ -469,7 +449,6 @@ export default function ClientBriefing() {
                 <label>
                   Orçamento de Mídia disponível (Mensal)
                   <input
-                    required
                     value={form.availableBudget}
                     onChange={e => update("availableBudget", e.target.value)}
                   />
@@ -477,7 +456,6 @@ export default function ClientBriefing() {
                 <label>
                   Existe sazonalidade forte neste nicho?
                   <input
-                    required
                     value={form.seasonality}
                     onChange={e => update("seasonality", e.target.value)}
                   />
@@ -487,7 +465,6 @@ export default function ClientBriefing() {
                 Quem são os 3 principais concorrentes diretos? (Links se
                 possível)
                 <textarea
-                  required
                   value={form.directCompetitors}
                   onChange={e => update("directCompetitors", e.target.value)}
                   rows={2}
@@ -497,7 +474,6 @@ export default function ClientBriefing() {
                 Existe alguma regra ou restrição do que NÃO PODEMOS fazer de
                 jeito nenhum?
                 <textarea
-                  required
                   value={form.restrictions}
                   onChange={e => update("restrictions", e.target.value)}
                   rows={2}

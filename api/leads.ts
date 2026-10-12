@@ -73,10 +73,11 @@ function normalizeBriefing(body: unknown): StrategicBriefing | null {
   for (const [key, maxLength] of Object.entries(
     strategicBriefingMaxLengths
   ) as Array<[keyof StrategicBriefing, number]>) {
-    const value = source[key];
-    if (typeof value !== "string" || value.trim().length > maxLength)
+    const rawValue = source[key];
+    const value = typeof rawValue === "string" ? rawValue.trim() : "";
+    if (value.length > maxLength)
       return null;
-    briefing[key] = value.trim();
+    briefing[key] = value;
   }
 
   return briefing;
